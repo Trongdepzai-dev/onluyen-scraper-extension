@@ -3226,16 +3226,16 @@ if (window.hasRunScraper) {
             </div>
 
             <div class="scraper-image-grid scraper-scrollbar" style="max-height: 320px; overflow-y: auto; padding-right: 8px;">
-              \${allImages.slice(0, 100).map((img, i) => {
+              ${allImages.slice(0, 100).map((img, i) => {
                 const optionLabelPart = img.optionLabel ? ' • ' + img.optionLabel : '';
-                const html = \`<div class="scraper-image-card" 
-                     data-img-index="\${i}" 
+                const html = `<div class="scraper-image-card" 
+                     data-img-index="${i}" 
                      style="
                        background: rgba(255,255,255,0.05); 
                        border: 1px solid rgba(255,255,255,0.1); 
                        position: relative; 
                      ">
-                  <img src="\${img.fullUrl || img.url}" 
+                  <img src="${img.fullUrl || img.url}" 
                        style="
                          width: 100%; 
                          height: 90px; 
@@ -3251,19 +3251,19 @@ if (window.hasRunScraper) {
                     height: 90px; 
                     align-items: center; 
                     justify-content: center; 
-                  ">\${getIcon('image')}</div>
+                  ">${getIcon('image')}</div>
                   <div style="
                     padding: 10px; 
                     background: rgba(0,0,0,0.3); 
                   ">
                     <div style="color: white; font-size: 12px; font-weight: 600;">
-                      Câu \${img.question}\${optionLabelPart}
+                      Câu ${img.question}${optionLabelPart}
                     </div>
                     <div style="color: #9ca3af; font-size: 10px; margin-top: 2px;">
-                      \${img.isBase64 ? '📊 Base64' : '🔗 URL'} • Click để xem
+                      ${img.isBase64 ? '📊 Base64' : '🔗 URL'} • Click để xem
                     </div>
                   </div>
-                </div>\`;
+                </div>`;
                 return html;
               }).join('')}
             </div>
