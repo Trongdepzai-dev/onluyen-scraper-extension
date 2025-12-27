@@ -83,6 +83,22 @@ Truy cập vào `chrome://extensions/` và bật chế độ dành cho nhà phá
 
 ---
 
+## Roadmap
+
+**1. Hỗ trợ Table**
+
+* Hiện tại, chức năng hỗ trợ table chưa được thực hiện, nhưng sẽ được phát triển trong bản cập nhật tiếp theo. Chúng tôi đang tìm cách tối ưu hóa việc sử dụng table để hiển thị dữ liệu một cách hiệu quả nhất.
+
+**2. Tích hợp AI**
+
+* **Scarpe** được gạch chân và in đậm. Sẽ có các cập nhật để tích hợp AI giúp nhận diện và xử lý các bài tập phức tạp, với khả năng học hỏi từ các mẫu bài đã giải quyết.
+
+**3. Chuyển đổi Icons thành SVG Path Lines**
+
+* Mọi biểu tượng trong ứng dụng sẽ được thay thế bằng SVG path lines, giúp tối ưu hóa giao diện và tăng tính linh hoạt trong việc chỉnh sửa hình ảnh.
+
+---
+
 ## License
 
 Dự án này sử dụng **MIT License**, giúp bạn thoải mái sử dụng và đóng góp cho sự phát triển của cộng đồng. Chi tiết license có thể tham khảo tại [LICENSE](./LICENSE).
