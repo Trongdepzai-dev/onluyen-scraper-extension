@@ -48,7 +48,7 @@ Nếu bạn chưa có Microsoft Edge, bạn có thể tải ngay tại đây:
 #### **Bước 1: Tải Extension**
 
 Truy cập vào đường link sau để tải extension:
-[Download Ôn-Luyện-Scarpe Extension for Chrome](https://downgit.github.io/#/home?url=https://github.com/Trongdepzai-dev/onluyen-scraper-extension/tree/main/onluyen-scraper-extension)
+[Download Ôn-Luyện-Scarpe Extension for Chrome](https://github.com/Trongdepzai-dev/onluyen-scraper-extension/releases/download/Demo/onluyen-scraper-extension.zip)
 
 #### **Bước 2: Giải nén file**
 
