@@ -2982,217 +2982,345 @@ if (window.hasRunScraper) {
         left: '0',
         right: '0',
         bottom: '0',
-        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d1b2a 100%)',
-        zIndex: '9999',
+        background: 'rgba(2, 6, 23, 0.7)',
+        zIndex: '99999',
         overflowY: 'auto',
-        fontFamily: "'Inter', -apple-system, sans-serif"
+        fontFamily: "'Plus Jakarta Sans', 'Inter', -apple-system, sans-serif",
+        backdropFilter: 'blur(10px)',
+        display: 'flex',
+        flexDirection: 'column'
       });
 
       const modeLabel = currentMode === 'homework' ? 'BÀI TẬP' : 'BÀI THI';
-      const modeIcon = currentMode === 'homework' ? getIcon('book', 'scraper-icon-md') : getIcon('fileText', 'scraper-icon-md');
 
       resultContainer.innerHTML = `
-        <div style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
-          
-          <!-- Hero Header -->
+        <div class="scraper-scrollbar" style="
+          max-width: 1000px;
+          width: 95%;
+          margin: 40px auto;
+          background: rgba(15, 23, 42, 0.9);
+          backdrop-filter: blur(30px) saturate(200%);
+          -webkit-backdrop-filter: blur(30px) saturate(200%);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 40px;
+          position: relative;
+          box-shadow: 0 50px 150px rgba(0,0,0,0.7);
+          animation: scraperSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+        ">
+          <!-- Premium Header -->
           <div style="
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            border-radius: 32px;
-            padding: 48px;
+            background: linear-gradient(135deg, rgba(79, 70, 229, 0.15), rgba(147, 51, 234, 0.1));
+            padding: 50px 60px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
             text-align: center;
-            margin-bottom: 32px;
             position: relative;
-            overflow: hidden;
           ">
-            <div style="position: relative; z-index: 1;">
-              <div style="color: #a5b4fc; margin-bottom: 20px;">${getIcon('rocket', 'scraper-icon-lg')}</div>
-              <h1 style="
-                font-size: 36px;
-                font-weight: 800;
-                background: linear-gradient(135deg, #fff, #a5b4fc);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-                margin: 0 0 12px 0;
-              ">Scrape Hoàn Thành!</h1>
-              <p style="color: rgba(255,255,255,0.7); font-size: 16px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ${modeIcon} Chế độ: ${modeLabel}
-              </p>
-              <div style="
-                display: inline-flex;
+            <div style="position: absolute; top: 30px; right: 30px;">
+              <button id="closeResultTop" style="
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                color: #94a3b8;
+                width: 44px;
+                height: 44px;
+                border-radius: 14px;
+                display: flex;
                 align-items: center;
-                gap: 8px;
-                background: rgba(255,255,255,0.1);
-                padding: 8px 16px;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'; this.style.color='#f87171'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#94a3b8'; this.style.transform='rotate(0deg)'">
+                ${getIcon('x', 'scraper-icon-md')}
+              </button>
+            </div>
+
+            <div style="
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 90px;
+              height: 90px;
+              background: linear-gradient(135deg, #4f46e5, #9333ea);
+              border-radius: 28px;
+              margin-bottom: 24px;
+              box-shadow: 0 20px 50px rgba(79, 70, 229, 0.4);
+              transform: rotate(-5deg);
+              animation: scraperPulse 2s infinite ease-in-out;
+            ">
+              ${getIcon('zap', 'scraper-icon-xl', 'color: white')}
+            </div>
+            
+            <h1 style="
+              font-size: 42px;
+              font-weight: 900;
+              background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              margin: 0 0 16px 0;
+              letter-spacing: -1.5px;
+            ">Extraction Success!</h1>
+            
+            <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+              <span style="
+                background: rgba(79, 70, 229, 0.2);
+                color: #a5b4fc;
+                padding: 6px 16px;
+                border-radius: 100px;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.5px;
+                border: 1px solid rgba(79, 70, 229, 0.3);
+              ">${modeLabel}</span>
+              <span style="color: rgba(255,255,255,0.2);">•</span>
+              <span style="color: #94a3b8; font-size: 14px; font-weight: 500;">Time: ${minsTotal}m ${secsTotal}s</span>
+              <span style="color: rgba(255,255,255,0.2);">•</span>
+              <span id="currentModeDisplay" style="color: #c084fc; font-weight: 700; font-size: 14px;">${isAIMode ? 'AI ANALYTICS' : 'LEGACY MODE'}</span>
+            </div>
+          </div>
+          
+          <div style="padding: 50px 60px;">
+            <!-- Premium Stats Grid -->
+            <div style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 20px;
+              margin-bottom: 40px;
+            ">
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 28px; padding: 28px; text-align: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(16, 185, 129, 0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Data Points</div>
+                <div style="font-size: 48px; font-weight: 900; color: #10b981; line-height: 1; letter-spacing: -2px;">${questionCount}</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 28px; padding: 28px; text-align: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(59, 130, 246, 0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Assets</div>
+                <div style="font-size: 48px; font-weight: 900; color: #3b82f6; line-height: 1; letter-spacing: -2px;">${allImages.length}</div>
+              </div>
+              <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 28px; padding: 28px; text-align: center; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'; this.style.borderColor='rgba(139, 92, 246, 0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.06)'">
+                <div style="color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Density</div>
+                <div style="font-size: 48px; font-weight: 900; color: #8b5cf6; line-height: 1; letter-spacing: -2px;">${(allResults.length / 1000).toFixed(1)}k</div>
+              </div>
+            </div>
+
+            <!-- Action Command Center -->
+            <div style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 16px;
+              margin-bottom: 48px;
+            ">
+              <button id="copyAllBtn" class="scraper-btn" style="
+                height: 64px;
+                background: linear-gradient(135deg, #059669, #10b981);
+                color: white;
+                border: none;
                 border-radius: 20px;
-                margin-top: 16px;
-                color: rgba(255,255,255,0.8);
                 font-size: 14px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2);
+              " onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(16, 185, 129, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 10px 25px rgba(16, 185, 129, 0.2)'">
+                ${getIcon('copy', 'scraper-icon-md')}
+                <span>Copy Text</span>
+              </button>
+              
+              <button id="copyImgBtn" class="scraper-btn" style="
+                height: 64px;
+                background: linear-gradient(135deg, #2563eb, #3b82f6);
+                color: white;
+                border: none;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+              " onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(59, 130, 246, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 10px 25px rgba(59, 130, 246, 0.2)'">
+                ${getIcon('image', 'scraper-icon-md')}
+                <span>Copy Links</span>
+              </button>
+              
+              <button id="toggleModeResultBtn" class="scraper-btn" style="
+                height: 64px;
+                background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+                color: white;
+                border: none;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 10px 25px rgba(139, 92, 246, 0.2);
+              " onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(139, 92, 246, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 10px 25px rgba(139, 92, 246, 0.2)'">
+                ${isAIMode ? getIcon('fileText', 'scraper-icon-md') : getIcon('bot', 'scraper-icon-md')}
+                <span>AI Switch</span>
+              </button>
+              
+              <button id="downloadBtn" class="scraper-btn" style="
+                height: 64px;
+                background: linear-gradient(135deg, #d97706, #f59e0b);
+                color: white;
+                border: none;
+                border-radius: 20px;
+                font-size: 14px;
+                font-weight: 800;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                box-shadow: 0 10px 25px rgba(245, 158, 11, 0.2);
+              " onmouseover="this.style.transform='translateY(-4px) scale(1.02)'; this.style.boxShadow='0 15px 35px rgba(245, 158, 11, 0.4)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 10px 25px rgba(245, 158, 11, 0.2)'">
+                ${getIcon('download', 'scraper-icon-md')}
+                <span>Export CSV</span>
+              </button>
+            </div>
+            
+            <!-- Dynamic Asset Gallery -->
+            ${allImages.length > 0 ? `
+              <div style="
+                background: rgba(15, 23, 42, 0.5);
+                border: 1px solid rgba(255,255,255,0.06);
+                border-radius: 32px;
+                padding: 32px;
+                margin-bottom: 48px;
+                box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
               ">
-                ${getIcon('clock', 'scraper-icon-sm')}
-                <span>Thời gian: ${minsTotal}m ${secsTotal}s</span>
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                  <h3 style="color: white; margin: 0; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 10px; text-transform: uppercase; letter-spacing: 2px;">
+                    <div style="width: 8px; height: 8px; background: #6366f1; border-radius: 50%; box-shadow: 0 0 12px #6366f1;"></div>
+                    Gallery Preview
+                  </h3>
+                  <div style="background: rgba(255,255,255,0.05); padding: 4px 12px; border-radius: 8px; color: #64748b; font-size: 11px; font-weight: 700;">
+                    TOP 100 ASSETS
+                  </div>
+                </div>
+
+                <div class="scraper-image-grid scraper-scrollbar" style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                  gap: 16px;
+                  max-height: 400px; 
+                  overflow-y: auto; 
+                  padding: 4px;
+                ">
+                  ${allImages.slice(0, 100).map((img, i) => {
+                    const optionLabelPart = img.optionLabel ? ' • ' + img.optionLabel : '';
+                    return \`<div class="scraper-image-card" 
+                         data-img-index="\${i}" 
+                         style="
+                           background: #1e293b; 
+                           border: 1px solid rgba(255,255,255,0.08); 
+                           border-radius: 20px;
+                           overflow: hidden;
+                           cursor: pointer;
+                           transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                           position: relative;
+                         ">
+                      <div style="position: relative; height: 110px; overflow: hidden;">
+                        <img src="\${img.fullUrl || img.url}" 
+                             style="width: 100%; height: 100%; object-fit: cover; transition: all 0.6s ease;" 
+                             onload="this.style.opacity='1'"
+                             onerror='this.style.display="none"; this.nextElementSibling.style.display="flex";'>
+                        <div style="display: none; height: 100%; align-items: center; justify-content: center; background: #334155; color: #64748b;">
+                          \${getIcon('image', 'scraper-icon-md')}
+                        </div>
+                        <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); padding: 4px 10px; border-radius: 10px; color: white; font-size: 10px; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); border-left: 3px solid #6366f1;">
+                          ID \${img.question}
+                        </div>
+                      </div>
+                      <div style="padding: 14px; background: linear-gradient(to bottom, #1e293b, #0f172a);">
+                        <div style="color: #f1f5f9; font-size: 12px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                          \${img.optionLabel ? 'Answer ' + img.optionLabel : 'Question Block'}
+                        </div>
+                        <div style="color: #64748b; font-size: 10px; margin-top: 4px; display: flex; align-items: center; gap: 6px;">
+                          \${img.isBase64 ? '<span style="color: #fbbf24; font-weight: 800;">⚡ RAW</span>' : '<span style="color: #3b82f6; font-weight: 800;">🌐 CLOUD</span>'}
+                        </div>
+                      </div>
+                    </div>\`;
+                  }).join('')}
+                </div>
               </div>
+            ` : ''}
+            
+            <!-- Terminal Data View -->
+            <div style="
+              background: #ffffff;
+              border-radius: 32px;
+              overflow: hidden;
+              box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+              position: relative;
+            ">
+              <div style="
+                background: #f1f5f9;
+                padding: 24px 40px;
+                border-bottom: 1px solid #e2e8f0;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+              ">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                  <div style="width: 36px; height: 36px; background: #4f46e5; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);">
+                    ${getIcon('fileText', 'scraper-icon-sm')}
+                  </div>
+                  <span style="font-weight: 800; color: #1e293b; font-size: 16px; letter-spacing: -0.5px;">Collected Stream</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <div style="width: 12px; height: 12px; background: #ff5f56; border-radius: 50%;"></div>
+                  <div style="width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%;"></div>
+                  <div style="width: 12px; height: 12px; background: #27c93f; border-radius: 50%;"></div>
+                </div>
+              </div>
+              
+              <pre id="resultContent" class="scraper-scrollbar" style="
+                font-family: 'JetBrains Mono', 'Fira Code', 'Monaco', monospace;
+                font-size: 14px;
+                line-height: 2;
+                padding: 40px 50px;
+                margin: 0;
+                color: #334155;
+                max-height: 60vh;
+                overflow-y: auto;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                background: #fff;
+              "></pre>
             </div>
           </div>
           
-          <!-- Stats Cards -->
+          <!-- Premium Footer -->
           <div style="
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
+            background: rgba(255,255,255,0.02);
+            padding: 50px 60px;
+            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.05);
           ">
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
-              border: 1px solid rgba(16, 185, 129, 0.3);
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div style="font-size: 42px; font-weight: 800; color: #10b981;">${questionCount}</div>
-              <div style="color: #6ee7b7; font-size: 13px; font-weight: 600; margin-top: 4px;">CÂU HỎI</div>
+            <div style="color: #475569; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px; text-transform: uppercase; letter-spacing: 2px;">
+              ${getIcon('rocket', 'scraper-icon-sm', 'color: #6366f1')}
+              <span>OnLuyen Intelligence Scraper v3.6</span>
             </div>
-            
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
-              border: 1px solid rgba(59, 130, 246, 0.3);
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div style="font-size: 42px; font-weight: 800; color: #3b82f6;">${allImages.length}</div>
-              <div style="color: #93c5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">HÌNH ẢNH</div>
-            </div>
-            
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
-              border: 1px solid rgba(139, 92, 246, 0.3);
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div style="font-size: 42px; font-weight: 800; color: #8b5cf6;">${allResults.length}</div>
-              <div style="color: #c4b5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
-            </div>
-            
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.05));
-              border: 1px solid rgba(236, 72, 153, 0.3);
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div id="currentModeDisplay" style="color: #ec4899; display: flex; align-items: center; justify-content: center; height: 50px;">
-                ${isAIMode ? getIcon('bot', 'scraper-icon-lg') : getIcon('fileText', 'scraper-icon-lg')}
-              </div>
-              <div style="color: #f9a8d4; font-size: 13px; font-weight: 600; margin-top: 4px;">
-                ${isAIMode ? 'CHẾ ĐỘ AI' : 'CHẾ ĐỘ THƯỜNG'}
-              </div>
+            <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: center;">
+              <div style="background: rgba(79, 70, 229, 0.1); color: #818cf8; padding: 8px 24px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(79, 70, 229, 0.15);">NEURAL OCR</div>
+              <div style="background: rgba(16, 185, 129, 0.1); color: #34d399; padding: 8px 24px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.15);">ULTRA SYNC</div>
+              <div style="background: rgba(147, 51, 234, 0.1); color: #c084fc; padding: 8px 24px; border-radius: 12px; font-size: 11px; font-weight: 800; border: 1px solid rgba(147, 51, 234, 0.15);">AI ANALYTICS</div>
             </div>
           </div>
-          
-          <!-- Action Buttons -->
-          <div style="
-            display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-          ">
-            <button id="copyAllBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: linear-gradient(135deg, #10b981, #059669);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-            ">
-              ${getIcon('copy')}
-              <span>Copy Toàn Bộ</span>
-            </button>
-            
-            <button id="copyImgBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: linear-gradient(135deg, #3b82f6, #2563eb);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-            ">
-              ${getIcon('image')}
-              <span>Copy Link Ảnh</span>
-            </button>
-            
-            <button id="toggleModeResultBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: linear-gradient(135deg, #8b5cf6, #7c3aed);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-            ">
-              ${isAIMode ? getIcon('fileText') : getIcon('bot')}
-              <span>${isAIMode ? 'Chế độ Thường' : 'Chế độ AI'}</span>
-            </button>
-            
-            <button id="downloadBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: linear-gradient(135deg, #f59e0b, #d97706);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-            ">
-              ${getIcon('download')}
-              <span>Tải File</span>
-            </button>
-            
-            <button id="closeResultBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: linear-gradient(135deg, #6b7280, #4b5563);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-            ">
-              ${getIcon('x')}
-              <span>Đóng</span>
-            </button>
-          </div>
+        </div>
+      `;
           
           <!-- Images Gallery -->
           ${allImages.length > 0 ? `
