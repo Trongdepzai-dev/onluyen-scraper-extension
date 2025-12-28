@@ -82,6 +82,7 @@ if (window.hasRunScraper) {
     let isPaused = false;
     let startTime = Date.now();
     let currentMode = null; // 'homework' or 'exam'
+    let isCheckingUpdate = false;
 
     // ============================================================ 
     // 🤖 DEFAULT AI PROMPT CONFIGURATION
@@ -490,7 +491,7 @@ if (window.hasRunScraper) {
       position: 'fixed',
       bottom: '20px',
       left: '20px',
-      zIndex: '10001',
+      zIndex: '200000',
       display: 'flex',
       flexDirection: 'column',
       gap: '10px'
@@ -498,6 +499,11 @@ if (window.hasRunScraper) {
     document.body.appendChild(toastContainer);
 
     function showToast(message, type = 'info', duration = 3000) {
+      // Giới hạn tối đa 3 toasts cùng lúc để tránh spam
+      if (toastContainer.children.length >= 3) {
+        toastContainer.children[0].remove();
+      }
+
       const colors = {
         success: 'linear-gradient(135deg, #10b981, #059669)',
         error: 'linear-gradient(135deg, #ef4444, #dc2626)',
@@ -678,11 +684,18 @@ if (window.hasRunScraper) {
     // 🔄 UPDATE CHECK SYSTEM
     // ============================================================
 
-    async function checkUpdate() {
+    async function checkUpdate(manual = false) {
+      if (isCheckingUpdate) return;
+      isCheckingUpdate = true;
+      
+      if (manual) showToast('Đang kiểm tra cập nhật...', 'info');
       return new Promise((resolve) => {
         chrome.runtime.sendMessage({ action: "checkUpdate" }, (response) => {
+          isCheckingUpdate = false;
+          
           if (chrome.runtime.lastError) {
             console.error('[Scraper] Lỗi gửi tin nhắn kiểm tra cập nhật:', chrome.runtime.lastError.message);
+            if (manual) showToast('Lỗi kết nối hệ thống', 'error');
             resolve();
             return;
           }
@@ -695,10 +708,12 @@ if (window.hasRunScraper) {
             if (isNewerVersion(updateInfo.version, currentVersion)) {
               showUpdateModal(updateInfo).then(resolve);
             } else {
+              if (manual) showToast('Bạn đang sử dụng phiên bản mới nhất!', 'success');
               resolve();
             }
           } else {
-            console.warn('[Scraper] Không thể lấy thông tin cập nhật qua background:', response ? response.error : 'No response');
+            console.warn('[Scraper] Không thể kiểm tra cập nhật:', response ? response.error : 'No response');
+            if (manual) showToast('Không thể kiểm tra cập nhật lúc này', 'warning');
             resolve();
           }
         });
@@ -722,7 +737,7 @@ if (window.hasRunScraper) {
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
           position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-          background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(15px)',
+          background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)',
           zIndex: '100001', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.4s ease'
         });
@@ -792,8 +807,8 @@ if (window.hasRunScraper) {
           left: '0',
           right: '0',
           bottom: '0',
-          background: 'rgba(0, 0, 0, 0.8)',
-          backdropFilter: 'blur(10px)',
+          background: 'rgba(0, 0, 0, 0.7)',
+          backdropFilter: 'blur(6px)',
           zIndex: '99999',
           display: 'flex',
           alignItems: 'center',
@@ -917,11 +932,28 @@ if (window.hasRunScraper) {
             </div>
             
             <!-- Cancel Button -->
-            <div style="text-align: center;">
+            <div style="text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center;">
+              <button id="checkUpdateBtn" style="
+                background: rgba(99, 102, 241, 0.1);
+                border: 1px solid rgba(99, 102, 241, 0.2);
+                color: #a5b4fc;
+                padding: 8px 16px;
+                border-radius: 12px;
+                font-size: 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                font-weight: 600;
+              " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'">
+                ${getIcon('refreshCw', 'scraper-icon-sm')} Kiểm tra cập nhật
+              </button>
+
               <button id="cancelModeBtn" style="
-                background: rgba(255,255,255,0.1);
-                border: 1px solid rgba(255,255,255,0.2);
-                color: rgba(255,255,255,0.6);
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                color: rgba(255,255,255,0.5);
                 padding: 12px 32px;
                 border-radius: 12px;
                 font-size: 14px;
@@ -950,6 +982,11 @@ if (window.hasRunScraper) {
         document.getElementById('examModeBtn').onclick = () => {
           overlay.remove();
           resolve('exam');
+        };
+
+        document.getElementById('checkUpdateBtn').onclick = (e) => {
+          e.stopPropagation();
+          checkUpdate(true);
         };
 
         document.getElementById('cancelModeBtn').onclick = () => {
