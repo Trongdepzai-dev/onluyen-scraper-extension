@@ -56,6 +56,19 @@ async function runScraper(tab) {
   }
 }
 
+// Lắng nghe tin nhắn từ Content Script
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === "checkUpdate") {
+    fetch('https://scintillating-kangaroo-6a27a8.netlify.app/update_info.json?t=' + Date.now(), {
+      cache: 'no-cache'
+    })
+      .then(response => response.json())
+      .then(data => sendResponse({ success: true, data: data }))
+      .catch(error => sendResponse({ success: false, error: error.message }));
+    return true; // Giữ kênh tin nhắn mở cho phản hồi bất đồng bộ
+  }
+});
+
 // Lắng nghe sự kiện click vào icon extension
 chrome.action.onClicked.addListener(async (tab) => {
   await runScraper(tab);

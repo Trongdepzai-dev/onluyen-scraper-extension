@@ -25,7 +25,7 @@ if (window.hasRunScraper) {
 
   /**
    * ╔══════════════════════════════════════════════════════════════════╗
-   * ║     AUTO SCRAPER v3.0 - COMBINED HOMEWORK & EXAM MODE           ║
+   * ║     AUTO SCRAPER v${chrome.runtime.getManifest().version} - COMBINED HOMEWORK & EXAM MODE           ║
    * ║   Kết hợp scrape bài tập (có nút click) và bài thi (static)     ║
    * ╠══════════════════════════════════════════════════════════════════╣
    * ║  Chế độ 1: HOMEWORK - Click qua từng câu, scrape động           ║
@@ -86,7 +86,7 @@ if (window.hasRunScraper) {
     // ============================================================ 
     // 🤖 DEFAULT AI PROMPT CONFIGURATION
     // ============================================================ 
-    let defaultAIPrompt = `# 🧠 HỆ THỐNG PHÂN TÍCH CÂU HỎI THÔNG MINH v3.0
+    let defaultAIPrompt = `# 🧠 HỆ THỐNG PHÂN TÍCH CÂU HỎI THÔNG MINH v${chrome.runtime.getManifest().version}
 
   ## 🎯 VAI TRÒ & NĂNG LỰC
   Bạn là **EXPERT ANALYST AI** - Trợ lý AI cấp cao chuyên phân tích và giải đáp:
@@ -675,6 +675,112 @@ if (window.hasRunScraper) {
     }
 
     // ============================================================
+    // 🔄 UPDATE CHECK SYSTEM
+    // ============================================================
+
+    async function checkUpdate() {
+      return new Promise((resolve) => {
+        chrome.runtime.sendMessage({ action: "checkUpdate" }, (response) => {
+          if (chrome.runtime.lastError) {
+            console.error('[Scraper] Lỗi gửi tin nhắn kiểm tra cập nhật:', chrome.runtime.lastError.message);
+            resolve();
+            return;
+          }
+
+          if (response && response.success) {
+            const updateInfo = response.data;
+            const currentVersion = chrome.runtime.getManifest().version;
+            console.log(`[Scraper] Version check: Current ${currentVersion} | Latest ${updateInfo.version}`);
+            
+            if (isNewerVersion(updateInfo.version, currentVersion)) {
+              showUpdateModal(updateInfo).then(resolve);
+            } else {
+              resolve();
+            }
+          } else {
+            console.warn('[Scraper] Không thể lấy thông tin cập nhật qua background:', response ? response.error : 'No response');
+            resolve();
+          }
+        });
+      });
+    }
+
+    function isNewerVersion(newVer, curVer) {
+      const newParts = newVer.split('.').map(Number);
+      const curParts = curVer.split('.').map(Number);
+      for (let i = 0; i < Math.max(newParts.length, curParts.length); i++) {
+        const n = newParts[i] || 0;
+        const c = curParts[i] || 0;
+        if (n > c) return true;
+        if (n < c) return false;
+      }
+      return false;
+    }
+
+    function showUpdateModal(info) {
+      return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+          position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+          background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(15px)',
+          zIndex: '100001', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.4s ease'
+        });
+
+        overlay.innerHTML = `
+          <div style="
+            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            border-radius: 32px; padding: 40px; max-width: 500px; width: 90%;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; color: white;
+          ">
+            <div style="color: #818cf8; margin-bottom: 24px; animation: scraper-float 3s ease-in-out infinite;">
+              ${getIcon('refreshCw', 'scraper-icon-lg')}
+            </div>
+            <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Cập Nhật Mới Sẵn Sàng!</h2>
+            <div style="background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 16px; margin-bottom: 24px; display: inline-block; border: 1px solid rgba(255,255,255,0.1);">
+              <span style="color: #a5b4fc; font-weight: 700;">v${info.version}</span>
+              <span style="color: rgba(255,255,255,0.4); margin: 0 10px;">•</span>
+              <span style="color: rgba(255,255,255,0.6);">${info.release_date}</span>
+            </div>
+            <p style="color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6; margin-bottom: 32px; text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px;">
+              ${info.message}
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <a href="${info.links.chrome}" target="_blank" style="
+                background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 16px; border-radius: 16px;
+                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+                box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
+              " onmouseover="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">
+                ${getIcon('download', 'scraper-icon-sm')} Chrome / Brave
+              </a>
+              <a href="${info.links.edge}" target="_blank" style="
+                background: rgba(255,255,255,0.05); color: white; padding: 16px; border-radius: 16px;
+                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+                border: 1px solid rgba(255,255,255,0.1);
+              " onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(0)'">
+                 Microsoft Edge
+              </a>
+            </div>
+            <button id="skipUpdateBtn" style="
+              margin-top: 24px; background: transparent; border: none; color: rgba(255,255,255,0.4);
+              font-size: 14px; cursor: pointer; transition: color 0.2s;
+              font-weight: 500;
+            " onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Để sau</button>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+        document.getElementById('skipUpdateBtn').onclick = () => {
+          overlay.remove();
+          resolve();
+        };
+      });
+    }
+
+    // ============================================================
     // 🎯 MODE SELECTION DIALOG
     // ============================================================
     function showModeSelector() {
@@ -717,7 +823,7 @@ if (window.hasRunScraper) {
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 margin: 0 0 12px 0;
-              ">Auto Scraper v3.0</h1>
+              ">Auto Scraper v${chrome.runtime.getManifest().version}</h1>
               <p style="color: rgba(255,255,255,0.6); font-size: 16px; margin: 0;">
                 Chọn chế độ scrape phù hợp với loại bài của bạn
               </p>
@@ -1150,7 +1256,7 @@ if (window.hasRunScraper) {
           align-items: center;
           justify-content: space-between;
         ">
-          <span style="color: #6b7280; font-size: 11px;">Auto Scraper v3.0 • ${modeText}</span>
+          <span style="color: #6b7280; font-size: 11px;">Auto Scraper v${chrome.runtime.getManifest().version} • ${modeText}</span>
           <div style="display: flex; gap: 4px;">
             <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>
             <span style="width: 6px; height: 6px; background: #3b82f6; border-radius: 50%;"></span>
@@ -3318,7 +3424,7 @@ if (window.hasRunScraper) {
             font-size: 13px;
           ">
             <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-              ${getIcon('rocket')} Auto Scraper v3.0 • ${new Date().toLocaleString('vi-VN')}
+              ${getIcon('rocket')} Auto Scraper v${chrome.runtime.getManifest().version} • ${new Date().toLocaleString('vi-VN')}
             </div>
             <div style="display: flex; gap: 8px; justify-content: center;">
               <span style="
@@ -3458,6 +3564,9 @@ if (window.hasRunScraper) {
     // ============================================================ 
     // 🚀 MAIN EXECUTION
     // ============================================================ 
+
+    // Check for updates first
+    await checkUpdate();
 
     // Show mode selector
     currentMode = await showModeSelector();
