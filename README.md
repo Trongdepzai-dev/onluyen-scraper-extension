@@ -181,15 +181,17 @@ flowchart LR
 
 ### Đang phát triển
 
-- [ ] 📊 **Hỗ trợ Table** - Hiển thị dữ liệu dạng bảng
 - [ ] 🤖 **Tích hợp AI** - Nhận diện và xử lý bài tập phức tạp
-- [ ] 🎨 **SVG Icons** - Thay thế tất cả icons bằng SVG path
+- [ ] 📊 **Hộ trợ nhiều dạng bài** - Hiển thị nhiều thông tin hơn
+- [ ] 🔗 **Upload extension lên chrome** - Dễ cập nhật và thao tác đơn giản hơn
 
 ### Hoàn thành
 
 - [x] ✅ Extension cơ bản cho Edge
 - [x] ✅ Extension cơ bản cho Chrome
 - [x] ✅ Scrape câu hỏi text
+- [x] ✅ **SVG Icons** - Thay thế tất cả icons bằng SVG path
+- [x] ✅ **Hỗ trợ Table** - Hiển thị dữ liệu dạng bảng
 
 ---
 
