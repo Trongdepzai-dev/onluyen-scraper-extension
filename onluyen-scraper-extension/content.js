@@ -71,7 +71,9 @@ if (window.hasRunScraper) {
       clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
       search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
       refreshCw: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
-      loader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>'
+      loader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
+      sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
+      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>'
     };
 
     const getIcon = (name, className = '') => {
@@ -349,6 +351,64 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       defaultAIPrompt = newPrompt;
       showToast('Đã cập nhật prompt AI!', 'success');
       console.log('✅ Custom AI prompt set');
+    }
+
+    // ============================================================ 
+    // 🤖 GEMINI API CONFIGURATION
+    // ============================================================ 
+    const GEMINI_MODELS = [
+        { id: 'gemini-3-pro', name: 'Gemini 3 Pro' },
+        { id: 'gemini-3-flash', name: 'Gemini 3 Flash' },
+        { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
+        { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
+        { id: 'gemini-2.5-flash-lite', name: 'Gemini 2.5 Flash-Lite' }
+    ];
+
+    function getGeminiConfig() {
+        const defaultModel = 'gemini-2.5-flash';
+        try {
+            const stored = localStorage.getItem('scraper_gemini_config');
+            if (stored) {
+                const config = JSON.parse(stored);
+                // Validate if model still exists
+                const isValidModel = GEMINI_MODELS.some(m => m.id === config.model);
+                if (!isValidModel) {
+                    config.model = defaultModel;
+                    saveGeminiConfig(config); // Auto-fix
+                }
+                return config;
+            }
+        } catch (e) { console.error('Error loading Gemini config', e); }
+        return { apiKey: '', model: defaultModel };
+    }
+
+    function saveGeminiConfig(config) {
+        localStorage.setItem('scraper_gemini_config', JSON.stringify(config));
+    }
+
+    async function callGeminiAPI(prompt, apiKey, modelId) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
+        
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: prompt }] }]
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error?.message || 'Gemini API Error');
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        } catch (error) {
+            console.error('Gemini Call Failed:', error);
+            throw error;
+        }
     }
 
     // ============================================================ 
@@ -3403,6 +3463,221 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     }
 
     // ============================================================ 
+    // 🤖 GEMINI UI COMPONENTS
+    // ============================================================ 
+
+    function showGeminiSettingsModal() {
+        return new Promise((resolve) => {
+            const config = getGeminiConfig();
+            const overlay = document.createElement('div');
+            Object.assign(overlay.style, {
+                position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+                background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(5px)',
+                zIndex: '100002', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: "'Inter', sans-serif"
+            });
+
+            const modelOptions = GEMINI_MODELS.map(m => 
+                `<option value="${m.id}" ${m.id === config.model ? 'selected' : ''}>${m.name}</option>`
+            ).join('');
+
+            overlay.innerHTML = `
+                <div style="
+                    background: #1e293b; border-radius: 24px; padding: 32px; width: 400px;
+                    border: 1px solid rgba(255,255,255,0.1); color: white;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                ">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="color: #8b5cf6; margin-bottom: 16px;">${getIcon('settings', 'scraper-icon-lg')}</div>
+                        <h2 style="margin: 0; font-size: 24px;">Cấu hình Gemini</h2>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">API Key</label>
+                        <input type="password" id="geminiApiKey" value="${config.apiKey}" placeholder="Nhập Gemini API Key..." style="
+                            width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                            border-radius: 12px; color: white; outline: none; box-sizing: border-box;
+                        ">
+                        <div style="margin-top: 6px; font-size: 11px; color: #94a3b8;">
+                            Lấy key tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8b5cf6;">Google AI Studio</a>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 32px;">
+                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">Mô hình (Model)</label>
+                        <select id="geminiModel" style="
+                            width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                            border-radius: 12px; color: white; outline: none; box-sizing: border-box; cursor: pointer;
+                        ">
+                            ${modelOptions}
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <button id="cancelGeminiConfig" style="
+                            flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: none;
+                            border-radius: 12px; color: white; cursor: pointer; font-weight: 600;
+                        ">Hủy</button>
+                        <button id="saveGeminiConfig" style="
+                            flex: 1; padding: 12px; background: #8b5cf6; border: none;
+                            border-radius: 12px; color: white; cursor: pointer; font-weight: 600;
+                        ">Lưu & Tiếp tục</button>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            document.getElementById('cancelGeminiConfig').onclick = () => {
+                overlay.remove();
+                resolve(false);
+            };
+
+            document.getElementById('saveGeminiConfig').onclick = () => {
+                const newConfig = {
+                    apiKey: document.getElementById('geminiApiKey').value.trim(),
+                    model: document.getElementById('geminiModel').value
+                };
+                if (!newConfig.apiKey) {
+                    alert('Vui lòng nhập API Key!');
+                    return;
+                }
+                saveGeminiConfig(newConfig);
+                overlay.remove();
+                // Trigger the send action again? Or just resolve true so the caller knows
+                // For now, let's just save. The user can click "Send" again.
+                // Or better, we handle the flow in the caller.
+                resolve(true);
+            };
+        });
+    }
+
+    function showGeminiResponseModal(initialContent, promptText) {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(0, 0, 0, 0.9)', backdropFilter: 'blur(5px)',
+            zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif"
+        });
+
+        const updateContent = (content, isLoading = false) => {
+             const contentArea = document.getElementById('geminiContentArea');
+             if (isLoading) {
+                 contentArea.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;flex-direction:column;gap:16px;">
+                    <div style="font-size:40px;animation:scraper-spin 1s linear infinite;">${getIcon('loader')}</div>
+                    <div>Đang suy nghĩ...</div>
+                 </div>`;
+             } else {
+                 contentArea.innerText = content;
+             }
+        };
+
+        overlay.innerHTML = `
+            <div style="
+                background: #0f172a; border-radius: 24px; width: 90%; max-width: 1000px; height: 85vh;
+                border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;
+            ">
+                <!-- Header -->
+                <div style="
+                    padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1);
+                    display: flex; justify-content: space-between; align-items: center;
+                    background: #1e293b;
+                ">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="color: #8b5cf6;">${getIcon('sparkles', 'scraper-icon-md')}</span>
+                        <div>
+                            <h3 style="margin: 0; color: white; font-size: 18px;">Kết quả phân tích Gemini</h3>
+                            <div id="currentModelName" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+                                ${GEMINI_MODELS.find(m => m.id === getGeminiConfig().model)?.name || 'Unknown Model'}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button id="geminiSettingsBtn" style="
+                            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1;
+                            padding: 8px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+                            font-size: 13px;
+                        ">
+                            ${getIcon('settings', 'scraper-icon-sm')} Cấu hình
+                        </button>
+                        <button id="closeGeminiModal" style="
+                            background: rgba(255,255,255,0.1); border: none; color: white;
+                            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+                            display: flex; align-items: center; justify-content: center;
+                        ">${getIcon('x')}</button>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div style="flex: 1; overflow-y: auto; padding: 30px; background: #0f172a;" class="scraper-scrollbar">
+                    <div id="geminiContentArea" style="
+                        color: #e2e8f0; font-size: 15px; line-height: 1.8;
+                        font-family: 'JetBrains Mono', monospace; white-space: pre-wrap;
+                    ">${initialContent}</div>
+                </div>
+
+                <!-- Footer -->
+                <div style="
+                    padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1);
+                    display: flex; justify-content: space-between; align-items: center; background: #1e293b;
+                ">
+                    <button id="regenerateGeminiBtn" style="
+                        padding: 10px 20px; background: rgba(255,255,255,0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
+                        border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        ${getIcon('refreshCw')} Tạo lại
+                    </button>
+
+                    <button id="copyGeminiContent" style="
+                        padding: 10px 20px; background: #3b82f6; color: white; border: none;
+                        border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
+                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                        transition: all 0.2s;
+                    " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
+                        ${getIcon('copy')} Copy Kết quả
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        document.getElementById('closeGeminiModal').onclick = () => overlay.remove();
+        
+        document.getElementById('geminiSettingsBtn').onclick = async () => {
+             const changed = await showGeminiSettingsModal();
+             if (changed) {
+                 const config = getGeminiConfig();
+                 const modelName = GEMINI_MODELS.find(m => m.id === config.model)?.name || 'Unknown';
+                 document.getElementById('currentModelName').textContent = modelName;
+             }
+        };
+
+        document.getElementById('regenerateGeminiBtn').onclick = async () => {
+             const config = getGeminiConfig();
+             updateContent('', true);
+             try {
+                 const newContent = await callGeminiAPI(promptText, config.apiKey, config.model);
+                 updateContent(newContent, false);
+             } catch (e) {
+                 updateContent(`Lỗi: ${e.message}`, false);
+             }
+        };
+
+        document.getElementById('copyGeminiContent').onclick = async () => {
+            const content = document.getElementById('geminiContentArea').innerText;
+            await navigator.clipboard.writeText(content);
+            const btn = document.getElementById('copyGeminiContent');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `${getIcon('check')} Đã Copy!`;
+            setTimeout(() => btn.innerHTML = originalHTML, 2000);
+        };
+    }
+
+    // ============================================================ 
     // 🎨 RESULT DISPLAY UI
     // ============================================================ 
 
@@ -3595,7 +3870,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #f59e0b, #d97706);
+              background: linear-gradient(135deg, #10b981, #059669);
               color: white;
               border: none;
               border-radius: 16px;
@@ -3608,6 +3883,33 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             ">
               ${getIcon('download')}
               <span>Tải File</span>
+            </button>
+            
+            <button id="sendGeminiBtn" class="scraper-btn" style="
+              flex: 1;
+              min-width: 150px;
+              padding: 18px 24px;
+              background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+              color: white;
+              border: none;
+              border-radius: 16px;
+              font-size: 15px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+              cursor: pointer;
+              position: relative;
+              overflow: hidden;
+            ">
+              <div style="
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
+                animation: scraper-shimmer 2s infinite;
+              "></div>
+              ${getIcon('sparkles')}
+              <span>Gửi Gemini</span>
             </button>
             
             <button id="closeResultBtn" class="scraper-btn" style="
@@ -3883,6 +4185,34 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         setTimeout(() => {
           btn.innerHTML = `${getIcon('download')}<span>Tải File</span>`;
         }, 2000);
+      };
+
+      document.getElementById('sendGeminiBtn').onclick = async () => {
+        const config = getGeminiConfig();
+        if (!config.apiKey) {
+            showGeminiSettingsModal();
+            return;
+        }
+
+        const btn = document.getElementById('sendGeminiBtn');
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')}<span>Đang gửi...</span>`;
+        btn.disabled = true;
+
+        try {
+            const content = isAIMode ? allResultsAI : allResults;
+            const response = await callGeminiAPI(content, config.apiKey, config.model);
+            showGeminiResponseModal(response, content);
+        } catch (error) {
+            alert('Lỗi khi gửi đến Gemini: ' + error.message);
+            // If API key is invalid, maybe show settings again?
+            if (error.message.includes('400') || error.message.includes('API key')) {
+                 showGeminiSettingsModal();
+            }
+        } finally {
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        }
       };
 
       document.getElementById('closeResultBtn').onclick = () => {
