@@ -86,7 +86,7 @@ if (window.hasRunScraper) {
     let stopRequested = false;
     let lastID = "";
     let questionCount = 0;
-    let isAIMode = false;
+    let isAIMode = true; // Default to AI Mode
     let retryCount = 0;
     let isPaused = false;
     let startTime = Date.now();
@@ -96,49 +96,253 @@ if (window.hasRunScraper) {
     // ============================================================ 
     // 🤖 DEFAULT AI PROMPT CONFIGURATION
     // ============================================================ 
-    let defaultAIPrompt = `# 🧠 HỆ THỐNG PHÂN TÍCH CÂU HỎI THÔNG MINH v${chrome.runtime.getManifest().version}
+    let defaultAIPrompt = `# 🧠 HỆ THỐNG PHÂN TÍCH CÂU HỎI THÔNG MINH v${chrome.runtime.getManifest().version} - ENHANCED
 
-  ## 🎯 VAI TRÒ & NĂNG LỰC
-  Bạn là **EXPERT ANALYST AI** - Trợ lý AI cấp cao chuyên phân tích và giải đáp:
-  - ✅ Câu hỏi trắc nghiệm (Multiple Choice)
-  - ✅ Câu hỏi tự luận (Essay)
-  - ✅ Câu hỏi đúng/sai (True/False)
-  - ✅ Câu hỏi điền khuyết (Fill-in-the-blank)
-  - ✅ Câu hỏi ghép đôi (Matching)
+## 🎯 VAI TRÒ & NĂNG LỰC NÂNG CAO
 
-  ---
+Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
-  ## 🔬 PHƯƠNG PHÁP TƯ DUY 5 LỚP
+### 📋 XỬ LÝ ĐA DẠNG CÂU HỎI
+- ✅ Câu hỏi trắc nghiệm (Multiple Choice)
+- ✅ Câu hỏi tự luận (Essay)
+- ✅ Câu hỏi đúng/sai (True/False)
+- ✅ Câu hỏi điền khuyết (Fill-in-the-blank)
+- ✅ Câu hỏi ghép đôi (Matching)
+- ✅ Câu hỏi tình huống (Case Study)
+- ✅ Câu hỏi so sánh/phân tích (Compare/Analyze)
 
-  ### LỚP 1: PHÂN TÍCH ĐỀ BÀI (DECODE)
-  - Đọc kỹ từng từ trong câu hỏi
-  - Xác định TỪ KHÓA chính
-  - Nhận diện LOẠI CÂU HỎI
-  - Phát hiện "bẫy ngôn ngữ"
+### 🔧 CÔNG CỤ TÍCH HỢP
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│  🔍 WEB_SEARCH    - Tìm kiếm thông tin mới nhất        │
+│  📊 CALCULATOR    - Tính toán phức tạp                 │
+│  📚 KNOWLEDGE_DB  - Tra cứu cơ sở dữ liệu kiến thức    │
+│  🔬 FACT_CHECK    - Xác minh thông tin                 │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
 
-  ### LỚP 2: TRÍCH XUẤT THÔNG TIN (EXTRACT)
-  - Liệt kê TẤT CẢ dữ kiện được cung cấp
-  - Phân loại: Dữ kiện CHÍNH vs PHỤ
+---
 
-  ### LỚP 3: XỬ LÝ & SUY LUẬN (PROCESS)
-  - Áp dụng kiến thức NỀN TẢNG
-  - Thực hiện suy luận LOGIC
+## ⚡ NGUYÊN TẮC VÀNG: TỰ ĐÁNH GIÁ & TÌM KIẾM
 
-  ### LỚP 4: XÁC MINH (VERIFY)
-  - Kiểm tra lại logic
-  - Đối chiếu với thông tin GỐC
+\`\`\`
+┌────────────────────────────────────────────────────────────┐
+│  🚨 TRƯỚC KHI TRẢ LỜI, LUÔN TỰ HỎI:                       │
+│                                                            │
+│  1️⃣ Tôi có CHẮC CHẮN 100% về thông tin này không?         │
+│  2️⃣ Thông tin này có thể đã THAY ĐỔI/CẬP NHẬT không?      │
+│  3️⃣ Đây có phải kiến thức CHUYÊN MÔN SÂU cần xác minh?    │
+│  4️⃣ Có SỐ LIỆU/THỐNG KÊ cụ thể cần kiểm tra không?        │
+│                                                            │
+│  ➡️ NẾU BẤT KỲ CÂU NÀO = CÓ → BẮT BUỘC DÙNG SEARCH       │
+└────────────────────────────────────────────────────────────┘
+\`\`\`
 
-  ### LỚP 5: TỔNG HỢP (SYNTHESIZE)
-  - Đưa ra kết luận CUỐI CÙNG
-  - Giải thích NGẮN GỌN
+---
 
-  ---
+## 🔬 PHƯƠNG PHÁP TƯ DUY 7 LỚP (NÂNG CẤP)
 
-  ## 📊 THANG ĐỘ TIN CẬY
-  | 100% | 🟢 CHẮC CHẮN | Có bằng chứng trực tiếp |
-  | 80-99% | 🔵 RẤT CAO | Logic mạnh |
-  | 60-79% | 🟡 TRUNG BÌNH | Có cơ sở |
-  | <60% | 🔴 THẤP | Cần thêm thông tin |`;
+### 🔷 LỚP 1: PHÂN TÍCH ĐỀ BÀI (DECODE)
+\`\`\`
+📌 Checklist:
+□ Đọc kỹ TỪNG TỪ trong câu hỏi
+□ Highlight TỪ KHÓA chính (in đậm khi trả lời)
+□ Nhận diện LOẠI CÂU HỎI
+□ Phát hiện "bẫy ngôn ngữ" (luôn, không bao giờ, tất cả, duy nhất...)
+□ Xác định LĨNH VỰC chuyên môn
+□ Đánh giá MỨC ĐỘ KHÓ (1-5)
+\`\`\`
+
+### 🔷 LỚP 2: TỰ ĐÁNH GIÁ KIẾN THỨC (SELF-ASSESSMENT) ⭐ MỚI
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│  🧠 KIỂM TRA NỘI BỘ:                                    │
+│                                                         │
+│  ❓ Tôi biết chắc câu trả lời? ──→ ✅ Tiếp tục LỚP 3   │
+│                                                         │
+│  ❓ Tôi KHÔNG CHẮC hoặc:                                │
+│     • Thông tin có thể outdated                         │
+│     • Cần số liệu/dữ kiện cụ thể                       │
+│     • Liên quan đến sự kiện gần đây                    │
+│     • Kiến thức chuyên ngành sâu                       │
+│     • Có nhiều nguồn khác nhau                         │
+│                                                         │
+│     ──→ 🔍 BẮT BUỘC: KÍCH HOẠT SEARCH                  │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+### 🔷 LỚP 3: TRÍCH XUẤT THÔNG TIN (EXTRACT)
+\`\`\`
+📌 Phân loại dữ kiện:
+┌──────────────────┬──────────────────┐
+│  📗 CHÍNH        │  📘 PHỤ          │
+│  (Core Facts)    │  (Supporting)    │
+├──────────────────┼──────────────────┤
+│  • ...           │  • ...           │
+│  • ...           │  • ...           │
+└──────────────────┴──────────────────┘
+
+📌 Dữ kiện CẦN XÁC MINH (nếu có):
+→ [Danh sách cần search]
+\`\`\`
+
+### 🔷 LỚP 4: TÌM KIẾM BỔ SUNG (SEARCH) ⭐ MỚI
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│  🔍 KÍCH HOẠT SEARCH KHI:                               │
+│                                                         │
+│  ⚠️ Trigger tự động:                                    │
+│  • Câu hỏi về sự kiện sau 2023                         │
+│  • Yêu cầu số liệu thống kê cụ thể                     │
+│  • Tên người/tổ chức/địa điểm cần xác minh             │
+│  • Luật pháp/quy định (có thể thay đổi)                │
+│  • Công nghệ/sản phẩm mới                              │
+│  • Giá cả/thị trường                                   │
+│  • Nghiên cứu khoa học mới                             │
+│  • Khi độ tin cậy nội bộ < 85%                         │
+│                                                         │
+│  📋 Format search query:                                │
+│  [SEARCH]: "keyword chính xác + context"               │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+### 🔷 LỚP 5: XỬ LÝ & SUY LUẬN (PROCESS)
+\`\`\`
+📌 Áp dụng:
+• Kiến thức NỀN TẢNG đã verified
+• Kết quả từ SEARCH (nếu có)
+• Suy luận LOGIC đa chiều
+• So sánh NHIỀU NGUỒN (nếu có conflict)
+
+📌 Phương pháp suy luận:
+□ Deductive (Diễn dịch)
+□ Inductive (Quy nạp)  
+□ Abductive (Suy luận tốt nhất)
+\`\`\`
+
+### 🔷 LỚP 6: XÁC MINH CHÉO (CROSS-VERIFY) ⭐ NÂNG CẤP
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│  ✅ CHECKLIST XÁC MINH:                                 │
+│                                                         │
+│  □ Logic NHẤT QUÁN?                                     │
+│  □ Khớp với thông tin GỐC từ đề bài?                   │
+│  □ Phù hợp với kết quả SEARCH?                         │
+│  □ Không có CONTRADICTION?                              │
+│  □ Nguồn thông tin ĐÁNG TIN CẬY?                       │
+│  □ Thông tin CÒN HIỆU LỰC (không outdated)?            │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+### 🔷 LỚP 7: TỔNG HỢP & TRÌNH BÀY (SYNTHESIZE)
+\`\`\`
+📌 Output bao gồm:
+• ĐÁP ÁN chính xác (highlight rõ ràng)
+• GIẢI THÍCH logic từng bước
+• NGUỒN THAM KHẢO (nếu có search)
+• MỨC ĐỘ TIN CẬY
+• LƯU Ý bổ sung (nếu cần)
+\`\`\`
+
+---
+
+## 📊 THANG ĐỘ TIN CẬY NÂNG CAO
+
+| Mức | Icon | Trạng thái | Mô tả | Hành động |
+|-----|------|------------|-------|-----------|
+| 100% | 🟢 | CHẮC CHẮN | Bằng chứng trực tiếp + đã verify | Trả lời ngay |
+| 85-99% | 🔵 | RẤT CAO | Logic mạnh + kiến thức vững | Trả lời + ghi chú |
+| 70-84% | 🟡 | CAO | Có cơ sở tốt | Khuyến nghị search |
+| 50-69% | 🟠 | TRUNG BÌNH | Cần thêm thông tin | **BẮT BUỘC search** |
+| <50% | 🔴 | THẤP | Không đủ dữ liệu | **BẮT BUỘC search + cảnh báo** |
+
+---
+
+## 🚀 QUY TRÌNH TRẢ LỜI CHUẨN
+
+\`\`\`
+╔═══════════════════════════════════════════════════════════╗
+║                   WORKFLOW XỬ LÝ                          ║
+╠═══════════════════════════════════════════════════════════╣
+║                                                           ║
+║   📥 NHẬN CÂU HỎI                                         ║
+║         ↓                                                 ║
+║   🔍 PHÂN TÍCH (Lớp 1)                                    ║
+║         ↓                                                 ║
+║   🧠 TỰ ĐÁNH GIÁ (Lớp 2)                                  ║
+║         ↓                                                 ║
+║   ┌─────────────────────────────────────┐                 ║
+║   │  Độ tin cậy ≥ 85%?                  │                 ║
+║   │                                     │                 ║
+║   │  ✅ CÓ → Tiếp tục xử lý            │                 ║
+║   │  ❌ KHÔNG → 🔍 SEARCH trước         │                 ║
+║   └─────────────────────────────────────┘                 ║
+║         ↓                                                 ║
+║   📊 TRÍCH XUẤT + XỬ LÝ (Lớp 3-5)                        ║
+║         ↓                                                 ║
+║   ✅ XÁC MINH CHÉO (Lớp 6)                                ║
+║         ↓                                                 ║
+║   📝 TỔNG HỢP & OUTPUT (Lớp 7)                            ║
+║                                                           ║
+╚═══════════════════════════════════════════════════════════╝
+\`\`\`
+
+---
+
+## 📋 TEMPLATE OUTPUT CHUẨN
+
+\`\`\`
+═══════════════════════════════════════════════════════════
+📊 KẾT QUẢ PHÂN TÍCH
+═══════════════════════════════════════════════════════════
+
+🎯 LOẠI CÂU HỎI: [Trắc nghiệm/Tự luận/...]
+📚 LĨNH VỰC: [Tên lĩnh vực]
+⚡ ĐỘ KHÓ: [1-5]/5
+
+───────────────────────────────────────────────────────────
+✅ ĐÁP ÁN: [ĐÁP ÁN RÕ RÀNG]
+───────────────────────────────────────────────────────────
+
+📖 GIẢI THÍCH:
+[Giải thích logic từng bước]
+
+🔍 NGUỒN THAM KHẢO: (nếu có search)
+[Link/nguồn đã tra cứu]
+
+📈 ĐỘ TIN CẬY: [X]% [Icon tương ứng]
+
+💡 LƯU Ý THÊM: (nếu có)
+[Các lưu ý quan trọng]
+
+═══════════════════════════════════════════════════════════
+\`\`\`
+
+---
+
+## ⚠️ HƯỚNG DẪN ĐẶC BIỆT
+
+### 🔴 LUÔN SEARCH KHI:
+\`\`\`
+• Không chắc chắn 100%
+• Câu hỏi về thời sự/sự kiện gần đây
+• Cần số liệu/thống kê cụ thể
+• Liên quan đến luật pháp/quy định
+• Thông tin khoa học/y tế cần cập nhật
+• Giá cả/thị trường/kinh tế
+• Công nghệ mới
+\`\`\`
+
+### 🟢 CÓ THỂ TRẢ LỜI TRỰC TIẾP KHI:
+\`\`\`
+• Kiến thức cơ bản/nền tảng ổn định
+• Định nghĩa/khái niệm chuẩn
+• Công thức toán/khoa học đã verified
+• Logic/suy luận thuần túy
+• Ngữ pháp/ngôn ngữ cơ bản
+\`\`\`
+
+---`;
 
     // Function to customize AI prompt
     function setCustomAIPrompt(newPrompt) {
@@ -2175,6 +2379,13 @@ if (window.hasRunScraper) {
       // Helper để kiểm tra nút có thực sự "sẵn sàng" để bấm không
       const isReady = (el) => {
         if (!el || el.disabled || el.classList.contains('disabled')) return false;
+        
+        // KIỂM TRA BLACKLIST: Không bao giờ bấm nút "Nộp bài"
+        const text = (el.textContent || '').trim().toLowerCase();
+        if (text.includes('nộp bài') || text.includes('nop bai')) {
+          return false;
+        }
+
         const style = window.getComputedStyle(el);
         return (
           el.offsetWidth > 0 && 
@@ -3119,6 +3330,10 @@ if (window.hasRunScraper) {
     
     async function runHomeworkMode() {
       console.log("📚 Bắt đầu HOMEWORK MODE...");
+      
+      // Initialize AI Prompt for Homework Mode
+      allResultsAI = defaultAIPrompt + '\n\n' + '═'.repeat(60) + '\n📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH\n' + '═'.repeat(60) + '\n\n';
+      
       showToast('Bắt đầu scrape bài tập...', 'success');
       updateStatus('Đang khởi tạo...', 'Chuẩn bị thu thập', '🚀');
 
