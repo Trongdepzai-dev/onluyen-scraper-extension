@@ -5,7 +5,7 @@
 
 # Ôn-Luyện-Scarpe
 
-**Made with love by [B.Trọng](https://github.com/Trongdepzai-dev)  
+**Made with love by [B.Trọng](https://github.com/Trongdepzai-dev) and [KryonBinary](https://github.com/KryonBinary)
 Cảm ơn và tri ân sâu sắc tới tất cả các contributor! Công sức và sự đóng góp của các bạn đã giúp phát triển dự án một cách đáng kể.**
 Để xem danh sách đầy đủ các contributor, vui lòng tham khảo [CONTRIBUTORS.md](./CONTRIBUTORS.md)
 
