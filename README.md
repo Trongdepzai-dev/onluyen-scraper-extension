@@ -7,7 +7,7 @@
 
 **Made with love by [B.Trọng](https://github.com/Trongdepzai-dev) and [KryonBinary](https://github.com/KryonBinary)
 Cảm ơn và tri ân sâu sắc tới tất cả các contributor! Công sức và sự đóng góp của các bạn đã giúp phát triển dự án một cách đáng kể.**
-Để xem danh sách đầy đủ các contributor, vui lòng tham khảo [CONTRIBUTORS.md](./CONTRIBUTORS.md)
+Để xem danh sách đầy đủ các contributor, vui lòng tham khảo [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 **Ôn-Luyện-Scarpe** là công cụ giúp bạn tối ưu hóa quá trình học tập và tiết kiệm thời gian. Thay vì phải chụp ảnh từng câu hỏi, bạn chỉ cần chọn bài tập và để AI giải quyết nhanh chóng. Dự án này hoàn toàn mở mã nguồn và sử dụng **MIT License**, được phát triển với đam mê và tâm huyết.
 
