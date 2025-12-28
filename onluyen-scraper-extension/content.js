@@ -39,7 +39,16 @@ if (window.hasRunScraper) {
     // ============================================================ 
     // 🎯 GLOBAL VARIABLES & CONFIGURATION
     // ============================================================ 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
+    const fastSleep = ms => new Promise(r => setTimeout(r, ms));
+    
+    // Hàm sleep có thể ngắt để dừng ngay lập tức
+    const smartSleep = async (ms) => {
+      const start = Date.now();
+      while (Date.now() - start < ms) {
+        if (stopRequested) return;
+        await new Promise(r => setTimeout(r, 50)); // Check mỗi 50ms
+      }
+    };
 
     const ICONS = {
       rocket: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg>',
@@ -1369,11 +1378,20 @@ if (window.hasRunScraper) {
         stopRequested = true;
         panelElements.stopBtn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')} Đang dừng...`;
         panelElements.stopBtn.disabled = true;
-        panelElements.stopBtn.style.opacity = '0.7';
-        panelElements.liveStatus.textContent = 'ĐANG DỪNG';
-        panelElements.liveStatus.style.background = 'rgba(239, 68, 68, 0.2)';
-        panelElements.liveStatus.style.color = '#ef4444';
-        showToast('Đang dừng scraper...', 'warning');
+        
+        // Dừng ngay lập tức: Dọn dẹp panel
+        if (statusPanel.elapsedTimeInterval) {
+          clearInterval(statusPanel.elapsedTimeInterval);
+        }
+        
+        setTimeout(() => {
+          if (statusPanel) statusPanel.remove();
+          if (toastContainer) toastContainer.innerHTML = '';
+          showToast('Đã dừng scraper', 'warning');
+          
+          // Hiển thị kết quả ngay lập tức
+          showResultsUI();
+        }, 300);
       };
 
       panelElements.pauseBtn.onclick = () => {
@@ -2087,60 +2105,64 @@ if (window.hasRunScraper) {
     }
 
     function findClickableButton() {
-      // 1. Tìm nút Trả lời (Màu xanh - Primary)
-      const allBtns = document.querySelectorAll('div.btn.btn-primary, div.btn-primary, button.btn-primary, button.btn-lg.btn-primary');
+      // Helper để kiểm tra nút có thực sự "sẵn sàng" để bấm không
+      const isReady = (el) => {
+        if (!el || el.disabled || el.classList.contains('disabled')) return false;
+        const style = window.getComputedStyle(el);
+        return (
+          el.offsetWidth > 0 && 
+          el.offsetHeight > 0 && 
+          style.display !== 'none' && 
+          style.visibility !== 'hidden' && 
+          style.opacity !== '0' &&
+          el.getAttribute('aria-hidden') !== 'true'
+        );
+      };
+
+      // 1. Tìm nút Trả lời (Màu xanh - Primary) - Ưu tiên cao nhất
+      const primarySelectors = [
+        'div.btn.btn-primary', 
+        'div.btn-primary', 
+        'button.btn-primary', 
+        'button.btn-lg.btn-primary',
+        '.questions-footer .btn-primary'
+      ];
       
-      for (const btn of allBtns) {
-        // KIỂM TRA SẴN SÀNG: Không disabled + Hiển thị + Có kích thước
-        if (btn.disabled) continue;
-        if (btn.offsetWidth === 0 || btn.offsetHeight === 0) continue;
-        if (getComputedStyle(btn).visibility === 'hidden' || getComputedStyle(btn).display === 'none') continue;
-        
-        const text = (btn.textContent || '').trim().toLowerCase();
-        
-        // Logic cũ: Tìm nút Trả lời
-        if (text.includes('trả lời') || text.includes('tra loi') || text === 'trả lời' || text === 'xác nhận') {
-          return { element: btn, type: 'answer', text: 'Trả lời' };
-        }
-        
-        // Xử lý trường hợp nút "Câu tiếp theo" nhưng lại có class btn-primary (màu xanh)
-        if (text.includes('tiếp theo') || text.includes('tiep theo') || text.includes('câu tiếp') || text.includes('next')) {
-           return { element: btn, type: 'next', text: 'Tiếp theo' };
+      for (const selector of primarySelectors) {
+        const btns = document.querySelectorAll(selector);
+        for (const btn of btns) {
+          if (!isReady(btn)) continue;
+          
+          const text = (btn.textContent || '').trim().toLowerCase();
+          if (text.includes('trả lời') || text.includes('tra loi') || text === 'xác nhận') {
+            return { element: btn, type: 'answer', text: 'Trả lời' };
+          }
+          if (text.includes('tiếp theo') || text.includes('tiep theo') || text.includes('next')) {
+            return { element: btn, type: 'next', text: 'Tiếp theo' };
+          }
         }
       }
       
-      // 2. Tìm nút Bỏ qua hoặc Next (Màu xám - Gray)
-      const grayBtns = document.querySelectorAll('div.btn.btn-gray, button.btn-gray, .btn-gray');
-      for (const btn of grayBtns) {
-        if (btn.classList.contains('btn-primary') && !btn.classList.contains('btn-gray')) continue;
-        
-        // KIỂM TRA SẴN SÀNG
-        if (btn.disabled) continue;
-        if (btn.offsetWidth === 0 || btn.offsetHeight === 0) continue;
-        if (getComputedStyle(btn).visibility === 'hidden' || getComputedStyle(btn).display === 'none') continue;
-        
-        const text = (btn.textContent || '').trim().toLowerCase();
-        
-        // Logic cũ: Tìm nút Bỏ qua
-        if (text.includes('bỏ qua') || text.includes('bo qua') || text.includes('skip')) {
-          return { element: btn, type: 'skip', text: 'Bỏ qua' };
-        }
-        
-        // Logic cũ: Tìm nút Tiếp theo (màu xám)
-        if (text.includes('tiếp') || text.includes('next') || text.includes('câu sau')) {
-          return { element: btn, type: 'next', text: 'Tiếp theo' };
-        }
-      }
-      
-      // 3. Fallback: Tìm các nút xám còn lại nếu chưa bắt được
-      for (const btn of grayBtns) {
-        if (!btn.classList.contains('btn-primary') && !btn.disabled) {
-          // KIỂM TRA SẴN SÀNG
-          if (btn.offsetWidth > 0 && btn.offsetHeight > 0 && getComputedStyle(btn).display !== 'none') {
-            const text = (btn.textContent || '').trim();
-            if (text) {
-               return { element: btn, type: 'gray', text: text };
-            }
+      // 2. Tìm nút Bỏ qua hoặc Tiếp theo (Màu xám/Khác)
+      const secondarySelectors = [
+        'div.btn.btn-gray', 
+        'button.btn-gray', 
+        '.btn-gray',
+        '.btn-default',
+        'button.btn-lg:not(.btn-primary)'
+      ];
+
+      for (const selector of secondarySelectors) {
+        const btns = document.querySelectorAll(selector);
+        for (const btn of btns) {
+          if (!isReady(btn)) continue;
+          
+          const text = (btn.textContent || '').trim().toLowerCase();
+          if (text.includes('bỏ qua') || text.includes('bo qua') || text.includes('skip')) {
+            return { element: btn, type: 'skip', text: 'Bỏ qua' };
+          }
+          if (text.includes('tiếp') || text.includes('next') || text.includes('câu sau')) {
+            return { element: btn, type: 'next', text: 'Tiếp theo' };
           }
         }
       }
@@ -2242,15 +2264,21 @@ if (window.hasRunScraper) {
         const numMatch = fullText.match(/Câu[:\s]*(\d+)/i);
         const newId = idMatch ? idMatch[1] : (numMatch ? numMatch[1] : null);
         
-        if (newId && newId !== currentId) {
-          await sleep(300);
-          return true;
-        }
-        await sleep(150);
-      }
-      
-      return false;
-    }
+                if (newId && newId !== currentId) {
+        
+                  await fastSleep(100);
+        
+                  return true;
+        
+                }
+        
+                await fastSleep(50);
+        
+              }
+        
+              return false;
+        
+            }
 
     async function extractQuestionHomework() {
       await waitForContentLoaded();
@@ -2932,7 +2960,7 @@ if (window.hasRunScraper) {
           scrollContainer.scrollTop = currentScroll;
         }
 
-        await sleep(200);
+        await fastSleep(80); // Giảm từ 200ms xuống 80ms
 
         // Cập nhật maxScroll (có thể tăng khi load thêm)
         maxScroll = Math.max(
@@ -2953,8 +2981,8 @@ if (window.hasRunScraper) {
           stableCount++;
         }
 
-        if (stableCount > 8) {
-          currentScroll += scrollStep * 2;
+        if (stableCount > 12) {
+          currentScroll += scrollStep * 3;
         }
       }
 
@@ -3031,7 +3059,7 @@ if (window.hasRunScraper) {
         try {
           // Wait if paused
           while (isPaused && !stopRequested) {
-            await sleep(500);
+            await fastSleep(200);
           }
           
           if (stopRequested) break;
@@ -3048,7 +3076,7 @@ if (window.hasRunScraper) {
           }
           updateStatus('Đang scrape...', `Xử lý câu ${currentId || '...'}`, '📝');
           
-          // Extract question
+          // Extract question - cực nhanh
           const q = await extractQuestionHomework();
           
           if (q && q.id !== lastID) {
@@ -3057,54 +3085,37 @@ if (window.hasRunScraper) {
             q.images.forEach(img => allImages.push({ ...img, question: q.id }));
             lastID = q.id;
             questionCount++;
-            retryCount = 0;
             
-            console.log(`✅ Câu ${q.id} (Tổng: ${questionCount}, Ảnh: ${allImages.length})`);
-            showToast(`Đã thu thập câu ${q.id}`, 'success', 2000);
+            console.log(`✅ Câu ${q.id} (Tổng: ${questionCount})`);
             updateStatus('Thu thập thành công!', `Câu ${q.id} - Tổng: ${questionCount}`, '✅');
           }
           
           if (stopRequested) break;
           
-          // Click button repeatedly
+          // Click button - tối ưu tần suất
           updateStatus('Tìm nút tiếp theo...', 'Click liên tục', '🔄', 'Đang tìm...');
-          if (panelElements.currentQText) {
-            panelElements.currentQText.textContent = 'Đang tìm và click nút...';
-          }
-          
-          const clickResult = await clickButtonRepeatedly(50, 200);
+          const clickResult = await clickButtonRepeatedly(30, 80); // Giảm delay xuống 80ms
           
           if (!clickResult.success) {
-            console.log('⚠️ Không tìm thấy nút sau nhiều lần thử');
-            showToast('Không tìm thấy nút, thử lại...', 'warning');
-            await sleep(2000);
-            
-            const retry = await clickButtonRepeatedly(30, 300);
-            if (!retry.success) {
-              console.log('❌ Có thể đã hết câu hỏi');
+            await smartSleep(1000); // Đợi ngắn nếu không thấy nút
+            const retry = await clickButtonRepeatedly(15, 150);
+            if (!retry.success && !stopRequested) {
               showToast('Có thể đã hết câu hỏi!', 'info');
               break;
             }
           }
           
-          // Wait for question change
+          if (stopRequested) break;
+          
+          // Wait for question change - check liên tục mỗi 100ms
           updateStatus('Chờ câu mới...', 'Đang load', '⏳');
-          const changed = await waitForQuestionChange(currentId);
-          
-          if (!changed) {
-            console.log('⚠️ Câu chưa đổi, thử click thêm...');
-            await sleep(500);
-            await clickButtonRepeatedly(20, 150);
-            await waitForQuestionChange(currentId, 5000);
-          }
-          
-          retryCount = 0;
+          await waitForQuestionChange(currentId, 4000);
           
         } catch (err) {
+          if (stopRequested) break;
           console.error("❌ Lỗi:", err);
-          showToast(`Lỗi: ${err.message}`, 'error');
           updateStatus('Lỗi!', err.message, '❌');
-          await sleep(2000);
+          await smartSleep(1000);
         }
       }
     }
@@ -3602,6 +3613,9 @@ if (window.hasRunScraper) {
     // 🚀 MAIN EXECUTION
     // ============================================================ 
 
+    // Reset stop flag for new run
+    stopRequested = false;
+
     // Check for updates first
     await checkUpdate();
 
@@ -3623,6 +3637,8 @@ if (window.hasRunScraper) {
     } else {
       await runHomeworkMode();
     }
+
+    if (stopRequested) return;
 
     // Finish
     console.log("✅ Hoàn thành scrape!");
