@@ -1,5 +1,5 @@
-// Lắng nghe sự kiện click vào icon extension
-chrome.action.onClicked.addListener(async (tab) => {
+// Hàm chung để chạy scraper trên tab
+async function runScraper(tab) {
   // Kiểm tra tab hợp lệ
   if (!tab || !tab.id || tab.id === chrome.tabs.TAB_ID_NONE) {
     console.log("Tab không hợp lệ");
@@ -47,11 +47,28 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
 
     console.error("Lỗi khi tiêm script:", error.message);
-    
+
     // Thử reload tab nếu gặp lỗi
-    if (error.message.includes("error page") || 
-        error.message.includes("Cannot access")) {
+    if (error.message.includes("error page") ||
+      error.message.includes("Cannot access")) {
       console.log("Trang có thể đang loading hoặc lỗi. Vui lòng thử lại.");
+    }
+  }
+}
+
+// Lắng nghe sự kiện click vào icon extension
+chrome.action.onClicked.addListener(async (tab) => {
+  await runScraper(tab);
+});
+
+// Lắng nghe keyboard shortcut (Ctrl+Shift+S)
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === "run-scraper") {
+    // Lấy tab hiện tại đang active
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) {
+      console.log("🚀 Keyboard shortcut activated: Ctrl+Shift+S");
+      await runScraper(tab);
     }
   }
 });
