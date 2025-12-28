@@ -40,7 +40,8 @@ Nếu bạn chưa có Microsoft Edge, tải về tại đây:
 
 #### **Bước 4: Sử dụng Extension**
 
-1. Sau khi chọn bài tập, nhấn vào **icon extension** trên trình duyệt và đợi kết quả.
+1. Sau khi chọn bài tập, nhấn vào **icon extension** <img width="27" height="22" alt="image" src="https://github.com/user-attachments/assets/ad689d46-d0a5-4abf-b6eb-fd2f3121ff06" />
+ trên trình duyệt và đợi kết quả.
 2. Sau khi AI hoàn tất, **copy kết quả** và gửi cho AI để giải quyết nhanh chóng.
 
 ---
@@ -80,7 +81,8 @@ Vào `chrome://extensions/` và bật chế độ **Developer Mode**:
 
 #### **Bước 7: Sử dụng Extension**
 
-1. Sau khi chọn bài tập trên trang ôn luyện, nhấn vào **icon extension** và đợi kết quả.
+1. Sau khi chọn bài tập trên trang ôn luyện, nhấn vào **icon extension**  <img width="27" height="22" alt="image" src="https://github.com/user-attachments/assets/5c085561-d523-4647-8fa4-c2af4d2ae2e2" />
+và đợi kết quả.
 2. Khi hoàn tất, **copy kết quả** và gửi cho AI để giải quyết.
 
 ---
