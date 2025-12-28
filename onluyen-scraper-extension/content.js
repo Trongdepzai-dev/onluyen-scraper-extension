@@ -770,24 +770,56 @@ if (window.hasRunScraper) {
             <p style="color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6; margin-bottom: 32px; text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px;">
               ${info.message}
             </p>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <a href="${info.links.chrome}" target="_blank" style="
-                background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; padding: 16px; border-radius: 16px;
-                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                display: flex; align-items: center; justify-content: center; gap: 8px;
-                box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4);
-              " onmouseover="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">
-                ${getIcon('download', 'scraper-icon-sm')} Chrome / Brave
-              </a>
+            <div id="updateActionButtons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+              <!-- Edge Button (Recommended) -->
               <a href="${info.links.edge}" target="_blank" style="
+                background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 16px; border-radius: 16px;
+                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+                box-shadow: 0 10px 20px -5px rgba(8, 145, 178, 0.4);
+              " onmouseover="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                   Microsoft Edge
+                </div>
+                <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px;">Khuyên dùng</span>
+              </a>
+              
+              <!-- Chrome/Brave Button -->
+              <a href="#" id="chromeUpdateBtn" style="
                 background: rgba(255,255,255,0.05); color: white; padding: 16px; border-radius: 16px;
                 text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
                 display: flex; align-items: center; justify-content: center; gap: 8px;
                 border: 1px solid rgba(255,255,255,0.1);
               " onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(0)'">
-                 Microsoft Edge
+                ${getIcon('download', 'scraper-icon-sm')} Chrome / Brave
               </a>
             </div>
+            
+            <!-- Custom Confirmation Step (Hidden by default) -->
+            <div id="chromeConfirmStep" style="display: none; flex-direction: column; gap: 12px; animation: scraper-fade-in 0.3s ease;">
+                <p style="color: #a5b4fc; font-weight: 600; margin-bottom: 8px;">Bạn đã biết cách cập nhật Extension thủ công chưa?</p>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button id="knowUpdateBtn" style="
+                        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;
+                        padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        Rồi (Tải ngay)
+                    </button>
+                    <button id="dontKnowUpdateBtn" style="
+                        background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; color: white;
+                        padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600;
+                        transition: all 0.2s;
+                    " onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
+                        Chưa (Xem hướng dẫn)
+                    </button>
+                </div>
+                <button id="backToOptionsBtn" style="
+                    margin-top: 8px; background: transparent; border: none; color: rgba(255,255,255,0.4);
+                    font-size: 12px; cursor: pointer; text-decoration: underline;
+                ">Quay lại</button>
+            </div>
+
             <button id="skipUpdateBtn" style="
               margin-top: 24px; background: transparent; border: none; color: rgba(255,255,255,0.4);
               font-size: 14px; cursor: pointer; transition: color 0.2s;
@@ -797,6 +829,41 @@ if (window.hasRunScraper) {
         `;
 
         document.body.appendChild(overlay);
+        
+        const actionButtons = document.getElementById('updateActionButtons');
+        const confirmStep = document.getElementById('chromeConfirmStep');
+        const skipBtn = document.getElementById('skipUpdateBtn');
+
+        // Handle Chrome/Brave click
+        document.getElementById('chromeUpdateBtn').onclick = (e) => {
+            e.preventDefault();
+            actionButtons.style.display = 'none';
+            confirmStep.style.display = 'flex';
+            skipBtn.style.display = 'none'; // Hide skip button during confirmation to focus user
+        };
+
+        // Handle "Know how to update" (Yes)
+        document.getElementById('knowUpdateBtn').onclick = () => {
+             window.open(info.links.chrome, '_blank');
+             overlay.remove(); // Close modal after action
+             resolve();
+        };
+
+        // Handle "Don't know how to update" (No)
+        document.getElementById('dontKnowUpdateBtn').onclick = () => {
+             window.open('https://github.com/Trongdepzai-dev/onluyen-scraper-extension/blob/main/HOW2UPDATE.md', '_blank');
+             window.location.href = info.links.chrome;
+             overlay.remove(); // Close modal after action
+             resolve();
+        };
+
+        // Handle "Back"
+        document.getElementById('backToOptionsBtn').onclick = () => {
+            confirmStep.style.display = 'none';
+            actionButtons.style.display = 'grid';
+            skipBtn.style.display = 'block';
+        };
+
         document.getElementById('skipUpdateBtn').onclick = () => {
           overlay.remove();
           resolve();
