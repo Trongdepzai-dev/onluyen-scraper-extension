@@ -386,16 +386,19 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         localStorage.setItem('scraper_gemini_config', JSON.stringify(config));
     }
 
-    async function callGeminiAPI(prompt, apiKey, modelId) {
+    async function callGeminiAPI(messages, apiKey, modelId) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
         
+        // Chuyển đổi format nếu messages là string (tương thích ngược)
+        const contents = Array.isArray(messages) 
+            ? messages 
+            : [{ role: 'user', parts: [{ text: messages }] }];
+
         try {
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
-                })
+                body: JSON.stringify({ contents })
             });
 
             if (!response.ok) {
@@ -574,6 +577,20 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       .scraper-scrollbar::-webkit-scrollbar {
         width: 6px;
         height: 6px;
+      }
+      
+      .scraper-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      
+      .scraper-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        transition: all 0.3s;
+      }
+      
+      .scraper-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.2);
       }
       
       .scraper-scrollbar::-webkit-scrollbar-track {
@@ -3553,99 +3570,319 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     }
 
     function showGeminiResponseModal(initialContent, promptText) {
+        let chatHistory = [
+            { role: 'user', parts: [{ text: promptText }] },
+            { role: 'model', parts: [{ text: initialContent }] }
+        ];
+
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
             position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-            background: 'rgba(0, 0, 0, 0.9)', backdropFilter: 'blur(5px)',
+            background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(16px)',
             zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontFamily: "'Inter', sans-serif"
+            fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+            opacity: '0', transition: 'opacity 0.3s ease'
         });
 
-        const updateContent = (content, isLoading = false) => {
-             const contentArea = document.getElementById('geminiContentArea');
-             if (isLoading) {
-                 contentArea.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#94a3b8;flex-direction:column;gap:16px;">
-                    <div style="font-size:40px;animation:scraper-spin 1s linear infinite;">${getIcon('loader')}</div>
-                    <div>Đang suy nghĩ...</div>
-                 </div>`;
-             } else {
-                 contentArea.innerText = content;
-             }
+        // Simple Markdown formatter
+        const formatMessage = (text) => {
+             // Escape HTML
+            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            
+            // Code blocks
+            safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
+                return `<div style="background: #1e293b; border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; border: 1px solid rgba(255,255,255,0.1);"><div style="color: #64748b; font-size: 10px; margin-bottom: 4px; text-transform: uppercase;">${lang || 'code'}</div>${code.trim()}</div>`;
+            });
+
+            // Inline code
+            safeText = safeText.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em;">$1</code>');
+
+            // Bold
+            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // Line breaks
+            return safeText.replace(/\n/g, '<br>');
+        };
+
+        const appendMessage = (role, text, isLoading = false) => {
+            const contentArea = document.getElementById('geminiContentArea');
+            if (!contentArea) return;
+
+            if (isLoading) {
+                const loader = document.createElement('div');
+                loader.id = 'gemini-chat-loader';
+                loader.style.cssText = `
+                    display: flex; align-items: center; gap: 8px; padding: 16px 20px;
+                    background: #1e293b; border-radius: 20px; border-bottom-left-radius: 4px;
+                    margin-bottom: 24px; align-self: flex-start; max-width: 85%;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.05);
+                `;
+                // Typing animation dots
+                loader.innerHTML = `
+                    <div style="display: flex; gap: 4px; align-items: center;">
+                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;"></div>
+                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both 0.16s;"></div>
+                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both 0.32s;"></div>
+                    </div>
+                    <span style="font-size: 13px; color: #94a3b8; margin-left: 8px;">Gemini đang suy nghĩ...</span>
+                    <style>
+                        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+                    </style>
+                `;
+                contentArea.appendChild(loader);
+            } else {
+                const loader = document.getElementById('gemini-chat-loader');
+                if (loader) loader.remove();
+
+                const msgDiv = document.createElement('div');
+                const isUser = role === 'user';
+                
+                msgDiv.style.cssText = `
+                    max-width: 85%; padding: 16px 20px; border-radius: 20px; margin-bottom: 24px;
+                    line-height: 1.6; font-size: 15px; position: relative;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    ${isUser ? `
+                        align-self: flex-end; 
+                        background: linear-gradient(135deg, #3b82f6, #2563eb); 
+                        color: white;
+                        border-bottom-right-radius: 4px; 
+                    ` : `
+                        align-self: flex-start; 
+                        background: #1e293b; 
+                        color: #e2e8f0;
+                        border-bottom-left-radius: 4px; 
+                        border: 1px solid rgba(255,255,255,0.05);
+                    `}
+                    animation: message-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                `;
+                
+                // Icon for bot
+                const botIcon = !isUser ? `
+                    <div style="
+                        position: absolute; left: -38px; bottom: 0; width: 32px; height: 32px;
+                        background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 10px;
+                        display: flex; align-items: center; justify-content: center; color: white;
+                        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+                    ">
+                        ${getIcon('sparkles', 'scraper-icon-sm')}
+                    </div>
+                ` : '';
+
+                const formattedText = isUser ? text : formatMessage(text);
+
+                msgDiv.innerHTML = `
+                    ${botIcon}
+                    <div style="font-weight: 500;">${formattedText}</div>
+                    <div style="
+                        font-size: 10px; opacity: 0.6; margin-top: 6px; text-align: right;
+                        ${isUser ? 'color: rgba(255,255,255,0.8);' : 'color: #94a3b8;'}
+                    ">
+                        ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}
+                    </div>
+                `;
+                contentArea.appendChild(msgDiv);
+            }
+            contentArea.scrollTop = contentArea.scrollHeight;
         };
 
         overlay.innerHTML = `
+            <style>
+                @keyframes message-slide-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes modal-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+                .gemini-chat-scroll::-webkit-scrollbar { width: 6px; }
+                .gemini-chat-scroll::-webkit-scrollbar-track { background: transparent; }
+                .gemini-chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+                .gemini-chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+            </style>
             <div style="
-                background: #0f172a; border-radius: 24px; width: 90%; max-width: 1000px; height: 85vh;
+                background: #0f172a; border-radius: 24px; width: 95%; max-width: 1000px; height: 85vh;
                 border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
                 box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;
+                animation: modal-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             ">
                 <!-- Header -->
                 <div style="
-                    padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.1);
+                    padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
                     display: flex; justify-content: space-between; align-items: center;
-                    background: #1e293b;
+                    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
                 ">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="color: #8b5cf6;">${getIcon('sparkles', 'scraper-icon-md')}</span>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="
+                            width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+                            border-radius: 14px; display: flex; align-items: center; justify-content: center;
+                            color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+                            position: relative; overflow: hidden;
+                        ">
+                            <div style="position: absolute; inset: 0; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDQwaDQwVjBIMHY0MHptMjAtMjB2MjBoMjBWMjBIMjB6TTAgMjBoMjBWMGgyMFYwaDIwdjIwSDIweiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L2c+PC9zdmc+'); opacity: 0.2;"></div>
+                            ${getIcon('sparkles', 'scraper-icon-md')}
+                        </div>
                         <div>
-                            <h3 style="margin: 0; color: white; font-size: 18px;">Kết quả phân tích Gemini</h3>
-                            <div id="currentModelName" style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
-                                ${GEMINI_MODELS.find(m => m.id === getGeminiConfig().model)?.name || 'Unknown Model'}
+                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Gemini Assistant</h3>
+                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
+                                <span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e;"></span>
+                                <span id="currentModelName" style="font-size: 12px; color: #94a3b8; font-weight: 500;">
+                                    ${GEMINI_MODELS.find(m => m.id === getGeminiConfig().model)?.name || 'Unknown Model'}
+                                </span>
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 8px;">
-                        <button id="geminiSettingsBtn" style="
-                            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1;
-                            padding: 8px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px;
-                            font-size: 13px;
-                        ">
+                         <button id="geminiSettingsBtn" style="
+                            background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8;
+                            padding: 8px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+                            font-size: 13px; transition: all 0.2s; font-weight: 500;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#f1f5f9'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
                             ${getIcon('settings', 'scraper-icon-sm')} Cấu hình
                         </button>
                         <button id="closeGeminiModal" style="
-                            background: rgba(255,255,255,0.1); border: none; color: white;
-                            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-                            display: flex; align-items: center; justify-content: center;
-                        ">${getIcon('x')}</button>
+                            background: rgba(255,255,255,0.05); border: none; color: #94a3b8;
+                            width: 38px; height: 38px; border-radius: 10px; cursor: pointer;
+                            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+                        " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';this.style.color='#f87171'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='#94a3b8'">
+                            ${getIcon('x')}
+                        </button>
                     </div>
                 </div>
                 
-                <!-- Content -->
-                <div style="flex: 1; overflow-y: auto; padding: 30px; background: #0f172a;" class="scraper-scrollbar">
-                    <div id="geminiContentArea" style="
-                        color: #e2e8f0; font-size: 15px; line-height: 1.8;
-                        font-family: 'JetBrains Mono', monospace; white-space: pre-wrap;
-                    ">${initialContent}</div>
+                <!-- Chat Area -->
+                <div id="geminiContentArea" class="gemini-chat-scroll" style="
+                    flex: 1; overflow-y: auto; padding: 32px; background: #0f172a;
+                    display: flex; flex-direction: column; gap: 8px;
+                    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+                ">
+                    <div style="text-align: center; margin-bottom: 32px; opacity: 0.5;">
+                        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Bắt đầu hội thoại</div>
+                        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); width: 200px; margin: 0 auto;"></div>
+                    </div>
+                    <!-- Messages will be appended here -->
                 </div>
 
-                <!-- Footer -->
+                <!-- Input Area -->
                 <div style="
-                    padding: 20px 30px; border-top: 1px solid rgba(255,255,255,0.1);
-                    display: flex; justify-content: space-between; align-items: center; background: #1e293b;
+                    padding: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+                    background: #1e293b; position: relative;
                 ">
-                    <button id="regenerateGeminiBtn" style="
-                        padding: 10px 20px; background: rgba(255,255,255,0.05); color: #cbd5e1; border: 1px solid rgba(255,255,255,0.1);
-                        border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
-                        transition: all 0.2s;
-                    " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-                        ${getIcon('refreshCw')} Tạo lại
-                    </button>
-
-                    <button id="copyGeminiContent" style="
-                        padding: 10px 20px; background: #3b82f6; color: white; border: none;
-                        border-radius: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;
-                        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-                        transition: all 0.2s;
-                    " onmouseover="this.style.transform='translateY(-1px)'" onmouseout="this.style.transform='translateY(0)'">
-                        ${getIcon('copy')} Copy Kết quả
-                    </button>
+                    <div style="
+                        background: #0f172a; border: 1px solid rgba(255,255,255,0.1);
+                        border-radius: 20px; padding: 8px; display: flex; gap: 8px;
+                        transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    " id="inputContainer">
+                        <textarea id="geminiChatInput" placeholder="Hỏi thêm gì đó..." style="
+                            flex: 1; background: transparent; border: none;
+                            padding: 12px 16px; color: white; font-family: inherit;
+                            font-size: 15px; resize: none; min-height: 24px; max-height: 150px;
+                            outline: none; line-height: 1.5;
+                        " onfocus="document.getElementById('inputContainer').style.borderColor='#6366f1';document.getElementById('inputContainer').style.boxShadow='0 0 0 3px rgba(99, 102, 241, 0.1)'"
+                        onblur="document.getElementById('inputContainer').style.borderColor='rgba(255,255,255,0.1)';document.getElementById('inputContainer').style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)'"></textarea>
+                        
+                        <div style="display: flex; gap: 4px; padding-right: 4px; align-items: flex-end; padding-bottom: 4px;">
+                            <button id="clearChatBtn" title="Xóa & Bắt đầu lại" style="
+                                width: 40px; height: 40px; background: transparent; color: #64748b;
+                                border: none; border-radius: 12px; cursor: pointer;
+                                display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+                            " onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#e2e8f0'"
+                            onmouseout="this.style.background='transparent';this.style.color='#64748b'">
+                                ${getIcon('refreshCw')}
+                            </button>
+                            <button id="sendChatMessage" style="
+                                width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;
+                                border: none; border-radius: 12px; cursor: pointer;
+                                display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+                            " onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)'"
+                            onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
+                                ${getIcon('send')}
+                            </button>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 12px; font-size: 11px; color: #64748b;">
+                        Enter để gửi • Shift + Enter để xuống dòng
+                    </div>
                 </div>
             </div>
         `;
 
+        // Animation entry
+        setTimeout(() => overlay.style.opacity = '1', 10);
         document.body.appendChild(overlay);
 
-        document.getElementById('closeGeminiModal').onclick = () => overlay.remove();
+        // Render initial message
+        appendMessage('user', promptText);
+        appendMessage('model', initialContent);
+
+        const handleSend = async () => {
+            const input = document.getElementById('geminiChatInput');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const config = getGeminiConfig();
+            if (!config.apiKey) {
+                showGeminiSettingsModal();
+                return;
+            }
+
+            input.value = '';
+            input.style.height = 'auto'; // Reset height
+            
+            appendMessage('user', text);
+            chatHistory.push({ role: 'user', parts: [{ text: text }] });
+            
+            appendMessage('model', '', true); // Show loading
+            
+            try {
+                const response = await callGeminiAPI(chatHistory, config.apiKey, config.model);
+                chatHistory.push({ role: 'model', parts: [{ text: response }] });
+                appendMessage('model', response);
+            } catch (e) {
+                appendMessage('model', `Lỗi: ${e.message}`);
+            }
+        };
+
+        document.getElementById('sendChatMessage').onclick = handleSend;
+        document.getElementById('geminiChatInput').onkeydown = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSend();
+            }
+        };
+
+        // Auto-resize textarea
+        const textarea = document.getElementById('geminiChatInput');
+        textarea.oninput = function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        };
+
+        document.getElementById('clearChatBtn').onclick = () => {
+            if (confirm('Bắt đầu lại cuộc hội thoại mới?')) {
+                document.getElementById('geminiContentArea').innerHTML = `
+                    <div style="text-align: center; margin-bottom: 32px; opacity: 0.5;">
+                        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Bắt đầu hội thoại</div>
+                        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); width: 200px; margin: 0 auto;"></div>
+                    </div>
+                `;
+                chatHistory = [{ role: 'user', parts: [{ text: promptText }] }];
+                handleSendOriginal();
+            }
+        };
+
+        const handleSendOriginal = async () => {
+            const config = getGeminiConfig();
+            appendMessage('user', promptText);
+            appendMessage('model', '', true);
+            try {
+                const response = await callGeminiAPI(chatHistory, config.apiKey, config.model);
+                chatHistory.push({ role: 'model', parts: [{ text: response }] });
+                appendMessage('model', response);
+            } catch (e) {
+                appendMessage('model', `Lỗi: ${e.message}`);
+            }
+        };
+
+        document.getElementById('closeGeminiModal').onclick = () => {
+             overlay.style.opacity = '0';
+             setTimeout(() => overlay.remove(), 300);
+        };
         
         document.getElementById('geminiSettingsBtn').onclick = async () => {
              const changed = await showGeminiSettingsModal();
@@ -3654,26 +3891,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                  const modelName = GEMINI_MODELS.find(m => m.id === config.model)?.name || 'Unknown';
                  document.getElementById('currentModelName').textContent = modelName;
              }
-        };
-
-        document.getElementById('regenerateGeminiBtn').onclick = async () => {
-             const config = getGeminiConfig();
-             updateContent('', true);
-             try {
-                 const newContent = await callGeminiAPI(promptText, config.apiKey, config.model);
-                 updateContent(newContent, false);
-             } catch (e) {
-                 updateContent(`Lỗi: ${e.message}`, false);
-             }
-        };
-
-        document.getElementById('copyGeminiContent').onclick = async () => {
-            const content = document.getElementById('geminiContentArea').innerText;
-            await navigator.clipboard.writeText(content);
-            const btn = document.getElementById('copyGeminiContent');
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = `${getIcon('check')} Đã Copy!`;
-            setTimeout(() => btn.innerHTML = originalHTML, 2000);
         };
     }
 
