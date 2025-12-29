@@ -261,7 +261,7 @@ Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE
 
 **Chúc bạn học tốt!** 📚✨
 
-*Made with ❤️ by Vietnamese Vibe Developers*
+*Made with ❤️ by Vietnamese Vibe Developers & the community*
 
 </div>
 
