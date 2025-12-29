@@ -73,7 +73,8 @@ if (window.hasRunScraper) {
       refreshCw: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>',
       loader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
       sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
-      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>'
+      settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
+      send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
     };
 
     const getIcon = (name, className = '') => {
@@ -3578,29 +3579,33 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
             position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-            background: 'rgba(15, 23, 42, 0.6)', backdropFilter: 'blur(16px)',
+            background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(20px) saturate(180%)',
             zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-            opacity: '0', transition: 'opacity 0.3s ease'
+            opacity: '0', transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
         });
 
-        // Simple Markdown formatter
+        // Enhanced Markdown formatter
         const formatMessage = (text) => {
-             // Escape HTML
             let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
-            // Code blocks
+            // Code blocks with syntax highlight look
             safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
-                return `<div style="background: #1e293b; border-radius: 8px; padding: 12px; margin: 8px 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; border: 1px solid rgba(255,255,255,0.1);"><div style="color: #64748b; font-size: 10px; margin-bottom: 4px; text-transform: uppercase;">${lang || 'code'}</div>${code.trim()}</div>`;
+                return `<div style="background: #020617; border-radius: 12px; margin: 16px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #94a3b8; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
+                        <div style="display: flex; gap: 4px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f;"></div></div>
+                    </div>
+                    <pre style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; color: #e2e8f0;">${code.trim()}</pre>
+                </div>`;
             });
 
-            // Inline code
-            safeText = safeText.replace(/`([^`]+)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 0.9em;">$1</code>');
+            safeText = safeText.replace(/`([^`]+)`/g, '<code style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em; border: 1px solid rgba(99, 102, 241, 0.2);">$1</code>');
+            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #f8fafc; font-weight: 700;">$1</strong>');
+            
+            // Lists
+            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span style="color: #6366f1;">•</span><span>$1</span></div>');
 
-            // Bold
-            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-            // Line breaks
             return safeText.replace(/\n/g, '<br>');
         };
 
@@ -3612,22 +3617,18 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 const loader = document.createElement('div');
                 loader.id = 'gemini-chat-loader';
                 loader.style.cssText = `
-                    display: flex; align-items: center; gap: 8px; padding: 16px 20px;
-                    background: #1e293b; border-radius: 20px; border-bottom-left-radius: 4px;
+                    display: flex; align-items: center; gap: 12px; padding: 20px 24px;
+                    background: rgba(30, 41, 59, 0.5); border-radius: 20px; border-bottom-left-radius: 4px;
                     margin-bottom: 24px; align-self: flex-start; max-width: 85%;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.05);
+                    border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(8px);
                 `;
-                // Typing animation dots
                 loader.innerHTML = `
-                    <div style="display: flex; gap: 4px; align-items: center;">
-                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both;"></div>
-                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both 0.16s;"></div>
-                        <div style="width: 8px; height: 8px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both 0.32s;"></div>
+                    <div style="display: flex; gap: 5px; align-items: center;">
+                        <div style="width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both;"></div>
+                        <div style="width: 6px; height: 6px; background: #a855f7; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.2s;"></div>
+                        <div style="width: 6px; height: 6px; background: #d946ef; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.4s;"></div>
                     </div>
-                    <span style="font-size: 13px; color: #94a3b8; margin-left: 8px;">Gemini đang suy nghĩ...</span>
-                    <style>
-                        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-                    </style>
+                    <span style="font-size: 13px; color: #94a3b8; font-weight: 500; letter-spacing: 0.3px;">Gemini đang xử lý...</span>
                 `;
                 contentArea.appendChild(loader);
             } else {
@@ -3638,48 +3639,52 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 const isUser = role === 'user';
                 
                 msgDiv.style.cssText = `
-                    max-width: 85%; padding: 16px 20px; border-radius: 20px; margin-bottom: 24px;
+                    max-width: 85%; padding: 18px 22px; border-radius: 22px; margin-bottom: 28px;
                     line-height: 1.6; font-size: 15px; position: relative;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                    transition: transform 0.2s ease;
                     ${isUser ? `
                         align-self: flex-end; 
-                        background: linear-gradient(135deg, #3b82f6, #2563eb); 
-                        color: white;
+                        background: linear-gradient(135deg, #4f46e5, #7c3aed); 
+                        color: #ffffff;
                         border-bottom-right-radius: 4px; 
+                        box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
                     ` : `
                         align-self: flex-start; 
                         background: #1e293b; 
                         color: #e2e8f0;
                         border-bottom-left-radius: 4px; 
-                        border: 1px solid rgba(255,255,255,0.05);
+                        border: 1px solid rgba(255,255,255,0.08);
+                        box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
                     `}
-                    animation: message-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                    animation: message-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 `;
                 
-                // Icon for bot
-                const botIcon = !isUser ? `
-                    <div style="
-                        position: absolute; left: -38px; bottom: 0; width: 32px; height: 32px;
-                        background: linear-gradient(135deg, #8b5cf6, #ec4899); border-radius: 10px;
+                if (!isUser) {
+                    const avatar = document.createElement('div');
+                    avatar.style.cssText = `
+                        position: absolute; left: -42px; bottom: 0; width: 34px; height: 34px;
+                        background: linear-gradient(135deg, #6366f1, #d946ef); border-radius: 12px;
                         display: flex; align-items: center; justify-content: center; color: white;
-                        box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
-                    ">
-                        ${getIcon('sparkles', 'scraper-icon-sm')}
-                    </div>
-                ` : '';
+                        box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
+                        border: 1px solid rgba(255,255,255,0.2);
+                    `;
+                    avatar.innerHTML = getIcon('sparkles', 'scraper-icon-sm');
+                    msgDiv.appendChild(avatar);
+                }
 
-                const formattedText = isUser ? text : formatMessage(text);
+                const contentSpan = document.createElement('div');
+                contentSpan.innerHTML = isUser ? text : formatMessage(text);
+                msgDiv.appendChild(contentSpan);
 
-                msgDiv.innerHTML = `
-                    ${botIcon}
-                    <div style="font-weight: 500;">${formattedText}</div>
-                    <div style="
-                        font-size: 10px; opacity: 0.6; margin-top: 6px; text-align: right;
-                        ${isUser ? 'color: rgba(255,255,255,0.8);' : 'color: #94a3b8;'}
-                    ">
-                        ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}
-                    </div>
+                const time = document.createElement('div');
+                time.style.cssText = `
+                    font-size: 10px; opacity: 0.5; margin-top: 8px; font-weight: 500;
+                    display: flex; align-items: center; gap: 4px; justify-content: flex-end;
+                    ${isUser ? 'color: rgba(255,255,255,0.9);' : 'color: #94a3b8;'}
                 `;
+                time.innerHTML = `${getIcon('clock', 'scraper-icon-xs')} ${new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'})}`;
+                msgDiv.appendChild(time);
+
                 contentArea.appendChild(msgDiv);
             }
             contentArea.scrollTop = contentArea.scrollHeight;
@@ -3687,126 +3692,139 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
         overlay.innerHTML = `
             <style>
-                @keyframes message-slide-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-                @keyframes modal-pop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-                .gemini-chat-scroll::-webkit-scrollbar { width: 6px; }
-                .gemini-chat-scroll::-webkit-scrollbar-track { background: transparent; }
-                .gemini-chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-                .gemini-chat-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+                @keyframes message-pop { from { opacity: 0; transform: translateY(15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+                @keyframes modal-reveal { from { opacity: 0; transform: translateY(20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+                @keyframes scraper-bounce { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-6px); } }
+                @keyframes scraper-glow { 0% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.2); } 50% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); } 100% { box-shadow: 0 0 5px rgba(99, 102, 241, 0.2); } }
+                .chat-scrollbar::-webkit-scrollbar { width: 5px; }
+                .chat-scrollbar::-webkit-scrollbar-track { background: transparent; }
+                .chat-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; transition: 0.2s; }
+                .chat-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+                .glass-panel { 
+                    background: rgba(15, 23, 42, 0.9);
+                    backdrop-filter: blur(12px);
+                    border: 1px solid rgba(255,255,255,0.1);
+                    position: relative;
+                }
+                .glass-panel::before {
+                    content: ""; position: absolute; inset: 0; border-radius: inherit;
+                    padding: 1px; background: linear-gradient(to bottom right, rgba(255,255,255,0.15), transparent, rgba(255,255,255,0.05));
+                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
+                }
             </style>
-            <div style="
-                background: #0f172a; border-radius: 24px; width: 95%; max-width: 1000px; height: 85vh;
-                border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); overflow: hidden;
-                animation: modal-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            <div class="glass-panel" style="
+                border-radius: 32px; width: 95%; max-width: 1000px; height: 85vh;
+                display: flex; flex-direction: column;
+                box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8); overflow: hidden;
+                animation: modal-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             ">
                 <!-- Header -->
                 <div style="
-                    padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.08);
+                    padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.06);
                     display: flex; justify-content: space-between; align-items: center;
-                    background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);
+                    background: rgba(15, 23, 42, 0.5);
                 ">
-                    <div style="display: flex; align-items: center; gap: 16px;">
+                    <div style="display: flex; align-items: center; gap: 20px;">
                         <div style="
-                            width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
-                            border-radius: 14px; display: flex; align-items: center; justify-content: center;
-                            color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-                            position: relative; overflow: hidden;
+                            width: 50px; height: 50px; background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+                            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+                            color: white; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+                            animation: scraper-glow 3s infinite;
                         ">
-                            <div style="position: absolute; inset: 0; background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0wIDQwaDQwVjBIMHY0MHptMjAtMjB2MjBoMjBWMjBIMjB6TTAgMjBoMjBWMGgyMFYwaDIwdjIwSDIweiIgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjEiLz48L2c+PC9zdmc+'); opacity: 0.2;"></div>
                             ${getIcon('sparkles', 'scraper-icon-md')}
                         </div>
                         <div>
-                            <h3 style="margin: 0; color: white; font-size: 18px; font-weight: 700; letter-spacing: -0.01em;">Gemini Assistant</h3>
-                            <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-                                <span style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 8px #22c55e;"></span>
-                                <span id="currentModelName" style="font-size: 12px; color: #94a3b8; font-weight: 500;">
+                            <h3 style="margin: 0; color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; font-family: 'Plus Jakarta Sans', sans-serif;">Gemini AI Assistant</h3>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                                <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981;"></div>
+                                <span id="currentModelName" style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
                                     ${GEMINI_MODELS.find(m => m.id === getGeminiConfig().model)?.name || 'Unknown Model'}
                                 </span>
                             </div>
                         </div>
                     </div>
-                    <div style="display: flex; gap: 8px;">
-                         <button id="geminiSettingsBtn" style="
-                            background: transparent; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8;
-                            padding: 8px 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;
-                            font-size: 13px; transition: all 0.2s; font-weight: 500;
-                        " onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#f1f5f9'" onmouseout="this.style.background='transparent';this.style.color='#94a3b8'">
+                    <div style="display: flex; gap: 12px;">
+                        <button id="geminiSettingsBtn" style="
+                            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1;
+                            padding: 10px 18px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+                            font-size: 14px; transition: all 0.3s; font-weight: 600;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.transform='translateY(-1px)'" 
+                           onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.transform='translateY(0)'">
                             ${getIcon('settings', 'scraper-icon-sm')} Cấu hình
                         </button>
                         <button id="closeGeminiModal" style="
-                            background: rgba(255,255,255,0.05); border: none; color: #94a3b8;
-                            width: 38px; height: 38px; border-radius: 10px; cursor: pointer;
-                            display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-                        " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';this.style.color='#f87171'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.color='#94a3b8'">
+                            background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); color: #f87171;
+                            width: 44px; height: 44px; border-radius: 14px; cursor: pointer;
+                            display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+                        " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';this.style.transform='rotate(90deg)'" 
+                           onmouseout="this.style.background='rgba(239, 68, 68, 0.05)';this.style.transform='rotate(0)'">
                             ${getIcon('x')}
                         </button>
                     </div>
                 </div>
                 
                 <!-- Chat Area -->
-                <div id="geminiContentArea" class="gemini-chat-scroll" style="
-                    flex: 1; overflow-y: auto; padding: 32px; background: #0f172a;
-                    display: flex; flex-direction: column; gap: 8px;
-                    background-image: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+                <div id="geminiContentArea" class="chat-scrollbar" style="
+                    flex: 1; overflow-y: auto; padding: 40px; background: transparent;
+                    display: flex; flex-direction: column; gap: 10px;
+                    background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.03) 0px, transparent 50%);
                 ">
-                    <div style="text-align: center; margin-bottom: 32px; opacity: 0.5;">
-                        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Bắt đầu hội thoại</div>
-                        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); width: 200px; margin: 0 auto;"></div>
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <span style="background: rgba(255,255,255,0.03); padding: 6px 16px; border-radius: 20px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.05);">Phiên làm việc mới</span>
                     </div>
-                    <!-- Messages will be appended here -->
                 </div>
 
                 <!-- Input Area -->
                 <div style="
-                    padding: 24px; border-top: 1px solid rgba(255,255,255,0.08);
-                    background: #1e293b; position: relative;
+                    padding: 32px 40px; border-top: 1px solid rgba(255,255,255,0.06);
+                    background: rgba(15, 23, 42, 0.4);
                 ">
                     <div style="
-                        background: #0f172a; border: 1px solid rgba(255,255,255,0.1);
-                        border-radius: 20px; padding: 8px; display: flex; gap: 8px;
-                        transition: all 0.2s; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                        background: #0f172a; border: 1.5px solid rgba(255,255,255,0.08);
+                        border-radius: 24px; padding: 10px; display: flex; gap: 12px;
+                        transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+                        align-items: flex-end;
                     " id="inputContainer">
-                        <textarea id="geminiChatInput" placeholder="Hỏi thêm gì đó..." style="
+                        <textarea id="geminiChatInput" placeholder="Nhập câu hỏi tại đây..." style="
                             flex: 1; background: transparent; border: none;
-                            padding: 12px 16px; color: white; font-family: inherit;
-                            font-size: 15px; resize: none; min-height: 24px; max-height: 150px;
-                            outline: none; line-height: 1.5;
-                        " onfocus="document.getElementById('inputContainer').style.borderColor='#6366f1';document.getElementById('inputContainer').style.boxShadow='0 0 0 3px rgba(99, 102, 241, 0.1)'"
-                        onblur="document.getElementById('inputContainer').style.borderColor='rgba(255,255,255,0.1)';document.getElementById('inputContainer').style.boxShadow='0 4px 6px -1px rgba(0, 0, 0, 0.1)'"></textarea>
+                            padding: 12px 18px; color: #f1f5f9; font-family: inherit;
+                            font-size: 16px; resize: none; min-height: 24px; max-height: 180px;
+                            outline: none; line-height: 1.6;
+                        " onfocus="document.getElementById('inputContainer').style.borderColor='#6366f1';document.getElementById('inputContainer').style.boxShadow='0 0 0 4px rgba(99, 102, 241, 0.15)'"
+                        onblur="document.getElementById('inputContainer').style.borderColor='rgba(255,255,255,0.08)';document.getElementById('inputContainer').style.boxShadow='0 4px 20px rgba(0, 0, 0, 0.2)'"></textarea>
                         
-                        <div style="display: flex; gap: 4px; padding-right: 4px; align-items: flex-end; padding-bottom: 4px;">
-                            <button id="clearChatBtn" title="Xóa & Bắt đầu lại" style="
-                                width: 40px; height: 40px; background: transparent; color: #64748b;
-                                border: none; border-radius: 12px; cursor: pointer;
+                        <div style="display: flex; gap: 8px; padding: 4px;">
+                            <button id="clearChatBtn" title="Reset chat" style="
+                                width: 48px; height: 48px; background: rgba(255,255,255,0.03); color: #94a3b8;
+                                border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; cursor: pointer;
                                 display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-                            " onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#e2e8f0'"
-                            onmouseout="this.style.background='transparent';this.style.color='#64748b'">
+                            " onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='#f1f5f9'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.color='#94a3b8'">
                                 ${getIcon('refreshCw')}
                             </button>
                             <button id="sendChatMessage" style="
-                                width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6, #2563eb); color: white;
-                                border: none; border-radius: 12px; cursor: pointer;
-                                display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-                                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-                            " onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 16px rgba(59, 130, 246, 0.4)'"
-                            onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 12px rgba(59, 130, 246, 0.3)'">
+                                width: 48px; height: 48px; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white;
+                                border: none; border-radius: 18px; cursor: pointer;
+                                display: flex; align-items: center; justify-content: center; transition: all 0.3s;
+                                box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4);
+                            " onmouseover="this.style.transform='scale(1.08) translateY(-2px)';this.style.boxShadow='0 12px 20px rgba(99, 102, 241, 0.5)'"
+                            onmouseout="this.style.transform='scale(1) translateY(0)';this.style.boxShadow='0 8px 15px rgba(99, 102, 241, 0.4)'">
                                 ${getIcon('send')}
                             </button>
                         </div>
                     </div>
-                    <div style="text-align: center; margin-top: 12px; font-size: 11px; color: #64748b;">
-                        Enter để gửi • Shift + Enter để xuống dòng
+                    <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #475569; font-weight: 500;">
+                        Sử dụng <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Enter</span> để gửi • <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Shift + Enter</span> để xuống dòng
                     </div>
                 </div>
             </div>
         `;
 
-        // Animation entry
-        setTimeout(() => overlay.style.opacity = '1', 10);
+        setTimeout(() => overlay.style.opacity = '1', 50);
         document.body.appendChild(overlay);
 
-        // Render initial message
         appendMessage('user', promptText);
         appendMessage('model', initialContent);
 
@@ -3822,12 +3840,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             }
 
             input.value = '';
-            input.style.height = 'auto'; // Reset height
+            input.style.height = 'auto';
             
             appendMessage('user', text);
             chatHistory.push({ role: 'user', parts: [{ text: text }] });
             
-            appendMessage('model', '', true); // Show loading
+            appendMessage('model', '', true);
             
             try {
                 const response = await callGeminiAPI(chatHistory, config.apiKey, config.model);
@@ -3846,7 +3864,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             }
         };
 
-        // Auto-resize textarea
         const textarea = document.getElementById('geminiChatInput');
         textarea.oninput = function() {
             this.style.height = 'auto';
@@ -3856,9 +3873,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         document.getElementById('clearChatBtn').onclick = () => {
             if (confirm('Bắt đầu lại cuộc hội thoại mới?')) {
                 document.getElementById('geminiContentArea').innerHTML = `
-                    <div style="text-align: center; margin-bottom: 32px; opacity: 0.5;">
-                        <div style="font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Bắt đầu hội thoại</div>
-                        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); width: 200px; margin: 0 auto;"></div>
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <span style="background: rgba(255,255,255,0.03); padding: 6px 16px; border-radius: 20px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.05);">Phiên làm việc mới</span>
                     </div>
                 `;
                 chatHistory = [{ role: 'user', parts: [{ text: promptText }] }];
@@ -3881,7 +3897,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
         document.getElementById('closeGeminiModal').onclick = () => {
              overlay.style.opacity = '0';
-             setTimeout(() => overlay.remove(), 300);
+             overlay.style.transform = 'scale(1.02)';
+             setTimeout(() => overlay.remove(), 400);
         };
         
         document.getElementById('geminiSettingsBtn').onclick = async () => {
