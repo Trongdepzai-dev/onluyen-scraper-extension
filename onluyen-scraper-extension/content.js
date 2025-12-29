@@ -3576,6 +3576,11 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             { role: 'model', parts: [{ text: initialContent }] }
         ];
 
+        // Image handling state
+        let imageMode = 'all'; // 'all', 'none', 'custom'
+        let selectedImageIndices = new Set(allImages.map((_, i) => i));
+        let isImageMenuOpen = false;
+
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
             position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
@@ -3584,6 +3589,39 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
             opacity: '0', transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
         });
+
+        // Helper: Convert URL/Base64 to raw Base64 for Gemini
+        const getImageData = async (imgObj) => {
+            try {
+                let base64Data = '';
+                let mimeType = 'image/jpeg';
+
+                if (imgObj.isBase64) {
+                    // Extract base64 part
+                    const matches = imgObj.fullUrl.match(/^data:(.+);base64,(.+)$/);
+                    if (matches) {
+                        mimeType = matches[1];
+                        base64Data = matches[2];
+                    } else {
+                        base64Data = imgObj.fullUrl; // Fallback
+                    }
+                } else {
+                    // Fetch URL
+                    const response = await fetch(imgObj.fullUrl);
+                    const blob = await response.blob();
+                    mimeType = blob.type;
+                    const reader = new FileReader();
+                    base64Data = await new Promise((resolve) => {
+                        reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                        reader.readAsDataURL(blob);
+                    });
+                }
+                return { inline_data: { mime_type: mimeType, data: base64Data } };
+            } catch (e) {
+                console.error("Failed to process image:", e);
+                return null;
+            }
+        };
 
         // Enhanced Markdown formatter
         const formatMessage = (text) => {
@@ -3690,6 +3728,89 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             contentArea.scrollTop = contentArea.scrollHeight;
         };
 
+        const renderImagePreviews = () => {
+            const container = document.getElementById('imagePreviewContainer');
+            if (!container) return;
+
+            if (imageMode === 'none' || allImages.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            container.style.display = 'flex';
+            container.innerHTML = '';
+            
+            allImages.forEach((img, index) => {
+                const isSelected = selectedImageIndices.has(index);
+                const thumb = document.createElement('div');
+                thumb.style.cssText = `
+                    min-width: 60px; height: 60px; border-radius: 8px; overflow: hidden;
+                    border: 2px solid ${isSelected ? '#6366f1' : 'rgba(255,255,255,0.1)'};
+                    cursor: pointer; position: relative; transition: all 0.2s;
+                    opacity: ${isSelected ? '1' : '0.5'};
+                `;
+                
+                const imgEl = document.createElement('img');
+                imgEl.src = img.fullUrl;
+                imgEl.style.cssText = 'width: 100%; height: 100%; object-fit: cover;';
+                
+                thumb.appendChild(imgEl);
+
+                if (isSelected) {
+                    const check = document.createElement('div');
+                    check.style.cssText = `
+                        position: absolute; top: 2px; right: 2px; width: 14px; height: 14px;
+                        background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                        color: white; font-size: 10px;
+                    `;
+                    check.innerHTML = getIcon('check', 'scraper-icon-xs');
+                    thumb.appendChild(check);
+                }
+
+                thumb.onclick = () => {
+                    if (imageMode === 'all') {
+                        imageMode = 'custom';
+                        updateImageModeUI();
+                    }
+                    if (selectedImageIndices.has(index)) {
+                        selectedImageIndices.delete(index);
+                    } else {
+                        selectedImageIndices.add(index);
+                    }
+                    renderImagePreviews();
+                };
+
+                container.appendChild(thumb);
+            });
+        };
+
+        const updateImageModeUI = () => {
+            const btn = document.getElementById('imageModeBtn');
+            const label = document.getElementById('imageModeLabel');
+            if (!btn || !label) return;
+
+            let iconName = 'image';
+            let text = 'Tất cả ảnh';
+            
+            if (imageMode === 'none') {
+                iconName = 'x';
+                text = 'Không gửi ảnh';
+            } else if (imageMode === 'custom') {
+                iconName = 'check';
+                text = `Chọn ${selectedImageIndices.size} ảnh`;
+            }
+
+            label.textContent = text;
+            // Highlight button if images are active
+            if (imageMode !== 'none') {
+                btn.style.color = '#6366f1';
+                btn.style.background = 'rgba(99, 102, 241, 0.1)';
+            } else {
+                btn.style.color = '#94a3b8';
+                btn.style.background = 'transparent';
+            }
+        };
+
         overlay.innerHTML = `
             <style>
                 @keyframes message-pop { from { opacity: 0; transform: translateY(15px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
@@ -3778,18 +3899,55 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
                 <!-- Input Area -->
                 <div style="
-                    padding: 32px 40px; border-top: 1px solid rgba(255,255,255,0.06);
-                    background: rgba(15, 23, 42, 0.4);
+                    padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.06);
+                    background: rgba(15, 23, 42, 0.4); display: flex; flex-direction: column; gap: 12px;
                 ">
+                    <!-- Image Preview Strip -->
+                    <div id="imagePreviewContainer" class="chat-scrollbar" style="
+                        display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 4px;
+                        ${allImages.length === 0 ? 'display: none;' : ''}
+                    "></div>
+
                     <div style="
                         background: #0f172a; border: 1.5px solid rgba(255,255,255,0.08);
                         border-radius: 24px; padding: 10px; display: flex; gap: 12px;
                         transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
                         align-items: flex-end;
                     " id="inputContainer">
+                        
+                        <!-- Image Control Button -->
+                        ${allImages.length > 0 ? `
+                        <div style="position: relative;">
+                            <button id="imageModeBtn" style="
+                                width: 44px; height: 44px; background: transparent; color: #6366f1;
+                                border: none; border-radius: 14px; cursor: pointer;
+                                display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+                                background: rgba(99, 102, 241, 0.1);
+                            " title="Tùy chọn ảnh">
+                                ${getIcon('image')}
+                            </button>
+                            <div id="imageModeMenu" style="
+                                position: absolute; bottom: 55px; left: 0; width: 180px;
+                                background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+                                border-radius: 16px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                                display: none; flex-direction: column; gap: 2px; z-index: 100;
+                            ">
+                                <div class="mode-item" data-mode="all" style="padding: 10px; border-radius: 8px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                    ${getIcon('check')} Tất cả (${allImages.length})
+                                </div>
+                                <div class="mode-item" data-mode="none" style="padding: 10px; border-radius: 8px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                    ${getIcon('x')} Không gửi ảnh
+                                </div>
+                                <div class="mode-item" data-mode="custom" style="padding: 10px; border-radius: 8px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                                    ${getIcon('image')} Chọn ảnh...
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+
                         <textarea id="geminiChatInput" placeholder="Nhập câu hỏi tại đây..." style="
                             flex: 1; background: transparent; border: none;
-                            padding: 12px 18px; color: #f1f5f9; font-family: inherit;
+                            padding: 12px 10px; color: #f1f5f9; font-family: inherit;
                             font-size: 16px; resize: none; min-height: 24px; max-height: 180px;
                             outline: none; line-height: 1.6;
                         " onfocus="document.getElementById('inputContainer').style.borderColor='#6366f1';document.getElementById('inputContainer').style.boxShadow='0 0 0 4px rgba(99, 102, 241, 0.15)'"
@@ -3815,8 +3973,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                             </button>
                         </div>
                     </div>
-                    <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #475569; font-weight: 500;">
-                        Sử dụng <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Enter</span> để gửi • <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Shift + Enter</span> để xuống dòng
+                    <div style="display: flex; justify-content: space-between; padding: 0 8px;">
+                         <div id="imageModeLabel" style="font-size: 11px; color: #6366f1; font-weight: 600;">
+                            ${allImages.length > 0 ? `Tất cả ảnh (${allImages.length})` : ''}
+                         </div>
+                        <div style="font-size: 11px; color: #475569; font-weight: 500;">
+                            Sử dụng <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Enter</span> để gửi • <span style="color: #64748b; background: rgba(255,255,255,0.05); padding: 2px 6px; border-radius: 4px;">Shift + Enter</span> để xuống dòng
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3824,6 +3987,45 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
         setTimeout(() => overlay.style.opacity = '1', 50);
         document.body.appendChild(overlay);
+
+        // Image Mode Events
+        if (allImages.length > 0) {
+            const btn = document.getElementById('imageModeBtn');
+            const menu = document.getElementById('imageModeMenu');
+            
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                isImageMenuOpen = !isImageMenuOpen;
+                menu.style.display = isImageMenuOpen ? 'flex' : 'none';
+            };
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isImageMenuOpen && !btn.contains(e.target) && !menu.contains(e.target)) {
+                    isImageMenuOpen = false;
+                    menu.style.display = 'none';
+                }
+            });
+
+            // Menu item clicks
+            document.querySelectorAll('.mode-item').forEach(item => {
+                item.onclick = () => {
+                    imageMode = item.dataset.mode;
+                    if (imageMode === 'all') selectedImageIndices = new Set(allImages.map((_, i) => i));
+                    if (imageMode === 'none') selectedImageIndices.clear();
+                    
+                    updateImageModeUI();
+                    renderImagePreviews();
+                    
+                    isImageMenuOpen = false;
+                    menu.style.display = 'none';
+                };
+                item.onmouseover = () => item.style.background = 'rgba(255,255,255,0.1)';
+                item.onmouseout = () => item.style.background = 'transparent';
+            });
+
+            renderImagePreviews();
+        }
 
         appendMessage('user', promptText);
         appendMessage('model', initialContent);
@@ -3843,8 +4045,32 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             input.style.height = 'auto';
             
             appendMessage('user', text);
-            chatHistory.push({ role: 'user', parts: [{ text: text }] });
             
+            // Prepare message with images
+            const userMessage = { role: 'user', parts: [{ text: text }] };
+            let imagesToSend = [];
+
+            if (imageMode !== 'none' && selectedImageIndices.size > 0) {
+                const indices = Array.from(selectedImageIndices).sort((a, b) => a - b);
+                
+                // Show loading indicator for images
+                const loadingMsg = document.createElement('div');
+                loadingMsg.innerHTML = `<span style="font-size: 11px; color: #94a3b8;">🔄 Đang xử lý ${indices.length} ảnh...</span>`;
+                loadingMsg.style.cssText = "padding: 0 40px; margin-bottom: 10px; text-align: right;";
+                document.getElementById('geminiContentArea').appendChild(loadingMsg);
+
+                for (const idx of indices) {
+                    const imgData = await getImageData(allImages[idx]);
+                    if (imgData) imagesToSend.push(imgData);
+                }
+                
+                if (imagesToSend.length > 0) {
+                    userMessage.parts.push(...imagesToSend);
+                }
+                loadingMsg.remove();
+            }
+
+            chatHistory.push(userMessage);
             appendMessage('model', '', true);
             
             try {
