@@ -256,6 +256,8 @@ Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE
 
 ### 🌟 Nếu thấy hữu ích, hãy cho chúng tôi một Star!
 
+## Star History
+
 [![Star History Chart](https://api.star-history.com/svg?repos=Trongdepzai-dev/onluyen-scraper-extension&type=date&legend=top-left)](https://www.star-history.com/#Trongdepzai-dev/onluyen-scraper-extension&type=date&legend=top-left)
 ---
 
@@ -266,3 +268,4 @@ Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE
 </div>
 
 ---
+
