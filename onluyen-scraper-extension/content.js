@@ -7,21 +7,26 @@ if (window.hasRunScraper) {
     toast.className = 'scraper-toast scraper-toast-already-running';
     Object.assign(toast.style, {
       position: 'fixed', bottom: '20px', left: '20px', zIndex: '2147483647',
-      background: 'linear-gradient(135deg, #6366f1, #4f46e5)', color: 'white',
-      padding: '16px 24px', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-      fontFamily: "'Inter', sans-serif", fontWeight: '600', animation: 'scraper-slide-up 0.4s ease'
+      background: '#ffffff', color: '#1f2937',
+      padding: '12px 16px', borderRadius: '10px', 
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+      fontFamily: "'Inter', sans-serif", fontWeight: '500', 
+      border: '1px solid #f3f4f6', borderLeft: '4px solid #6366f1',
+      animation: 'scraper-slide-up 0.4s ease', backdropFilter: 'blur(8px)'
     });
     toast.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-        <svg class="scraper-icon scraper-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg> 
-        Scraper đang hoạt động!
+        <span style="color: #6366f1; display: flex; align-items: center;">
+          <svg class="scraper-icon scraper-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg> 
+        </span>
+        <span>Scraper đang hoạt động!</span>
       </div>
       <button class="scraper-toast-close" style="
-        background: transparent; border: none; color: currentColor; opacity: 0.7; 
-        cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 8px;
-        border-radius: 50%; transition: all 0.2s;
-      " onmouseover="this.style.opacity='1';this.style.background='rgba(255,255,255,0.1)'" 
-        onmouseout="this.style.opacity='0.7';this.style.background='transparent'">
+        background: transparent; border: none; color: #9ca3af; 
+        cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 4px;
+        border-radius: 6px; transition: all 0.2s;
+      " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
+        onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
         <svg class="scraper-icon scraper-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1em; height: 1em;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     `;
@@ -51,22 +56,27 @@ if (window.hasRunScraper) {
   const toast = document.createElement('div');
   Object.assign(toast.style, {
     position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: '2147483647',
-    background: 'linear-gradient(135deg, #ef4444, #b91c1c)', color: 'white',
-    padding: '16px 28px', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
-    fontFamily: "'Inter', sans-serif", fontWeight: '700', fontSize: '15px',
-    display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid rgba(255,255,255,0.2)'
+    background: '#ffffff', color: '#1f2937',
+    padding: '12px 16px', borderRadius: '10px', 
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+    fontFamily: "'Inter', sans-serif", fontWeight: '500', fontSize: '15px',
+    display: 'flex', alignItems: 'center', gap: '12px', 
+    border: '1px solid #f3f4f6', borderLeft: '4px solid #ef4444',
+    backdropFilter: 'blur(8px)'
   });
   toast.innerHTML = `
     <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      Trang web không hỗ trợ! Tiện ích chỉ chạy trên OnLuyen.vn
+      <span style="color: #ef4444; display: flex; align-items: center;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </span>
+      <span>Trang web không hỗ trợ! Tiện ích chỉ chạy trên OnLuyen.vn</span>
     </div>
     <button class="scraper-toast-close" style="
-      background: transparent; border: none; color: currentColor; opacity: 0.7; 
+      background: transparent; border: none; color: #9ca3af; 
       cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 8px;
-      border-radius: 50%; transition: all 0.2s;
-    " onmouseover="this.style.opacity='1';this.style.background='rgba(255,255,255,0.1)'" 
-      onmouseout="this.style.opacity='0.7';this.style.background='transparent'">
+      border-radius: 6px; transition: all 0.2s;
+    " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
+      onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   `;
@@ -875,48 +885,54 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         toastContainer.children[0].remove();
       }
 
-      const colors = {
-        success: 'linear-gradient(135deg, #10b981, #059669)',
-        error: 'linear-gradient(135deg, #ef4444, #dc2626)',
-        warning: 'linear-gradient(135deg, #f59e0b, #d97706)',
-        info: 'linear-gradient(135deg, #3b82f6, #2563eb)'
-      };
-      
       const icons = {
         success: getIcon('check', 'scraper-icon-md'),
         error: getIcon('x', 'scraper-icon-md'),
         warning: getIcon('alertTriangle', 'scraper-icon-md'),
         info: getIcon('info', 'scraper-icon-md')
       };
+
+      const typeColors = {
+        success: '#10b981', // Emerald 500
+        error: '#ef4444',   // Red 500
+        warning: '#f59e0b', // Amber 500
+        info: '#3b82f6'     // Blue 500
+      };
       
       const toast = document.createElement('div');
       toast.className = 'scraper-toast';
+      
+      const accentColor = typeColors[type] || typeColors.info;
+
       Object.assign(toast.style, {
-        background: colors[type],
-        color: 'white',
-        padding: '14px 20px',
-        borderRadius: '12px',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+        background: '#ffffff',
+        color: '#1f2937', // Gray 800
+        padding: '12px 16px',
+        borderRadius: '10px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', // Soft shadow
         display: 'flex',
         alignItems: 'center',
-        gap: '10px',
+        gap: '12px',
         fontFamily: "'Inter', sans-serif",
         fontSize: '14px',
         fontWeight: '500',
-        maxWidth: '350px'
+        maxWidth: '320px',
+        border: '1px solid #f3f4f6', // Gray 100
+        borderLeft: `4px solid ${accentColor}`,
+        backdropFilter: 'blur(8px)'
       });
       
       toast.innerHTML = `
         <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-          <span>${icons[type]}</span>
-          <span>${message}</span>
+          <span style="color: ${accentColor}; display: flex; align-items: center;">${icons[type]}</span>
+          <span style="line-height: 1.4;">${message}</span>
         </div>
         <button class="scraper-toast-close" style="
-          background: transparent; border: none; color: currentColor; opacity: 0.7; 
-          cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 8px;
-          border-radius: 50%; transition: all 0.2s;
-        " onmouseover="this.style.opacity='1';this.style.background='rgba(255,255,255,0.1)'" 
-          onmouseout="this.style.opacity='0.7';this.style.background='transparent'">
+          background: transparent; border: none; color: #9ca3af; 
+          cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 4px;
+          border-radius: 6px; transition: all 0.2s;
+        " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
+          onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
           ${getIcon('x', 'scraper-icon-sm')}
         </button>
       `;
@@ -926,7 +942,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       if (closeBtn) {
         closeBtn.onclick = () => {
           toast.style.opacity = '0';
-          toast.style.transform = 'translateX(-120%)';
+          toast.style.transform = 'translateX(-100%)';
           setTimeout(() => toast.remove(), 300);
         };
       }
@@ -934,8 +950,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       toastContainer.appendChild(toast);
       
       setTimeout(() => {
-        toast.style.transition = 'all 0.3s ease';
-        toast.style.transform = 'translateX(-120%)';
+        toast.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        toast.style.transform = 'translateX(-100%)';
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
       }, duration);
