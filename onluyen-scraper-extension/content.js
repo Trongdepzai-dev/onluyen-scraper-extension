@@ -74,7 +74,8 @@ if (window.hasRunScraper) {
       loader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
       sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
       settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
-      send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'
+      send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+      github: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>'
     };
 
     const getIcon = (name, className = '') => {
@@ -3484,6 +3485,39 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     // 🤖 GEMINI UI COMPONENTS
     // ============================================================ 
 
+    // Helper: Convert URL/Base64 to raw Base64 for Gemini (Global Scope)
+    const getImageData = async (imgObj) => {
+        try {
+            let base64Data = '';
+            let mimeType = 'image/jpeg';
+
+            if (imgObj.isBase64) {
+                // Extract base64 part
+                const matches = imgObj.fullUrl.match(/^data:(.+);base64,(.+)$/);
+                if (matches) {
+                    mimeType = matches[1];
+                    base64Data = matches[2];
+                } else {
+                    base64Data = imgObj.fullUrl; // Fallback
+                }
+            } else {
+                // Fetch URL
+                const response = await fetch(imgObj.fullUrl);
+                const blob = await response.blob();
+                mimeType = blob.type;
+                const reader = new FileReader();
+                base64Data = await new Promise((resolve) => {
+                    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                    reader.readAsDataURL(blob);
+                });
+            }
+            return { inline_data: { mime_type: mimeType, data: base64Data } };
+        } catch (e) {
+            console.error("Failed to process image:", e);
+            return null;
+        }
+    };
+
     function showGeminiSettingsModal() {
         return new Promise((resolve) => {
             const config = getGeminiConfig();
@@ -3570,11 +3604,25 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         });
     }
 
-    function showGeminiResponseModal(initialContent, promptText) {
+    function showGeminiResponseModal(initialContent, promptData) {
+        let initialUserMsg;
+        
+        // Handle different prompt formats
+        if (typeof promptData === 'object' && promptData.role === 'user') {
+            initialUserMsg = promptData;
+        } else if (Array.isArray(promptData)) {
+            initialUserMsg = { role: 'user', parts: promptData };
+        } else {
+            initialUserMsg = { role: 'user', parts: [{ text: promptData }] };
+        }
+
         let chatHistory = [
-            { role: 'user', parts: [{ text: promptText }] },
+            initialUserMsg,
             { role: 'model', parts: [{ text: initialContent }] }
         ];
+        
+        // Extract text for initial display if parts contain images
+        const promptText = initialUserMsg.parts.find(p => p.text)?.text || "Image prompt...";
 
         // Image handling state
         let imageMode = 'all'; // 'all', 'none', 'custom'
@@ -3590,38 +3638,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             opacity: '0', transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
         });
 
-        // Helper: Convert URL/Base64 to raw Base64 for Gemini
-        const getImageData = async (imgObj) => {
-            try {
-                let base64Data = '';
-                let mimeType = 'image/jpeg';
 
-                if (imgObj.isBase64) {
-                    // Extract base64 part
-                    const matches = imgObj.fullUrl.match(/^data:(.+);base64,(.+)$/);
-                    if (matches) {
-                        mimeType = matches[1];
-                        base64Data = matches[2];
-                    } else {
-                        base64Data = imgObj.fullUrl; // Fallback
-                    }
-                } else {
-                    // Fetch URL
-                    const response = await fetch(imgObj.fullUrl);
-                    const blob = await response.blob();
-                    mimeType = blob.type;
-                    const reader = new FileReader();
-                    base64Data = await new Promise((resolve) => {
-                        reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                        reader.readAsDataURL(blob);
-                    });
-                }
-                return { inline_data: { mime_type: mimeType, data: base64Data } };
-            } catch (e) {
-                console.error("Failed to process image:", e);
-                return null;
-            }
-        };
 
         // Enhanced Markdown formatter
         const formatMessage = (text) => {
@@ -4345,6 +4362,18 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               <span>Tải File</span>
             </button>
             
+            ${allImages.length > 0 ? `
+            <label style="
+                display: flex; align-items: center; gap: 8px; cursor: pointer;
+                background: rgba(99, 102, 241, 0.1); padding: 0 16px; border-radius: 16px;
+                border: 1px solid rgba(99, 102, 241, 0.3); flex: 0 0 auto;
+                transition: all 0.2s; user-select: none;
+            " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'">
+                <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: #8b5cf6; cursor: pointer;">
+                <span style="color: #e2e8f0; font-size: 14px; font-weight: 600;">Gửi kèm ảnh</span>
+            </label>
+            ` : ''}
+
             <button id="sendGeminiBtn" class="scraper-btn" style="
               flex: 1;
               min-width: 150px;
@@ -4515,6 +4544,38 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             color: rgba(255,255,255,0.4);
             font-size: 13px;
           ">
+            <!-- Open Source Section -->
+            <div style="
+                background: rgba(99, 102, 241, 0.05);
+                border: 1px dashed rgba(99, 102, 241, 0.3);
+                border-radius: 20px;
+                padding: 24px;
+                margin-bottom: 24px;
+                animation: scraper-slide-up 0.6s ease;
+            ">
+                <div style="color: #a5b4fc; margin-bottom: 12px;">${getIcon('github', 'scraper-icon-lg')}</div>
+                <h4 style="color: white; margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">Dự án Nguồn Mở (Open Source)</h4>
+                <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                    Extension này hoàn toàn miễn phí và mã nguồn mở. Chúng mình rất trân trọng mọi sự đóng góp, ý tưởng hoặc báo lỗi từ cộng đồng qua Pull Requests!
+                </p>
+                <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 8px;
+                    background: #24292f;
+                    color: white;
+                    padding: 10px 20px;
+                    border-radius: 12px;
+                    text-decoration: none;
+                    font-weight: 600;
+                    font-size: 14px;
+                    transition: all 0.3s;
+                    border: 1px solid rgba(255,255,255,0.1);
+                " onmouseover="this.style.background='#333';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#24292f';this.style.transform='translateY(0)'">
+                    ${getIcon('github', 'scraper-icon-sm')} Đóng góp trên GitHub
+                </a>
+            </div>
+
             <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
               ${getIcon('rocket')} Auto Scraper v${chrome.runtime.getManifest().version} • ${new Date().toLocaleString('vi-VN')}
             </div>
@@ -4656,14 +4717,46 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
         const btn = document.getElementById('sendGeminiBtn');
         const originalContent = btn.innerHTML;
-        btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')}<span>Đang gửi...</span>`;
+        const cb = document.getElementById('sendWithImagesCb');
+        const sendImages = cb ? cb.checked : false;
+
+        btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')}<span>${sendImages ? 'Xử lý ảnh...' : 'Đang gửi...'}</span>`;
         btn.disabled = true;
 
         try {
-            const content = isAIMode ? allResultsAI : allResults;
-            const response = await callGeminiAPI(content, config.apiKey, config.model);
-            showGeminiResponseModal(response, content);
+            const textContent = isAIMode ? allResultsAI : allResults;
+            let finalPrompt = textContent;
+
+            if (sendImages && allImages.length > 0) {
+                 const imageParts = [];
+                 for (const img of allImages) {
+                     const data = await getImageData(img);
+                     if (data) imageParts.push(data);
+                 }
+                 
+                 if (imageParts.length > 0) {
+                     finalPrompt = {
+                         role: 'user',
+                         parts: [
+                             { text: textContent },
+                             ...imageParts
+                         ]
+                     };
+                 }
+            }
+
+            // Prepare for API
+            let apiPayload;
+            if (typeof finalPrompt === 'object') {
+                apiPayload = [finalPrompt];
+            } else {
+                apiPayload = finalPrompt;
+            }
+
+            const response = await callGeminiAPI(apiPayload, config.apiKey, config.model);
+            showGeminiResponseModal(response, finalPrompt);
         } catch (error) {
+            console.error(error);
             alert('Lỗi khi gửi đến Gemini: ' + error.message);
             // If API key is invalid, maybe show settings again?
             if (error.message.includes('400') || error.message.includes('API key')) {
