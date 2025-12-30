@@ -11,7 +11,7 @@ if (window.hasRunScraper) {
       padding: '16px 24px', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
       fontFamily: "'Inter', sans-serif", fontWeight: '600', animation: 'scraper-slide-up 0.4s ease'
     });
-    toast.innerHTML = '🚀 Scraper đang hoạt động!';
+    toast.innerHTML = `${getIcon('rocket', 'scraper-icon-md')} Scraper đang hoạt động!`;
     document.body.appendChild(toast);
     setTimeout(() => {
       toast.style.opacity = '0';
@@ -95,7 +95,19 @@ if (window.hasRunScraper) {
       sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
       settings: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 1-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>',
       send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
-      github: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>'
+      github: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>',
+      target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
+      brain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04"/></svg>',
+      clipboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>',
+      chart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+      zap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+      pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+      help: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+      star: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+      tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+      pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
+      circle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>',
+      link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
     };
 
     const getIcon = (name, className = '') => {
@@ -911,20 +923,30 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     // ============================================================ 
     function createConfetti() {
       const colors = ['#6366f1', '#8b5cf6', '#a855f7', '#ec4899', '#10b981', '#f59e0b'];
-      const shapes = ['●', '■', '▲', '★', '♦'];
+      const svgs = [
+        '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="8"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,4 4,20 20,20"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,4 20,12 12,20 4,12"/></svg>'
+      ];
       
       for (let i = 0; i < 50; i++) {
         const confetti = document.createElement('div');
         confetti.className = 'scraper-confetti-piece';
-        confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
-        confetti.style.cssText = `
-          left: ${Math.random() * 100}vw;
-          top: -20px;
-          color: ${colors[Math.floor(Math.random() * colors.length)]};
-          font-size: ${Math.random() * 20 + 10}px;
-          animation-delay: ${Math.random() * 0.5}s;
-          animation-duration: ${Math.random() * 2 + 2}s;
-        `;
+        confetti.innerHTML = svgs[Math.floor(Math.random() * svgs.length)];
+        Object.assign(confetti.style, {
+          position: 'fixed',
+          left: Math.random() * 100 + 'vw',
+          top: '-40px',
+          width: (Math.random() * 15 + 10) + 'px',
+          height: (Math.random() * 15 + 10) + 'px',
+          color: colors[Math.floor(Math.random() * colors.length)],
+          zIndex: '200000',
+          pointerEvents: 'none',
+          animation: `scraper-confetti ${Math.random() * 2 + 2}s ease-out forwards`,
+          animationDelay: Math.random() * 0.5 + 's'
+        });
         document.body.appendChild(confetti);
         setTimeout(() => confetti.remove(), 4000);
       }
@@ -1330,7 +1352,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                   font-size: 12px;
                   font-weight: 600;
                 ">
-                  ✓ Dành riêng OnLuyen.vn
+                  ${getIcon('check', 'scraper-icon-xs')} Dành riêng OnLuyen.vn
                 </div>
               </div>
               
@@ -1366,7 +1388,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                   font-size: 12px;
                   font-weight: 600;
                 ">
-                  ✓ Bài kiểm tra, Đề thi
+                  ${getIcon('check', 'scraper-icon-xs')} Bài kiểm tra, Đề thi
                 </div>
               </div>
             </div>
@@ -1863,17 +1885,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       panelElements.statusSubtitle.textContent = subtitle;
 
       const iconMap = {
-        '📚': 'book',
-        '📝': 'fileText',
-        '🔍': 'search',
-        '📜': 'fileText',
-        '🔢': 'bot',
-        '✅': 'check',
-        '❌': 'x',
-        '🚀': 'rocket',
-        '🔄': 'refreshCw',
-        '⏳': 'clock',
-        '🎊': 'rocket'
+        'book': 'book',
+        'fileText': 'fileText',
+        'search': 'search',
+        'bot': 'bot',
+        'check': 'check',
+        'x': 'x',
+        'rocket': 'rocket',
+        'refreshCw': 'refreshCw',
+        'clock': 'clock',
+        'zap': 'zap'
       };
 
       const iconName = iconMap[iconKey] || iconKey;
@@ -2743,12 +2764,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         questionImages = [...ctx.images, ...q.images];
         
         let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ 📝 ${cauText} • TỰ LUẬN\n`;
+        textNormal += `║ ${getIcon('pencil', 'scraper-icon-sm')} ${cauText} • TỰ LUẬN\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        if (ctx.text) textNormal += `║ 📋 Đề bài: ${ctx.text}\n`;
-        if (q.text) textNormal += `║ ❓ Câu hỏi: ${q.text}\n`;
+        if (ctx.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} Đề bài: ${ctx.text}\n`;
+        if (q.text) textNormal += `║ ${getIcon('help', 'scraper-icon-sm')} Câu hỏi: ${q.text}\n`;
         if (questionImages.length > 0) {
-          textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
+          textNormal += `║ ${getIcon('image', 'scraper-icon-sm')} Ảnh: ${questionImages.length} hình\n`;
         }
         textNormal += `${createSeparator("end")}\n`;
         
@@ -2770,11 +2791,11 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         const childContents = document.querySelectorAll('.child-content .fadein, .child-content');
         
         let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ ✅ ${cauText} • ĐÚNG/SAI\n`;
+        textNormal += `║ ${getIcon('check', 'scraper-icon-sm')} ${cauText} • ĐÚNG/SAI\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        if (ts.text) textNormal += `║ 📋 ${ts.text}\n`;
+        if (ts.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} ${ts.text}\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ 🔘 Các ý:\n`;
+        textNormal += `║ ${getIcon('circle', 'scraper-icon-sm')} Các ý:\n`;
         
         let textAI = `\n━━━ ${cauText} [ĐÚNG/SAI] ━━━\n`;
         if (ts.text) textAI += `${ts.text}\n\n`;
@@ -2808,10 +2829,10 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       questionImages = [...qn.images, ...db.images];
       
       let textNormal = `\n${createSeparator("start")}\n`;
-      textNormal += `║ 🎯 ${cauText} • TRẮC NGHIỆM\n`;
+      textNormal += `║ ${getIcon('target', 'scraper-icon-sm')} ${cauText} • TRẮC NGHIỆM\n`;
       textNormal += `${createSeparator("thin")}\n`;
-      if (db.text) textNormal += `║ 📋 Đề bài: ${db.text}\n`;
-      if (qn.text) textNormal += `║ ❓ Câu hỏi: ${qn.text}\n`;
+      if (db.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} Đề bài: ${db.text}\n`;
+      if (qn.text) textNormal += `║ ${getIcon('help', 'scraper-icon-sm')} Câu hỏi: ${qn.text}\n`;
       
       let textAI = `\n━━━ ${cauText} [TRẮC NGHIỆM] ━━━\n`;
       if (db.text) textAI += `📋 ${db.text}\n`;
@@ -2819,7 +2840,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       if (options.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ 🔘 Lựa chọn:\n`;
+        textNormal += `║ ${getIcon('circle', 'scraper-icon-sm')} Lựa chọn:\n`;
         
         options.forEach(opt => {
           const label = opt.querySelector('.question-option-label');
@@ -2838,7 +2859,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       if (questionImages.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
+        textNormal += `║ ${getIcon('image', 'scraper-icon-sm')} Ảnh: ${questionImages.length} hình\n`;
       }
       
       textNormal += `${createSeparator("end")}\n`;
@@ -3224,12 +3245,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       questions.forEach(q => {
         out.push(createSeparator("start"));
-        out.push(`║ 📌 CÂU ${q.number} ${q.score ? `(${q.score} điểm)` : ''}`);
+        out.push(`║ ${getIcon('pin', 'scraper-icon-sm')} CÂU ${q.number} ${q.score ? `(${q.score} điểm)` : ''}`);
         out.push(createSeparator("thin"));
 
-        if (q.title) out.push(`║ 📋 Yêu cầu: ${q.title}`);
-        if (q.content) out.push(`║ 📝 Đề bài: ${q.content}`);
-        if (q.answerPrompt) out.push(`║ ✏️ Điền: ${q.answerPrompt}`);
+        if (q.title) out.push(`║ ${getIcon('clipboard', 'scraper-icon-sm')} Yêu cầu: ${q.title}`);
+        if (q.content) out.push(`║ ${getIcon('pencil', 'scraper-icon-sm')} Đề bài: ${q.content}`);
+        if (q.answerPrompt) out.push(`║ ${getIcon('pencil', 'scraper-icon-sm')} Điền: ${q.answerPrompt}`);
 
         const typeNames = {
           'multiple-choice': 'Trắc nghiệm',
@@ -3237,38 +3258,38 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           'fill-blank': 'Điền khuyết',
           'unknown': 'Không xác định'
         };
-        out.push(`║ 🏷️ Loại: ${typeNames[q.type] || q.type}`);
+        out.push(`║ ${getIcon('tag', 'scraper-icon-sm')} Loại: ${typeNames[q.type] || q.type}`);
         out.push('');
 
         switch(q.type) {
           case 'multiple-choice':
-            out.push('║ 📊 CÁC ĐÁP ÁN:');
+            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} CÁC ĐÁP ÁN:`);
             Object.entries(q.data.answers).sort().forEach(([k, v]) => {
               out.push(`║    ${k}. ${v}`);
             });
             break;
 
           case 'true-false':
-            out.push('║ 📊 CÁC MỆNH ĐỀ:');
+            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} CÁC MỆNH ĐỀ:`);
             q.data.items.forEach(item => {
               out.push(`║    ${item.label} ${item.statement}`);
             });
             break;
 
           case 'fill-blank':
-            out.push(`║ 📊 Số ô trống: ${q.data.blanks.length}`);
+            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} Số ô trống: ${q.data.blanks.length}`);
             break;
         }
 
         // ===== THÊM PHẦN HIỂN THỊ ẢNH =====
         if (q.images && q.images.length > 0) {
           out.push(createSeparator("thin"));
-          out.push(`║ 🖼️ HÌNH ẢNH (${q.images.length}):`);
+          out.push(`║ ${getIcon('image', 'scraper-icon-sm')} HÌNH ẢNH (${q.images.length}):`);
           q.images.forEach((img, idx) => {
             if (img.isBase64) {
-              out.push(`║    [${idx + 1}] 📊 Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`║    [${idx + 1}] ${getIcon('chart', 'scraper-icon-xs')} Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             } else {
-              out.push(`║    [${idx + 1}] 🔗 ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`║    [${idx + 1}] ${getIcon('link', 'scraper-icon-xs')} ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             }
           });
         }
@@ -3358,10 +3379,10 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     async function runExamMode() {
       showToast('Đang scrape bài thi...', 'info');
-      updateStatus('Đang scrape...', 'Quét tất cả câu hỏi', '📝');
+      updateStatus('Đang scrape...', 'Quét tất cả câu hỏi', 'fileText');
 
       // ========== SCROLL ĐỂ LOAD TẤT CẢ CÂU HỎI ==========
-      updateStatus('Đang load...', 'Scroll để tải câu hỏi', '📜');
+      updateStatus('Đang load...', 'Scroll để tải câu hỏi', 'fileText');
 
       const scrollContainer = document.querySelector('.questions-container') ||
                          document.querySelector('.exam-content') ||
@@ -3403,7 +3424,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         // Kiểm tra số câu hỏi
         const currentQuestions = document.querySelectorAll('.question').length;
         if (currentQuestions > lastQuestionCount) {
-          updateStatus('Đang load...', `Đã tìm thấy ${currentQuestions} câu`, '📜');
+          updateStatus('Đang load...', `Đã tìm thấy ${currentQuestions} câu`, 'fileText');
           lastQuestionCount = currentQuestions;
           stableCount = 0;
         } else {
@@ -3424,7 +3445,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       await sleep(400);
 
       // ========== ĐỢI MATHJAX ==========
-      updateStatus('Đang xử lý...', 'Chờ MathJax render', '🔢');
+      updateStatus('Đang xử lý...', 'Chờ MathJax render', 'bot');
 
       if (window.MathJax) {
         try {
@@ -3439,13 +3460,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       await sleep(500);
 
       // ========== EXTRACT ==========
-      updateStatus('Đang trích xuất...', 'Phân tích câu hỏi & ảnh', '📝');
+      updateStatus('Đang trích xuất...', 'Phân tích câu hỏi & ảnh', 'fileText');
 
       const questions = extractAllExam();
 
       if (questions.length === 0) {
         showToast('Không tìm thấy câu hỏi!', 'error');
-        updateStatus('Lỗi!', 'Không tìm thấy câu hỏi', '❌');
+        updateStatus('Lỗi!', 'Không tìm thấy câu hỏi', 'x');
         return;
       }
 
@@ -3467,7 +3488,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       window._examQuestions = questions;
 
-      updateStatus('Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, '✅');
+      updateStatus('Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, 'check');
       showToast(`Đã scrape ${questionCount} câu, ${allImages.length} ảnh!`, 'success');
     }
 
@@ -3480,7 +3501,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       allResultsAI = defaultAIPrompt + '\n\n' + '═'.repeat(60) + '\n📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH\n' + '═'.repeat(60) + '\n\n';
       
       showToast('Bắt đầu scrape bài tập...', 'success');
-      updateStatus('Đang khởi tạo...', 'Chuẩn bị thu thập', '🚀');
+      updateStatus('Đang khởi tạo...', 'Chuẩn bị thu thập', 'rocket');
 
       while (!stopRequested) {
         try {
@@ -3501,7 +3522,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           if (panelElements.currentQText) {
             panelElements.currentQText.textContent = currentId ? `Đang xử lý: Câu #${currentId}` : 'Đang tìm câu hỏi...';
           }
-          updateStatus('Đang scrape...', `Xử lý câu ${currentId || '...'}`, '📝');
+          updateStatus('Đang scrape...', `Xử lý câu ${currentId || '...'}`, 'fileText');
           
           // Extract question - cực nhanh
           const q = await extractQuestionHomework();
@@ -3513,13 +3534,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             lastID = q.id;
             questionCount++;
             
-            updateStatus('Thu thập thành công!', `Câu ${q.id} - Tổng: ${questionCount}`, '✅');
+            updateStatus('Thu thập thành công!', `Câu ${q.id} - Tổng: ${questionCount}`, 'check');
           }
           
           if (stopRequested) break;
           
           // Click button - tối ưu tần suất
-          updateStatus('Tìm nút tiếp theo...', 'Click liên tục', '🔄', 'Đang tìm...');
+          updateStatus('Tìm nút tiếp theo...', 'Click liên tục', 'refreshCw', 'Đang tìm...');
           const clickResult = await clickButtonRepeatedly(30, 80); // Giảm delay xuống 80ms
           
           if (!clickResult.success) {
@@ -3534,13 +3555,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           if (stopRequested) break;
           
           // Wait for question change - check liên tục mỗi 100ms
-          updateStatus('Chờ câu mới...', 'Đang load', '⏳');
+          updateStatus('Chờ câu mới...', 'Đang load', 'clock');
           await waitForQuestionChange(currentId, 4000);
           
         } catch (err) {
           if (stopRequested) break;
-          console.error("❌ Lỗi:", err);
-          updateStatus('Lỗi!', err.message, '❌');
+          updateStatus('Lỗi!', err.message, 'x');
           await smartSleep(1000);
         }
       }
@@ -4136,7 +4156,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 
                 // Show loading indicator for images
                 const loadingMsg = document.createElement('div');
-                loadingMsg.innerHTML = `<span style="font-size: 11px; color: #94a3b8;">🔄 Đang xử lý ${indices.length} ảnh...</span>`;
+                loadingMsg.innerHTML = `<span style="font-size: 11px; color: #94a3b8; display: flex; align-items: center; justify-content: flex-end; gap: 4px;">${getIcon('refreshCw', 'scraper-icon-spin scraper-icon-xs')} Đang xử lý ${indices.length} ảnh...</span>`;
                 loadingMsg.style.cssText = "padding: 0 40px; margin-bottom: 10px; text-align: right;";
                 document.getElementById('geminiContentArea').appendChild(loadingMsg);
 
@@ -4302,6 +4322,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               padding: 24px;
               text-align: center;
             ">
+              <div style="color: #10b981; margin-bottom: 8px;">${getIcon('clipboard', 'scraper-icon-md')}</div>
               <div style="font-size: 42px; font-weight: 800; color: #10b981;">${questionCount}</div>
               <div style="color: #6ee7b7; font-size: 13px; font-weight: 600; margin-top: 4px;">CÂU HỎI</div>
             </div>
@@ -4313,6 +4334,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               padding: 24px;
               text-align: center;
             ">
+              <div style="color: #3b82f6; margin-bottom: 8px;">${getIcon('image', 'scraper-icon-md')}</div>
               <div style="font-size: 42px; font-weight: 800; color: #3b82f6;">${allImages.length}</div>
               <div style="color: #93c5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">HÌNH ẢNH</div>
             </div>
@@ -4324,6 +4346,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               padding: 24px;
               text-align: center;
             ">
+              <div style="color: #8b5cf6; margin-bottom: 8px;">${getIcon('fileText', 'scraper-icon-md')}</div>
               <div style="font-size: 42px; font-weight: 800; color: #8b5cf6;">${allResults.length}</div>
               <div style="color: #c4b5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
             </div>
@@ -4872,7 +4895,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     // Finish
     showToast(`Hoàn thành! ${questionCount} câu, ${allImages.length} ảnh`, 'success', 5000);
     createConfetti();
-    updateStatus('🎉 Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, '🎊');
+    updateStatus('Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, 'rocket');
 
     // Make functions available globally
     window.setCustomAIPrompt = setCustomAIPrompt;
