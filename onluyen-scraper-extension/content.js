@@ -3512,22 +3512,48 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           
           if (stopRequested) break;
           
-          // Get current ID
+          // Get current ID and Total
           const numDiv = document.querySelector('.num');
           const fullText = numDiv ? (numDiv.textContent || '') : '';
           const idMatch = fullText.match(/#(\d+)/);
+          const progressMatch = fullText.match(/Câu[:\s]*(\d+)\s*(?:\/|trên)\s*(\d+)/i);
           const numMatch = fullText.match(/Câu[:\s]*(\d+)/i);
+          
           const currentId = idMatch ? idMatch[1] : (numMatch ? numMatch[1] : null);
+          const totalQ = progressMatch ? parseInt(progressMatch[2]) : null;
           
           if (panelElements.currentQText) {
-            panelElements.currentQText.textContent = currentId ? `Đang xử lý: Câu #${currentId}` : 'Đang tìm câu hỏi...';
+            panelElements.currentQText.textContent = currentId ? `Đang xử lý: Câu #${currentId}${totalQ ? ' / ' + totalQ : ''}` : 'Đang tìm câu hỏi...';
           }
+
+          if (totalQ && panelElements.progressBar) {
+              const currentNum = progressMatch ? parseInt(progressMatch[1]) : (idMatch ? parseInt(idMatch[1]) : questionCount);
+              const percent = Math.min(100, Math.round((currentNum / totalQ) * 100));
+              panelElements.progressBar.style.width = percent + '%';
+              panelElements.progressBar.style.background = `linear-gradient(90deg, #10b981 ${percent}%, rgba(255,255,255,0.1) ${percent}%)`;
+          }
+
           updateStatus('Đang scrape...', `Xử lý câu ${currentId || '...'}`, 'fileText');
           
           // Extract question - cực nhanh
           const q = await extractQuestionHomework();
           
           if (q && q.id !== lastID) {
+            // Smart UX: Highlight the question on the page
+            const highlightEl = document.querySelector('app-test-step-question-freetext, .true-false, .question-name');
+            if (highlightEl) {
+                const originalOutline = highlightEl.style.outline;
+                const originalTransition = highlightEl.style.transition;
+                highlightEl.style.transition = 'outline 0.3s ease';
+                highlightEl.style.outline = '4px solid #6366f1';
+                highlightEl.style.outlineOffset = '4px';
+                highlightEl.style.borderRadius = '8px';
+                setTimeout(() => {
+                    highlightEl.style.outline = originalOutline || 'transparent solid 0px';
+                    setTimeout(() => highlightEl.style.transition = originalTransition, 300);
+                }, 800);
+            }
+
             allResults += q.text;
             allResultsAI += q.textAI;
             q.images.forEach(img => allImages.push({ ...img, question: q.id }));
@@ -3724,10 +3750,40 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
 
 
-        // Enhanced Markdown formatter
-        const formatMessage = (text) => {
-            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            
+            // Enhanced Markdown formatter
+            const formatMessage = (text) => {
+                let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                
+                // Better Headers
+                safeText = safeText.replace(/^# (.*$)/gm, '<h1 style="color: #fff; font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid #6366f1; padding-bottom: 8px;">$1</h1>');
+                safeText = safeText.replace(/^## (.*$)/gm, '<h2 style="color: #f1f5f9; font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
+                safeText = safeText.replace(/^### (.*$)/gm, '<h3 style="color: #e2e8f0; font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
+
+                // Horizontal Rule
+                safeText = safeText.replace(/^---$/gm, '<hr style="border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin: 24px 0;">');
+                safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: rgba(99, 102, 241, 0.3); margin: 20px 0;">');
+
+                // Smart Badge: Confidence Score detection
+            safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
+                const s = parseInt(score);
+                let color = '#ef4444'; // Red
+                let icon = 'alertTriangle';
+                if (s >= 85) { color = '#10b981'; icon = 'check'; } // Green
+                else if (s >= 70) { color = '#3b82f6'; icon = 'info'; } // Blue
+                else if (s >= 50) { color = '#f59e0b'; icon = 'alertTriangle'; } // Orange
+                
+                return `<div style="display: inline-flex; align-items: center; gap: 8px; background: ${color}20; color: ${color}; padding: 6px 12px; border-radius: 10px; border: 1px solid ${color}40; font-weight: 700; font-size: 13px; margin: 10px 0;">
+                    ${getIcon(icon, 'scraper-icon-xs')} ĐỘ TIN CẬY: ${s}%
+                </div>`;
+            });
+
+            // Smart Badge: Subject/Category detection
+            safeText = safeText.replace(/(?:🎯|📚)?\s*(LOẠI CÂU HỎI|LĨNH VỰC|⚡ ĐỘ KHÓ):\s*([^\n]+)/gi, (match, label, value) => {
+                return `<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); color: #94a3b8; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 600; text-transform: uppercase; margin: 4px 2px;">
+                    <span style="color: #6366f1;">${label}:</span> ${value}
+                </div>`;
+            });
+
             // Code blocks with syntax highlight look
             safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
                 return `<div style="background: #020617; border-radius: 12px; margin: 16px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
@@ -3752,22 +3808,32 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             const contentArea = document.getElementById('geminiContentArea');
             if (!contentArea) return;
 
+            // Save current scroll position to see if we should auto-scroll
+            const isNearBottom = contentArea.scrollHeight - contentArea.scrollTop - contentArea.clientHeight < 150;
+
             if (isLoading) {
                 const loader = document.createElement('div');
                 loader.id = 'gemini-chat-loader';
                 loader.style.cssText = `
-                    display: flex; align-items: center; gap: 12px; padding: 20px 24px;
-                    background: rgba(30, 41, 59, 0.5); border-radius: 20px; border-bottom-left-radius: 4px;
-                    margin-bottom: 24px; align-self: flex-start; max-width: 85%;
+                    display: flex; flex-direction: column; gap: 12px; padding: 20px 24px;
+                    background: rgba(30, 41, 59, 0.4); border-radius: 20px; border-bottom-left-radius: 4px;
+                    margin-bottom: 24px; align-self: flex-start; width: 80%;
                     border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(8px);
+                    animation: message-pop 0.3s ease-out;
                 `;
                 loader.innerHTML = `
-                    <div style="display: flex; gap: 5px; align-items: center;">
-                        <div style="width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both;"></div>
-                        <div style="width: 6px; height: 6px; background: #a855f7; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.2s;"></div>
-                        <div style="width: 6px; height: 6px; background: #d946ef; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.4s;"></div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <div class="skeleton-box" style="width: 24px; height: 24px; border-radius: 50%;"></div>
+                        <div class="skeleton-box" style="width: 120px; height: 12px;"></div>
                     </div>
-                    <span style="font-size: 13px; color: #94a3b8; font-weight: 500; letter-spacing: 0.3px;">Gemini đang xử lý...</span>
+                    <div class="skeleton-box" style="width: 90%; height: 14px; margin-bottom: 8px;"></div>
+                    <div class="skeleton-box" style="width: 70%; height: 14px; margin-bottom: 8px;"></div>
+                    <div class="skeleton-box" style="width: 40%; height: 14px;"></div>
+                    <div style="margin-top: 12px; display: flex; gap: 5px; align-items: center;">
+                        <div style="width: 5px; height: 5px; background: #6366f1; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both;"></div>
+                        <div style="width: 5px; height: 5px; background: #8b5cf6; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.2s;"></div>
+                        <div style="width: 5px; height: 5px; background: #d946ef; border-radius: 50%; animation: scraper-bounce 1s infinite ease-in-out both 0.4s;"></div>
+                    </div>
                 `;
                 contentArea.appendChild(loader);
             } else {
@@ -3812,6 +3878,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 }
 
                 const contentSpan = document.createElement('div');
+                contentSpan.className = 'chat-msg-content';
                 contentSpan.innerHTML = isUser ? text : formatMessage(text);
                 msgDiv.appendChild(contentSpan);
 
@@ -3826,7 +3893,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
                 contentArea.appendChild(msgDiv);
             }
-            contentArea.scrollTop = contentArea.scrollHeight;
+
+            // Auto-scroll logic: only scroll if the user was already near the bottom
+            if (isNearBottom || role === 'user') {
+                contentArea.scrollTo({
+                    top: contentArea.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }
         };
 
         const renderImagePreviews = () => {
@@ -4223,12 +4297,64 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             }
         };
 
-        document.getElementById('closeGeminiModal').onclick = () => {
+        const handleClose = () => {
              overlay.style.opacity = '0';
              overlay.style.transform = 'scale(1.02)';
-             setTimeout(() => overlay.remove(), 400);
+             setTimeout(() => {
+                overlay.remove();
+                document.removeEventListener('keydown', handleEsc);
+             }, 400);
         };
-        
+
+        const handleEsc = (e) => {
+            if (e.key === 'Escape') handleClose();
+        };
+
+        document.addEventListener('keydown', handleEsc);
+        document.getElementById('closeGeminiModal').onclick = handleClose;
+
+        // Scroll to bottom button logic
+        const contentArea = document.getElementById('geminiContentArea');
+        const scrollBtn = document.createElement('button');
+        scrollBtn.id = 'chatScrollBottomBtn';
+        scrollBtn.style.cssText = `
+            position: absolute; bottom: 100px; right: 40px; width: 44px; height: 44px;
+            background: #6366f1; color: white; border: none; border-radius: 50%;
+            display: none; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4); z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: scale(0.5); opacity: 0;
+        `;
+        scrollBtn.innerHTML = getIcon('chevronRight', 'scraper-icon-md scraper-icon-rotate-90');
+        // Need to add rotation style to the chevron
+        const extraStyles = document.createElement('style');
+        extraStyles.textContent = `
+            .scraper-icon-rotate-90 { transform: rotate(90deg); }
+            #chatScrollBottomBtn.visible { transform: scale(1); opacity: 1; display: flex; }
+            @keyframes skeleton-loading { 0% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+            .skeleton-box {
+                background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+                background-size: 200% 100%;
+                animation: skeleton-loading 1.5s infinite;
+                border-radius: 8px;
+            }
+        `;
+        document.head.appendChild(extraStyles);
+        overlay.querySelector('.glass-panel').appendChild(scrollBtn);
+
+        contentArea.onscroll = () => {
+            const isNearBottom = contentArea.scrollHeight - contentArea.scrollTop - contentArea.clientHeight < 200;
+            if (isNearBottom) {
+                scrollBtn.classList.remove('visible');
+            } else {
+                scrollBtn.classList.add('visible');
+            }
+        };
+
+        scrollBtn.onclick = () => {
+            contentArea.scrollTo({ top: contentArea.scrollHeight, behavior: 'smooth' });
+        };
+
         document.getElementById('geminiSettingsBtn').onclick = async () => {
              const changed = await showGeminiSettingsModal();
              if (changed) {
@@ -4236,6 +4362,38 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                  const modelName = GEMINI_MODELS.find(m => m.id === config.model)?.name || 'Unknown';
                  document.getElementById('currentModelName').textContent = modelName;
              }
+        };
+    }
+
+    function showLightbox(src) {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(0,0,0,0.95)', zIndex: '200000', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', cursor: 'zoom-out',
+            opacity: '0', transition: 'all 0.3s ease', backdropFilter: 'blur(10px)'
+        });
+        
+        const img = document.createElement('img');
+        img.src = src;
+        Object.assign(img.style, {
+            maxWidth: '90%', maxHeight: '90%', borderRadius: '12px',
+            boxShadow: '0 25px 50px rgba(0,0,0,0.5)', transform: 'scale(0.9)',
+            transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        });
+        
+        overlay.appendChild(img);
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => {
+            overlay.style.opacity = '1';
+            img.style.transform = 'scale(1)';
+        }, 50);
+        
+        overlay.onclick = () => {
+            overlay.style.opacity = '0';
+            img.style.transform = 'scale(0.9)';
+            setTimeout(() => overlay.remove(), 300);
         };
     }
 
@@ -4796,8 +4954,15 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         }, 2000);
       };
 
-      document.getElementById('sendGeminiBtn').onclick = async () => {
-        const config = getGeminiConfig();
+                  // Event listeners for image gallery
+                  resultContainer.querySelectorAll('.scraper-image-card[data-img-index]').forEach(card => {
+                      card.onclick = () => {
+                          const idx = card.getAttribute('data-img-index');
+                          if (allImages[idx]) showLightbox(allImages[idx].fullUrl);
+                      };
+                  });
+      
+                  document.getElementById('sendGeminiBtn').onclick = async () => {        const config = getGeminiConfig();
         if (!config.apiKey) {
             showGeminiSettingsModal();
             return;
