@@ -13,7 +13,7 @@
 
 [Cài đặt ngay](#-cài-đặt) • [Hướng dẫn sử dụng](#-hướng-dẫn-sử-dụng) • [Đóng góp](#-đóng-góp) • [Lộ trình](#-lộ-trình-phát-triển)
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 </div>
 
@@ -38,7 +38,7 @@
 
 > 💖 **Tri ân sâu sắc** tới tất cả các contributor! Xem danh sách đầy đủ tại [CONTRIBUTING.md](./CONTRIBUTING.md)
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 📖 Giới thiệu
 
@@ -53,7 +53,7 @@
 | 🔒 **An toàn** | Không thu thập dữ liệu cá nhân |
 | 💯 **Miễn phí** | Mã nguồn mở, hoàn toàn miễn phí |
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 🌐 Trình duyệt hỗ trợ
 
@@ -62,7 +62,7 @@
 | <img src="https://img.shields.io/badge/Edge-0078D7?logo=microsoftedge&logoColor=white" /> | ✅ Hỗ trợ | ⭐ Dễ | **Khuyến nghị** - Cài từ Store |
 | <img src="https://img.shields.io/badge/Chrome-4285F4?logo=googlechrome&logoColor=white" /> | ✅ Hỗ trợ | ⭐⭐ Trung bình | Cài thủ công |
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 📥 Cài đặt
 
@@ -93,7 +93,7 @@
 
 </details>
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ### 🔶 Lựa chọn 2: Google Chrome
 
@@ -143,7 +143,7 @@ Bật toggle **"Developer mode"** ở góc phải trên:
 
 </details>
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ### 🔄 Cập nhật Extension
 
@@ -152,7 +152,7 @@ Bật toggle **"Developer mode"** ở góc phải trên:
 | **Edge** | Tự động cập nhật qua Store |
 | **Chrome** | [📖 Xem hướng dẫn cập nhật thủ công](./HOW2UPDATE.md) |
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 🎯 Hướng dẫn sử dụng
 
@@ -175,7 +175,7 @@ flowchart LR
 | 4️⃣ | Đợi xử lý | Extension sẽ scrape nội dung câu hỏi |
 | 5️⃣ | Copy & Paste | Copy kết quả và gửi cho AI (ChatGPT, Claude...) |
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 🗺️ Lộ trình phát triển
 
@@ -193,7 +193,7 @@ flowchart LR
 - [x] ✅ **SVG Icons** - Thay thế tất cả icons bằng SVG path
 - [x] ✅ **Hỗ trợ Table** - Hiển thị dữ liệu dạng bảng
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 🔒 Bảo mật & Pháp lý
 
@@ -224,7 +224,7 @@ flowchart LR
 
 [![VirusTotal Report](https://img.shields.io/badge/VirusTotal-View%20Report-blue?style=for-the-badge)](https://www.virustotal.com/gui/file/e135158d23b9fe31a62a096a4217994f5ff64405b6d3dc1dc097d9759a88846a/summary)
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 🤝 Đóng góp
 
@@ -244,13 +244,13 @@ git push origin feature/TinhNangMoi
 
 Xem thêm tại [CONTRIBUTING.md](./CONTRIBUTING.md)
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 ## 📄 License
 
 Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE) để biết thêm chi tiết.
 
----
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 <div align="center">
 
@@ -259,7 +259,8 @@ Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=Trongdepzai-dev/onluyen-scraper-extension&type=date&legend=top-left)](https://www.star-history.com/#Trongdepzai-dev/onluyen-scraper-extension&type=date&legend=top-left)
----
+
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
 
 **Chúc bạn học tốt!** 📚✨
 
@@ -267,5 +268,4 @@ Dự án được phân phối dưới **MIT License** - Xem [LICENSE](./LICENSE
 
 </div>
 
----
-
+<img width="100%" loading="lazy" src="https://github.com/SamirPaulb/SamirPaulb/blob/main/assets/rainbow-superthin.webp" />
