@@ -998,37 +998,59 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     async function checkUpdate(manual = false) {
       if (isCheckingUpdate) return;
+      
+      // Kiểm tra xem extension context có còn hiệu lực không
+      if (!chrome.runtime?.id) {
+        console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
+        return;
+      }
+
       isCheckingUpdate = true;
       
       if (manual) showToast('Đang kiểm tra cập nhật...', 'info');
       return new Promise((resolve) => {
-        chrome.runtime.sendMessage({ action: "checkUpdate" }, (response) => {
-          isCheckingUpdate = false;
-          
-          if (chrome.runtime.lastError) {
-            console.error('[Scraper] Lỗi gửi tin nhắn kiểm tra cập nhật:', chrome.runtime.lastError.message);
-            if (manual) showToast('Lỗi kết nối hệ thống', 'error');
-            resolve();
-            return;
-          }
-
-          if (response && response.success) {
-            const updateInfo = response.data;
-            const currentVersion = chrome.runtime.getManifest().version;
-            console.log(`[Scraper] Version check: Current ${currentVersion} | Latest ${updateInfo.version}`);
+        try {
+          chrome.runtime.sendMessage({ action: "checkUpdate" }, (response) => {
+            isCheckingUpdate = false;
             
-            if (isNewerVersion(updateInfo.version, currentVersion)) {
-              showUpdateModal(updateInfo).then(resolve);
+            if (chrome.runtime.lastError) {
+              const errMsg = chrome.runtime.lastError.message;
+              if (errMsg.includes("context invalidated")) {
+                console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
+              } else {
+                console.error('[Scraper] Lỗi gửi tin nhắn kiểm tra cập nhật:', errMsg);
+                if (manual) showToast('Lỗi kết nối hệ thống', 'error');
+              }
+              resolve();
+              return;
+            }
+
+            if (response && response.success) {
+              const updateInfo = response.data;
+              const currentVersion = chrome.runtime.getManifest().version;
+              console.log(`[Scraper] Version check: Current ${currentVersion} | Latest ${updateInfo.version}`);
+              
+              if (isNewerVersion(updateInfo.version, currentVersion)) {
+                showUpdateModal(updateInfo).then(resolve);
+              } else {
+                if (manual) showToast('Bạn đang sử dụng phiên bản mới nhất!', 'success');
+                resolve();
+              }
             } else {
-              if (manual) showToast('Bạn đang sử dụng phiên bản mới nhất!', 'success');
+              console.warn('[Scraper] Không thể kiểm tra cập nhật:', response ? response.error : 'No response');
+              if (manual) showToast('Không thể kiểm tra cập nhật lúc này', 'warning');
               resolve();
             }
+          });
+        } catch (e) {
+          isCheckingUpdate = false;
+          if (e.message.includes("context invalidated")) {
+            console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
           } else {
-            console.warn('[Scraper] Không thể kiểm tra cập nhật:', response ? response.error : 'No response');
-            if (manual) showToast('Không thể kiểm tra cập nhật lúc này', 'warning');
-            resolve();
+            console.error('[Scraper] Lỗi checkUpdate:', e);
           }
-        });
+          resolve();
+        }
       });
     }
 
