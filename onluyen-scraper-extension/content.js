@@ -372,7 +372,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     function setCustomAIPrompt(newPrompt) {
       defaultAIPrompt = newPrompt;
       showToast('Đã cập nhật prompt AI!', 'success');
-      console.log('✅ Custom AI prompt set');
     }
 
     // ============================================================ 
@@ -400,7 +399,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 }
                 return config;
             }
-        } catch (e) { console.error('Error loading Gemini config', e); }
+        } catch (e) { }
         return { apiKey: '', model: defaultModel };
     }
 
@@ -431,7 +430,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             const data = await response.json();
             return data.candidates[0].content.parts[0].text;
         } catch (error) {
-            console.error('Gemini Call Failed:', error);
             throw error;
         }
     }
@@ -858,6 +856,56 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       }, duration);
     }
 
+    function showConfirmModal(message, title = 'Xác nhận') {
+      return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+          position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+          background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)',
+          zIndex: '200001', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.3s ease'
+        });
+
+        overlay.innerHTML = `
+          <div style="
+            background: #1e293b; border-radius: 24px; padding: 32px; width: 380px;
+            border: 1px solid rgba(255,255,255,0.1); color: white;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+          ">
+            <div style="color: #f59e0b; margin-bottom: 20px;">
+              ${getIcon('alertTriangle', 'scraper-icon-lg')}
+            </div>
+            <h3 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 700;">${title}</h3>
+            <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 28px;">${message}</p>
+            <div style="display: flex; gap: 12px;">
+              <button id="confirmCancel" style="
+                flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 12px; color: #cbd5e1; cursor: pointer; font-weight: 600; transition: all 0.2s;
+              " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Hủy</button>
+              <button id="confirmOk" style="
+                flex: 1; padding: 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none;
+                border-radius: 12px; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s;
+                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+              " onmouseover="this.style.transform='translateY(-1px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">Đồng ý</button>
+            </div>
+          </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        document.getElementById('confirmCancel').onclick = () => {
+          overlay.remove();
+          resolve(false);
+        };
+
+        document.getElementById('confirmOk').onclick = () => {
+          overlay.remove();
+          resolve(true);
+        };
+      });
+    }
+
     // ============================================================ 
     // 🎊 CONFETTI EFFECT
     // ============================================================ 
@@ -1001,7 +1049,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       // Kiểm tra xem extension context có còn hiệu lực không
       if (!chrome.runtime?.id) {
-        console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
         return;
       }
 
@@ -1016,9 +1063,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             if (chrome.runtime.lastError) {
               const errMsg = chrome.runtime.lastError.message;
               if (errMsg.includes("context invalidated")) {
-                console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
+                // Không log gì để tránh phiền toái, script cũ sẽ tự chết
               } else {
-                console.error('[Scraper] Lỗi gửi tin nhắn kiểm tra cập nhật:', errMsg);
                 if (manual) showToast('Lỗi kết nối hệ thống', 'error');
               }
               resolve();
@@ -1028,7 +1074,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             if (response && response.success) {
               const updateInfo = response.data;
               const currentVersion = chrome.runtime.getManifest().version;
-              console.log(`[Scraper] Version check: Current ${currentVersion} | Latest ${updateInfo.version}`);
               
               if (isNewerVersion(updateInfo.version, currentVersion)) {
                 showUpdateModal(updateInfo).then(resolve);
@@ -1037,18 +1082,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 resolve();
               }
             } else {
-              console.warn('[Scraper] Không thể kiểm tra cập nhật:', response ? response.error : 'No response');
               if (manual) showToast('Không thể kiểm tra cập nhật lúc này', 'warning');
               resolve();
             }
           });
         } catch (e) {
           isCheckingUpdate = false;
-          if (e.message.includes("context invalidated")) {
-            console.warn('[Scraper] Extension context invalidated. Vui lòng tải lại trang.');
-          } else {
-            console.error('[Scraper] Lỗi checkUpdate:', e);
-          }
           resolve();
         }
       });
@@ -2383,10 +2422,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       // Sử dụng getElementsByTagName để đảm bảo tìm thấy mọi bảng kể cả trong node tách rời
       const tables = Array.from(cloned.getElementsByTagName('table'));
       
-      if (tables.length > 0) {
-        console.log(`[Scraper] 🔍 Tìm thấy ${tables.length} bảng (getElementsByTagName).`);
-      }
-
       tables.forEach((table, idx) => {
         try {
           const md = convertTableToMarkdown(table);
@@ -2398,10 +2433,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           
           if(table.parentNode) {
             table.parentNode.replaceChild(span, table);
-            console.log(`[Scraper] ✅ Đã thay thế bảng #${idx + 1}`);
           }
         } catch (err) {
-          console.error(`[Scraper] ❌ Lỗi convert bảng #${idx + 1}:`, err);
         }
       });
 
@@ -2597,10 +2630,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             btn.element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
             btn.element.click();
             
-            console.log(`⚡ TRIGGERED (${source}): ${btn.text}`);
             resolve({ success: true, ...btn });
           } catch (e) {
-            console.log(`⚠️ Click error:`, e);
             resolve({ success: false });
           }
         };
@@ -3326,7 +3357,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     // ============================================================
 
     async function runExamMode() {
-      console.log("📝 Bắt đầu EXAM MODE...");
       showToast('Đang scrape bài thi...', 'info');
       updateStatus('Đang scrape...', 'Quét tất cả câu hỏi', '📝');
 
@@ -3404,7 +3434,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             await new Promise(resolve => window.MathJax.Hub.Queue(() => resolve()));
           }
         } catch (e) {
-          console.log('MathJax warning:', e);
         }
       }
       await sleep(500);
@@ -3438,9 +3467,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       window._examQuestions = questions;
 
-      console.log(`✅ Đã scrape ${questionCount} câu hỏi, ${allImages.length} ảnh`);
-      console.log('📊 Phân loại:', typeCounts);
-
       updateStatus('Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, '✅');
       showToast(`Đã scrape ${questionCount} câu, ${allImages.length} ảnh!`, 'success');
     }
@@ -3450,8 +3476,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     // ============================================================ 
     
     async function runHomeworkMode() {
-      console.log("📚 Bắt đầu HOMEWORK MODE...");
-      
       // Initialize AI Prompt for Homework Mode
       allResultsAI = defaultAIPrompt + '\n\n' + '═'.repeat(60) + '\n📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH\n' + '═'.repeat(60) + '\n\n';
       
@@ -3489,7 +3513,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             lastID = q.id;
             questionCount++;
             
-            console.log(`✅ Câu ${q.id} (Tổng: ${questionCount})`);
             updateStatus('Thu thập thành công!', `Câu ${q.id} - Tổng: ${questionCount}`, '✅');
           }
           
@@ -3555,7 +3578,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             }
             return { inline_data: { mime_type: mimeType, data: base64Data } };
         } catch (e) {
-            console.error("Failed to process image:", e);
             return null;
         }
     };
@@ -3633,7 +3655,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                     model: document.getElementById('geminiModel').value
                 };
                 if (!newConfig.apiKey) {
-                    alert('Vui lòng nhập API Key!');
+                    showToast('Vui lòng nhập API Key!', 'warning');
                     return;
                 }
                 saveGeminiConfig(newConfig);
@@ -4155,8 +4177,9 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             this.style.height = (this.scrollHeight) + 'px';
         };
 
-        document.getElementById('clearChatBtn').onclick = () => {
-            if (confirm('Bắt đầu lại cuộc hội thoại mới?')) {
+        document.getElementById('clearChatBtn').onclick = async () => {
+            const confirmed = await showConfirmModal('Bắt đầu lại cuộc hội thoại mới?', 'Reset Chat');
+            if (confirmed) {
                 document.getElementById('geminiContentArea').innerHTML = `
                     <div style="text-align: center; margin-bottom: 40px;">
                         <span style="background: rgba(255,255,255,0.03); padding: 6px 16px; border-radius: 20px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.05);">Phiên làm việc mới</span>
@@ -4798,8 +4821,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             const response = await callGeminiAPI(apiPayload, config.apiKey, config.model);
             showGeminiResponseModal(response, finalPrompt);
         } catch (error) {
-            console.error(error);
-            alert('Lỗi khi gửi đến Gemini: ' + error.message);
+            showToast('Lỗi Gemini: ' + error.message, 'error');
             // If API key is invalid, maybe show settings again?
             if (error.message.includes('400') || error.message.includes('API key')) {
                  showGeminiSettingsModal();
@@ -4848,7 +4870,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     if (stopRequested) return;
 
     // Finish
-    console.log("✅ Hoàn thành scrape!");
     showToast(`Hoàn thành! ${questionCount} câu, ${allImages.length} ảnh`, 'success', 5000);
     createConfetti();
     updateStatus('🎉 Hoàn thành!', `${questionCount} câu, ${allImages.length} ảnh`, '🎊');
