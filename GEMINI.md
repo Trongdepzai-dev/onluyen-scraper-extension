@@ -43,15 +43,6 @@ D:\onluyen-scraper-extension-main\onluyen-scraper-extension-main\
 └── CONTRIBUTING.md              # Contribution Guidelines
 ```
 
-### Conventions
-*   **Commits:** Follow [Conventional Commits](https://www.conventionalcommits.org/) (e.g., `feat:`, `fix:`, `docs:`).
-*   **Coding Style:** Vanilla JS. CSS is often injected dynamically via JavaScript in `content.js`.
-*   **AI Prompting:** The system prompt for Gemini is defined in `content.js` under `defaultAIPrompt`.
-
-## Key Commands
-*   **Trigger Extension:** `Ctrl+Shift+S` (Windows) or `Command+Shift+S` (Mac).
-*   **Action:** Click the extension icon to trigger `runScraper`.
-
 ---
 
 ## 🎯 NGUYÊN TẮC LÀM VIỆC CỐT LÕI
@@ -153,17 +144,6 @@ PHÂN TÍCH ROOT CAUSE (nguyên nhân gốc)
 - ✓ Nhẹ, performance tốt
 - ✓ Nhất quán cross-platform
 
-**Ví dụ SVG thay emoji:**
-```html
-<!-- ❌ Không dùng -->
-<span>✅</span>
-
-<!-- ✅ Nên dùng -->
-<svg viewBox="0 0 24 24" fill="currentColor">
-  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-</svg>
-```
-
 ---
 
 ### 🇻🇳 6. NGÔN NGỮ GIAO TIẾP
@@ -180,7 +160,65 @@ PHÂN TÍCH ROOT CAUSE (nguyên nhân gốc)
 
 ---
 
-### ✅ 7. CHECKLIST TRƯỚC KHI HOÀN THÀNH
+### 📝 7. COMMIT MESSAGE SAU MỖI THAY ĐỔI
+
+**BẮT BUỘC:** Sau mỗi lần update/fix/thêm tính năng thành công, **LUÔN** hiển thị gợi ý commit message theo format sau:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  📋 GỢI Ý COMMIT MESSAGE                                     ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  git commit -m "<type>(<scope>): <subject>"                  ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+**Cấu trúc Commit:**
+```
+<type>(<scope>): <subject>
+
+[body - nếu cần giải thích thêm]
+```
+
+**Các loại Type:**
+
+| Type | Emoji | Mô tả | Khi nào dùng |
+|------|-------|-------|--------------|
+| `feat` | ✨ | Tính năng mới | Thêm chức năng mới |
+| `fix` | 🐛 | Sửa lỗi | Fix bug |
+| `docs` | 📚 | Tài liệu | Cập nhật README, comments |
+| `style` | 💄 | Format/UI | CSS, format code (không đổi logic) |
+| `refactor` | ♻️ | Tái cấu trúc | Đổi code nhưng không đổi behavior |
+| `perf` | ⚡ | Hiệu suất | Tối ưu performance |
+| `chore` | 🔧 | Bảo trì | Dependencies, config |
+
+**Ví dụ output sau khi hoàn thành task:**
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║  ✅ HOÀN THÀNH                                               ║
+╠══════════════════════════════════════════════════════════════╣
+║                                                              ║
+║  📋 Commit lên GitHub:                                       ║
+║                                                              ║
+║  git commit -m "fix(content): resolve overlay z-index issue" ║
+║                                                              ║
+║  Hoặc với emoji:                                             ║
+║  git commit -m "🐛 fix(content): resolve overlay z-index"    ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+**Quy tắc viết subject:**
+- ≤ 50 ký tự
+- Viết thường, không có dấu chấm cuối
+- Dùng động từ nguyên mẫu: `add`, `fix`, `update`, `remove`
+- Mô tả **what**, không phải **how**
+
+---
+
+### ✅ 8. CHECKLIST TRƯỚC KHI HOÀN THÀNH
 
 **Mỗi response phải tự verify:**
 ```
@@ -191,6 +229,7 @@ PHÂN TÍCH ROOT CAUSE (nguyên nhân gốc)
 □ Không xóa/sửa gì ngoài phạm vi yêu cầu?
 □ UI đẹp, dùng SVG thay emoji?
 □ Trả lời bằng tiếng Việt?
+□ ĐÃ ĐỀ XUẤT COMMIT MESSAGE? ← BẮT BUỘC
 ```
 
 ---
@@ -204,7 +243,8 @@ PHÂN TÍCH ROOT CAUSE (nguyên nhân gốc)
 | 3 | **DIFF NHỎ** | Chia nhỏ, verify từng phần |
 | 4 | **KHÔNG XÓA** | Chỉ sửa khi được yêu cầu |
 | 5 | **UI ĐẸP** | SVG path, design chuẩn |
-| 6 | **TIẾNG VIỆT** | Luôn luôn giao tiếp tiếng Việt |
+| 6 | **TIẾNG VIỆT** | Luôn giao tiếp tiếng Việt |
+| 7 | **COMMIT** | **LUÔN** đề xuất commit message khi xong |
 
 ---
 
@@ -213,3 +253,4 @@ PHÂN TÍCH ROOT CAUSE (nguyên nhân gốc)
 *   **Modification:** When modifying `content.js`, be aware it is a large file (~4400 lines). Use `search_file_content` to locate specific functions before reading/editing to save context.
 *   **UI/UX:** The UI is built using dynamic DOM element creation in `content.js`. Search for `showGeminiResponseModal` or `showResultsUI` to modify the visual interface.
 *   **AI Config:** Gemini API Key and Model selection are stored in `localStorage` (`scraper_gemini_config`).
+*   **Commits:** Follow [Conventional Commits](https://www.conventionalcommits.org/) - Luôn đề xuất commit message phù hợp sau mỗi thay đổi thành công.
