@@ -26,12 +26,6 @@ async function runScraper(tab) {
     return;
   }
 
-  // Kiểm tra domain
-  if (!tab.url.includes("onluyen.vn")) {
-    console.log("Extension chỉ hoạt động trên OnLuyen.vn");
-    return;
-  }
-
   // Tiêm content script với error handling
   try {
     await chrome.scripting.executeScript({

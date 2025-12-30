@@ -20,6 +20,26 @@ if (window.hasRunScraper) {
       setTimeout(() => toast.remove(), 400);
     }, 3000);
   }
+} else if (!window.location.hostname.endsWith('onluyen.vn')) {
+  // Kiểm tra domain: Nếu không phải onluyen.vn thì cảnh báo và thoát
+  const toast = document.createElement('div');
+  Object.assign(toast.style, {
+    position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: '100000',
+    background: 'linear-gradient(135deg, #ef4444, #b91c1c)', color: 'white',
+    padding: '16px 28px', borderRadius: '16px', boxShadow: '0 20px 50px rgba(0,0,0,0.3)',
+    fontFamily: "'Inter', sans-serif", fontWeight: '700', fontSize: '15px',
+    display: 'flex', alignItems: 'center', gap: '12px', border: '1px solid rgba(255,255,255,0.2)'
+  });
+  toast.innerHTML = `
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Trang web không hỗ trợ! Tiện ích chỉ chạy trên OnLuyen.vn
+  `;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.5s ease';
+    setTimeout(() => toast.remove(), 500);
+  }, 4000);
 } else {
   window.hasRunScraper = true;
 
