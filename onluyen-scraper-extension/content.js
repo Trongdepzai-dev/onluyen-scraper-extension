@@ -148,7 +148,7 @@ if (window.hasRunScraper) {
       copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
       download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
       clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-      search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+      search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
       refreshCw: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 3.5L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-3.5L3 16"/><path d="M3 21v-5h5"/></svg>',
       loader: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>',
       sparkles: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>',
@@ -167,9 +167,83 @@ if (window.hasRunScraper) {
       pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
       circle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>',
       link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
-      messageSquare: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
+      messageSquare: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+      sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+      moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
     };
 
+    // CSS Variables for Theming - ENHANCED
+    const THEME_STYLES = `
+      :root {
+        /* LIGHT MODE PALETTE */
+        --ol-bg: #ffffff;
+        --ol-surface: #f9fafb;
+        --ol-border: #e5e7eb;
+        
+        --ol-text: #111827;
+        --ol-text-sub: #6b7280;
+        
+        --ol-brand: #4f46e5;       /* Indigo 600 */
+        --ol-brand-bg: #eef2ff;    /* Indigo 50 */
+        
+        --ol-success: #059669;     /* Emerald 600 */
+        --ol-success-bg: #ecfdf5;  /* Emerald 50 */
+        
+        --ol-hover: #f3f4f6;
+        --ol-shadow: rgba(0, 0, 0, 0.1);
+        --ol-overlay-bg: rgba(255, 255, 255, 0.8); /* Light Overlay */
+      }
+
+      .scraper-dark {
+        /* DARK MODE PALETTE */
+        --ol-bg: #0f172a;          /* Slate 900 */
+        --ol-surface: #1e293b;     /* Slate 800 */
+        --ol-border: #334155;      /* Slate 700 */
+        
+        --ol-text: #f1f5f9;        /* Slate 100 */
+        --ol-text-sub: #94a3b8;    /* Slate 400 */
+        
+        --ol-brand: #818cf8;       /* Indigo 400 */
+        --ol-brand-bg: #312e81;    /* Indigo 900 */
+        
+        --ol-success: #34d399;     /* Emerald 400 */
+        --ol-success-bg: #064e3b;  /* Emerald 900 */
+        
+        --ol-hover: #334151;
+        --ol-shadow: rgba(0, 0, 0, 0.5);
+        --ol-overlay-bg: rgba(15, 23, 42, 0.85); /* Dark Overlay */
+      }
+
+      /* UTILITY CLASSES */
+      .ol-bg { background-color: var(--ol-bg) !important; transition: all 0.3s; }
+      .ol-surface { background-color: var(--ol-surface) !important; transition: all 0.3s; }
+      .ol-border { border-color: var(--ol-border) !important; transition: all 0.3s; }
+      .ol-overlay { background-color: var(--ol-overlay-bg) !important; transition: all 0.3s; backdrop-filter: blur(8px); }
+      
+      .ol-text { color: var(--ol-text) !important; transition: all 0.3s; }
+      .ol-text-sub { color: var(--ol-text-sub) !important; transition: all 0.3s; }
+      
+      /* Semantic Colors (Text & Icon) */
+      .ol-brand-text { color: var(--ol-brand) !important; transition: all 0.3s; }
+      .ol-success-text { color: var(--ol-success) !important; transition: all 0.3s; }
+      
+      /* Semantic Backgrounds */
+      .ol-brand-bg { background-color: var(--ol-brand-bg) !important; transition: all 0.3s; }
+      .ol-success-bg { background-color: var(--ol-success-bg) !important; transition: all 0.3s; }
+      
+      .ol-btn-hover:hover { background-color: var(--ol-hover) !important; }
+      
+      /* SVG Fill Fix - Force currentColor inheritance with transition */
+      .ol-brand-text svg, .ol-success-text svg, button svg { 
+        stroke: currentColor !important; 
+        transition: stroke 0.3s ease;
+      }
+    `;
+
+    // Inject Styles
+    const styleEl = document.createElement('style');
+    styleEl.textContent = THEME_STYLES;
+    document.head.appendChild(styleEl);
     const getIcon = (name, className = '') => {
       const svg = ICONS[name] || '';
       if (!svg) return '';
@@ -1368,59 +1442,57 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     function showModeSelector() {
       return new Promise((resolve) => {
         const overlay = document.createElement('div');
+        overlay.id = 'modeSelectorOverlay';
+        overlay.className = 'ol-overlay'; // Use Theme Class for background
+        
+        // Init Theme from storage
+        const currentTheme = localStorage.getItem('ol_theme') || 'light';
+        if (currentTheme === 'dark') overlay.classList.add('scraper-dark');
+
         Object.assign(overlay.style, {
-          position: 'fixed',
-          top: '0',
-          left: '0',
-          right: '0',
-          bottom: '0',
-          background: 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(8px)',
-          zIndex: '99999',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontFamily: "'Inter', sans-serif"
+          position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+          // background & backdrop-filter handled by .ol-overlay class
+          zIndex: '99999', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Inter', sans-serif",
+          animation: 'scraper-fade-in 0.3s ease'
         });
 
         overlay.innerHTML = `
-          <div style="
-            background: #ffffff;
-            border-radius: 32px;
-            padding: 48px;
-            max-width: 700px;
-            width: 90%;
-            box-shadow: var(--scraper-shadow-xl);
-            border: 1px solid #e5e7eb;
+          <div class="ol-bg ol-border" style="
+            border-radius: 32px; padding: 48px; max-width: 700px; width: 90%;
+            box-shadow: var(--scraper-shadow-xl); position: relative;
+            border-width: 1px; border-style: solid;
           ">
+            <!-- Theme Toggle -->
+            <button id="menuThemeBtn" class="ol-text-sub ol-btn-hover" style="
+              position: absolute; top: 24px; right: 24px;
+              background: transparent; border: none; cursor: pointer;
+              width: 36px; height: 36px; border-radius: 8px;
+              display: flex; align-items: center; justify-content: center;
+              transition: all 0.2s;
+            ">
+              ${currentTheme === 'dark' ? getIcon('sun', 'scraper-icon-md') : getIcon('moon', 'scraper-icon-md')}
+            </button>
+
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 40px;">
-              <div style="
-                color: #6366f1; margin: 0 auto 20px auto; 
-                width: 72px; height: 72px; background: #eef2ff;
+              <div class="ol-brand-bg ol-brand-text" style="
+                margin: 0 auto 20px auto; 
+                width: 72px; height: 72px;
                 border-radius: 24px; display: flex; align-items: center; justify-content: center;
               ">
                 ${getIcon('rocket', 'scraper-icon-lg')}
               </div>
-              <h1 style="
-                font-size: 32px;
-                font-weight: 800;
-                color: #111827;
-                margin: 0 0 12px 0;
-                letter-spacing: -0.02em;
+              <h1 class="ol-text" style="
+                font-size: 32px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.02em;
               ">Auto Scraper v${chrome.runtime.getManifest().version}</h1>
-              <p style="color: #6b7280; font-size: 16px; margin: 0;">
+              <p class="ol-text-sub" style="font-size: 16px; margin: 0;">
                 Công cụ hỗ trợ học tập thông minh
               </p>
-              <a href="https://github.com/Trongdepzai-dev/" target="_blank" style="
-                display: inline-block;
-                margin-top: 12px;
-                color: #9ca3af;
-                font-size: 13px;
-                text-decoration: none;
-                transition: color 0.2s;
-                font-weight: 500;
-              " onmouseover="this.style.color='#6366f1'" onmouseout="this.style.color='#9ca3af'">
+              <a href="https://github.com/Trongdepzai-dev/" target="_blank" class="ol-text-sub" style="
+                display: inline-block; margin-top: 12px;
+                font-size: 13px; text-decoration: none; transition: color 0.2s; font-weight: 500;
+              ">
                 Made by B.Trọng
               </a>
             </div>
@@ -1429,78 +1501,64 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px;">
               
               <!-- Homework Mode -->
-              <div id="homeworkModeBtn" class="scraper-mode-select-btn" style="
-                background: #ffffff;
-                border: 2px solid #e5e7eb;
-                border-radius: 24px;
-                padding: 32px 24px;
-                text-align: center;
-                transition: all 0.2s ease;
+              <div id="homeworkModeBtn" class="scraper-mode-select-btn ol-surface ol-border" style="
+                border-width: 2px; border-style: solid;
+                border-radius: 24px; padding: 32px 24px; text-align: center;
+                transition: all 0.2s ease; cursor: pointer;
               ">
-                <div style="
-                  color: #10b981; margin: 0 auto 20px auto;
-                  width: 64px; height: 64px; background: #ecfdf5;
+                <div class="ol-success-bg ol-success-text" style="
+                  margin: 0 auto 20px auto;
+                  width: 64px; height: 64px;
                   border-radius: 20px; display: flex; align-items: center; justify-content: center;
                 ">
                   ${getIcon('book', 'scraper-icon-lg')}
                 </div>
-                <div style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">
+                <div class="ol-text" style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">
                   BÀI TẬP
                 </div>
-                <div style="font-size: 13px; font-weight: 600; color: #10b981; margin-bottom: 16px; letter-spacing: 0.05em;">
+                <div class="ol-success-text" style="font-size: 13px; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.05em;">
                   HOMEWORK MODE
                 </div>
-                <div style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                   Click qua từng câu<br>
                   Có nút "Trả lời", "Bỏ qua"
                 </div>
-                <div style="
-                  background: #f3f4f6;
-                  padding: 8px 16px;
-                  border-radius: 9999px;
-                  display: inline-block;
-                  color: #4b5563;
-                  font-size: 12px;
-                  font-weight: 600;
+                <div class="ol-btn-hover ol-text-sub" style="
+                  background: var(--ol-border); /* Badge bg */
+                  padding: 8px 16px; border-radius: 9999px;
+                  display: inline-block; font-size: 12px; font-weight: 600;
                 ">
                   ${getIcon('check', 'scraper-icon-xs')} OnLuyen.vn
                 </div>
               </div>
               
               <!-- Exam Mode -->
-              <div id="examModeBtn" class="scraper-mode-select-btn" style="
-                background: #ffffff;
-                border: 2px solid #e5e7eb;
-                border-radius: 24px;
-                padding: 32px 24px;
-                text-align: center;
-                transition: all 0.2s ease;
+              <div id="examModeBtn" class="scraper-mode-select-btn ol-surface ol-border" style="
+                border-width: 2px; border-style: solid;
+                border-radius: 24px; padding: 32px 24px; text-align: center;
+                transition: all 0.2s ease; cursor: pointer;
               ">
-                <div style="
-                  color: #6366f1; margin: 0 auto 20px auto;
-                  width: 64px; height: 64px; background: #eef2ff;
+                <div class="ol-brand-bg ol-brand-text" style="
+                  margin: 0 auto 20px auto;
+                  width: 64px; height: 64px;
                   border-radius: 20px; display: flex; align-items: center; justify-content: center;
                 ">
                   ${getIcon('fileText', 'scraper-icon-lg')}
                 </div>
-                <div style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">
+                <div class="ol-text" style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">
                   BÀI THI
                 </div>
-                <div style="font-size: 13px; font-weight: 600; color: #6366f1; margin-bottom: 16px; letter-spacing: 0.05em;">
+                <div class="ol-brand-text" style="font-size: 13px; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.05em;">
                   EXAM MODE
                 </div>
-                <div style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                   Tất cả câu trên 1 trang<br>
                   Không cần click
                 </div>
-                <div style="
-                  background: #f3f4f6;
-                  padding: 8px 16px;
-                  border-radius: 9999px;
-                  display: inline-block;
-                  color: #4b5563;
-                  font-size: 12px;
-                  font-weight: 600;
+                <div class="ol-btn-hover ol-text-sub" style="
+                  background: var(--ol-border); /* Badge bg */
+                  padding: 8px 16px; border-radius: 9999px;
+                  display: inline-block; font-size: 12px; font-weight: 600;
                 ">
                   ${getIcon('check', 'scraper-icon-xs')} Bài kiểm tra
                 </div>
@@ -1509,39 +1567,25 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             
             <!-- Footer Actions -->
             <div style="text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center;">
-              <button id="checkUpdateBtn" style="
-                background: #ffffff;
-                border: 1px solid #e5e7eb;
-                color: #6366f1;
+              <button id="checkUpdateBtn" class="ol-text-sub ol-btn-hover" style="
+                background: transparent;
+                border: 1px solid var(--ol-border);
                 padding: 10px 20px;
                 border-radius: 12px;
                 font-size: 13px;
                 cursor: pointer;
+                display: flex; align-items: center; gap: 8px;
                 transition: all 0.2s;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                font-weight: 600;
-                box-shadow: var(--scraper-shadow-sm);
-              " onmouseover="this.style.background='#f9fafb';this.style.borderColor='#d1d5db'" onmouseout="this.style.background='white';this.style.borderColor='#e5e7eb'">
-                ${getIcon('refreshCw', 'scraper-icon-sm')} Kiểm tra cập nhật
-              </button>
-
-              <button id="cancelModeBtn" style="
-                background: transparent;
-                border: none;
-                color: #9ca3af;
-                padding: 8px 16px;
-                font-size: 14px;
-                cursor: pointer;
-                transition: all 0.2s;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                margin: 0 auto;
                 font-weight: 500;
-              " onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">
+              ">
+                ${getIcon('refreshCw', 'scraper-icon-xs')} Kiểm tra cập nhật
+              </button>
+              
+              <button id="cancelModeBtn" class="ol-text-sub" style="
+                background: transparent; border: none;
+                font-size: 13px; cursor: pointer;
+                transition: color 0.2s;
+              " onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='inherit'">
                 Hủy bỏ
               </button>
             </div>
@@ -1549,6 +1593,15 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         `;
 
         document.body.appendChild(overlay);
+
+        // Theme Toggle Handler
+        document.getElementById('menuThemeBtn').onclick = () => {
+            const isDark = overlay.classList.toggle('scraper-dark');
+            localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
+            document.getElementById('menuThemeBtn').innerHTML = isDark 
+                ? getIcon('sun', 'scraper-icon-md') 
+                : getIcon('moon', 'scraper-icon-md');
+        };
 
         // Event handlers
         document.getElementById('homeworkModeBtn').onclick = () => {
@@ -1571,20 +1624,21 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           resolve(null);
         };
 
-        // Hover effects
+        // Hover effects - Use CSS Variables
         const btns = overlay.querySelectorAll('.scraper-mode-select-btn');
         btns.forEach(btn => {
           btn.onmouseenter = () => {
             btn.style.transform = 'translateY(-4px)';
             btn.style.boxShadow = 'var(--scraper-shadow-lg)';
+            // Use semantic variables for border
             btn.style.borderColor = btn.id === 'homeworkModeBtn' 
-              ? '#10b981' 
-              : '#6366f1';
+              ? 'var(--ol-success)' 
+              : 'var(--ol-brand)';
           };
           btn.onmouseleave = () => {
             btn.style.transform = 'translateY(0)';
             btn.style.boxShadow = 'none';
-            btn.style.borderColor = '#e5e7eb';
+            btn.style.borderColor = ''; // Revert to CSS class border
           };
         });
       });
@@ -1598,7 +1652,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     function createStatusPanel(mode) {
       statusPanel = document.createElement('div');
-      statusPanel.className = 'scraper-panel';
+      statusPanel.className = 'scraper-panel ol-bg ol-border';
+      
+      // Theme Check
+      if (localStorage.getItem('ol_theme') === 'dark') {
+        statusPanel.classList.add('scraper-dark');
+      }
+
       let isDragging = false;
       let dragOffset = { x: 0, y: 0 };
       let isMinimized = false;
@@ -1613,7 +1673,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         top: '24px',
         right: '24px',
         zIndex: '10000',
-        background: '#ffffff',
+        // background: '#ffffff', -> Handled by CSS class ol-bg
         borderRadius: '24px',
         padding: '0',
         boxShadow: 'var(--scraper-shadow-xl)',
@@ -1622,19 +1682,22 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         backdropFilter: 'blur(12px)',
-        border: '1px solid #e5e7eb'
+        borderWidth: '1px',
+        borderStyle: 'solid'
+        // border: '1px solid #e5e7eb' -> Handled by CSS class ol-border
       });
 
       statusPanel.innerHTML = `
         <!-- Header -->
-        <div id="panelHeader" style="
-          background: #ffffff;
+        <div id="panelHeader" class="ol-bg ol-border" style="
           padding: 16px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           cursor: move;
-          border-bottom: 1px solid #f3f4f6;
+          user-select: none;
+          border-bottom-width: 1px;
+          border-bottom-style: solid;
         ">
           <div style="display: flex; align-items: center; gap: 12px;">
             <div style="
@@ -1648,10 +1711,9 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             " id="statusIcon">${modeIcon}</div>
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
-                <div id="statusTitle" style="
+                <div id="statusTitle" class="ol-text" style="
                   font-weight: 700;
                   font-size: 16px;
-                  color: #111827;
                 ">Đang Khởi Tạo...</div>
               </div>
               <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
@@ -1664,28 +1726,36 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                   color: ${modeColor};
                   letter-spacing: 0.05em;
                 ">${modeText}</span>
-                <span id="statusSubtitle" style="
+                <span id="statusSubtitle" class="ol-text-sub" style="
                   font-size: 12px;
-                  color: #6b7280;
                 ">Chuẩn bị...</span>
               </div>
             </div>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button id="feedbackBtn" class="scraper-btn" style="
+            <button id="themeBtn" class="scraper-btn ol-border ol-text-sub ol-btn-hover" style="
               width: 32px; height: 32px;
               background: transparent;
-              border: 1px solid #f3f4f6;
-              color: #6b7280;
+              border-width: 1px; border-style: solid;
+              border-radius: 8px;
+              padding: 0;
+              cursor: pointer;
+              display: flex; align-items: center; justify-content: center;
+            " title="Giao diện Sáng/Tối">
+                ${statusPanel.classList.contains('scraper-dark') ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
+            </button>
+            <button id="feedbackBtn" class="scraper-btn ol-border ol-text-sub ol-btn-hover" style="
+              width: 32px; height: 32px;
+              background: transparent;
+              border-width: 1px; border-style: solid;
               border-radius: 8px;
               padding: 0;
               cursor: pointer;
             " title="Góp ý">${getIcon('messageSquare', 'scraper-icon-sm')}</button>
-            <button id="minimizeBtn" class="scraper-btn" style="
+            <button id="minimizeBtn" class="scraper-btn ol-border ol-text-sub ol-btn-hover" style="
               width: 32px; height: 32px;
               background: transparent;
-              border: 1px solid #f3f4f6;
-              color: #6b7280;
+              border-width: 1px; border-style: solid;
               border-radius: 8px;
               padding: 0;
             " title="Thu nhỏ">${getIcon('minus', 'scraper-icon-sm')}</button>
@@ -1711,19 +1781,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 letter-spacing: 0.05em;
               ">ĐANG HOẠT ĐỘNG</span>
             </div>
-            <span style="
-              color: #6b7280; 
+            <span class="ol-surface ol-text-sub" style="
               font-size: 12px; 
               font-family: 'JetBrains Mono', monospace;
-              background: #f3f4f6;
               padding: 2px 8px;
               border-radius: 6px;
             " id="elapsedTime">00:00</span>
           </div>
           
           <!-- Progress Bar -->
-          <div style="
-            background: #f3f4f6;
+          <div class="ol-surface" style="
             border-radius: 9999px;
             height: 6px;
             overflow: hidden;
@@ -1744,44 +1811,42 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             gap: 12px;
             margin-bottom: 20px;
           ">
-            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
-              <div id="questionNum" class="scraper-stat-number" style="
-                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
+            <div class="scraper-stat-card ol-surface ol-border" style="padding: 12px; text-align: center; border-width:1px; border-style:solid; border-radius:12px;">
+              <div id="questionNum" class="scraper-stat-number ol-text" style="
+                font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">Câu hỏi</div>
+              <div class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Câu hỏi</div>
             </div>
             
-            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
-              <div id="imageNum" class="scraper-stat-number" style="
-                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
+            <div class="scraper-stat-card ol-surface ol-border" style="padding: 12px; text-align: center; border-width:1px; border-style:solid; border-radius:12px;">
+              <div id="imageNum" class="scraper-stat-number ol-text" style="
+                font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">Hình ảnh</div>
+              <div class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">Hình ảnh</div>
             </div>
             
-            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
-              <div id="retryNum" class="scraper-stat-number" style="
-                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
+            <div class="scraper-stat-card ol-surface ol-border" style="padding: 12px; text-align: center; border-width:1px; border-style:solid; border-radius:12px;">
+              <div id="retryNum" class="scraper-stat-number ol-text" style="
+                font-size: 24px; font-weight: 800; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">${mode === 'homework' ? 'Retry' : 'Skip'}</div>
+              <div class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase;">${mode === 'homework' ? 'Retry' : 'Skip'}</div>
             </div>
           </div>
           
           <!-- Current Question -->
-          <div id="currentQuestionCard" style="
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+          <div id="currentQuestionCard" class="ol-surface ol-border" style="
+            border-width: 1px; border-style: solid;
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
           ">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
               <span style="color: #6366f1;">${getIcon('fileText', 'scraper-icon-sm')}</span>
-              <span style="color: #4b5563; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+              <span class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase;">
                 TIẾN TRÌNH XỬ LÝ
               </span>
             </div>
-            <div id="currentQText" style="
-              color: #111827;
+            <div id="currentQText" class="ol-text" style="
               font-size: 13px;
               font-weight: 500;
               line-height: 1.5;
@@ -1790,12 +1855,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               -webkit-box-orient: vertical;
               overflow: hidden;
             ">Đang chờ...</div>
-            <div id="waitingBtn" style="
-              color: #6b7280;
+            <div id="waitingBtn" class="ol-text-sub" style="
               font-size: 12px;
               margin-top: 8px;
               display: flex; align-items: center; gap: 6px;
-            "></div>
+            ">
+              <span>Đang chờ dữ liệu...</span>
+            </div>
           </div>
           
           <!-- Action Buttons -->
@@ -1868,6 +1934,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         body: document.getElementById('panelBody'),
         feedbackBtn: document.getElementById('feedbackBtn'),
         minimizeBtn: document.getElementById('minimizeBtn'),
+        themeBtn: document.getElementById('themeBtn'), // Added
         statusIcon: document.getElementById('statusIcon'),
         statusTitle: document.getElementById('statusTitle'),
         statusSubtitle: document.getElementById('statusSubtitle'),
@@ -1883,6 +1950,17 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         liveStatus: document.getElementById('liveStatus'),
         elapsedTime: document.getElementById('elapsedTime')
       };
+
+      // Theme Toggle Handler
+      if (panelElements.themeBtn) {
+        panelElements.themeBtn.onclick = () => {
+          const isDark = statusPanel.classList.toggle('scraper-dark');
+          localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
+          panelElements.themeBtn.innerHTML = isDark 
+            ? getIcon('sun', 'scraper-icon-sm') 
+            : getIcon('moon', 'scraper-icon-sm');
+        };
+      }
 
       // Feedback button handler
       if (panelElements.feedbackBtn) {
@@ -3852,12 +3930,15 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         let isImageMenuOpen = false;
 
         const overlay = document.createElement('div');
+        overlay.className = 'ol-overlay';
+        if (localStorage.getItem('ol_theme') === 'dark') overlay.classList.add('scraper-dark');
+
         Object.assign(overlay.style, {
             position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-            background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(20px) saturate(180%)',
+            // background handled by .ol-overlay class
             zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
-            opacity: '0', transition: 'opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+            opacity: '0', transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
         });
 
 
@@ -3866,52 +3947,51 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             const formatMessage = (text) => {
                 let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 
-                // Better Headers
-                safeText = safeText.replace(/^# (.*$)/gm, '<h1 style="color: #fff; font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid #6366f1; padding-bottom: 8px;">$1</h1>');
-                safeText = safeText.replace(/^## (.*$)/gm, '<h2 style="color: #f1f5f9; font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
-                safeText = safeText.replace(/^### (.*$)/gm, '<h3 style="color: #e2e8f0; font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
+                // Better Headers - Themed
+                safeText = safeText.replace(/^# (.*$)/gm, '<h1 class="ol-text" style="font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid var(--ol-brand); padding-bottom: 8px;">$1</h1>');
+                safeText = safeText.replace(/^## (.*$)/gm, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
+                safeText = safeText.replace(/^### (.*$)/gm, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
 
                 // Horizontal Rule
-                safeText = safeText.replace(/^---$/gm, '<hr style="border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); margin: 24px 0;">');
-                safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: rgba(99, 102, 241, 0.3); margin: 20px 0;">');
+                safeText = safeText.replace(/^---$/gm, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
+                safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: var(--ol-brand); opacity: 0.3; margin: 20px 0;">');
 
                 // Smart Badge: Confidence Score detection
             safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
                 const s = parseInt(score);
-                let color = '#ef4444'; // Red
+                let colorVar = '--ol-text-sub';
                 let icon = 'alertTriangle';
-                if (s >= 85) { color = '#10b981'; icon = 'check'; } // Green
-                else if (s >= 70) { color = '#3b82f6'; icon = 'info'; } // Blue
-                else if (s >= 50) { color = '#f59e0b'; icon = 'alertTriangle'; } // Orange
+                if (s >= 85) { colorVar = '--ol-success'; icon = 'check'; }
+                else if (s >= 70) { colorVar = '--ol-brand'; icon = 'info'; }
                 
-                return `<div style="display: inline-flex; align-items: center; gap: 8px; background: ${color}20; color: ${color}; padding: 6px 12px; border-radius: 10px; border: 1px solid ${color}40; font-weight: 700; font-size: 13px; margin: 10px 0;">
+                return `<div style="display: inline-flex; align-items: center; gap: 8px; background: var(${colorVar}); color: white; padding: 6px 12px; border-radius: 10px; font-weight: 700; font-size: 13px; margin: 10px 0;">
                     ${getIcon(icon, 'scraper-icon-xs')} ĐỘ TIN CẬY: ${s}%
                 </div>`;
             });
 
             // Smart Badge: Subject/Category detection
             safeText = safeText.replace(/(?:🎯|📚)?\s*(LOẠI CÂU HỎI|LĨNH VỰC|⚡ ĐỘ KHÓ):\s*([^\n]+)/gi, (match, label, value) => {
-                return `<div style="display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); color: #94a3b8; padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); font-size: 11px; font-weight: 600; text-transform: uppercase; margin: 4px 2px;">
-                    <span style="color: #6366f1;">${label}:</span> ${value}
+                return `<div class="ol-surface ol-border ol-text-sub" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border-width: 1px; border-style: solid; font-size: 11px; font-weight: 600; text-transform: uppercase; margin: 4px 2px;">
+                    <span class="ol-brand-text">${label}:</span> ${value}
                 </div>`;
             });
 
-            // Code blocks with syntax highlight look
+            // Code blocks - Darker in Dark Mode, Surface in Light Mode
             safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
-                return `<div style="background: #020617; border-radius: 12px; margin: 16px 0; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                    <div style="background: rgba(255,255,255,0.03); padding: 8px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #94a3b8; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
+                return `<div class="ol-surface ol-border" style="border-radius: 12px; margin: 16px 0; overflow: hidden; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">
+                    <div class="ol-bg ol-border" style="padding: 8px 16px; border-bottom-width: 1px; border-bottom-style: solid; display: flex; justify-content: space-between; align-items: center;">
+                        <span class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
                         <div style="display: flex; gap: 4px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f;"></div></div>
                     </div>
-                    <pre style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; color: #e2e8f0;">${code.trim()}</pre>
+                    <pre class="ol-text" style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; background: transparent;">${code.trim()}</pre>
                 </div>`;
             });
 
-            safeText = safeText.replace(/`([^`]+)`/g, '<code style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em; border: 1px solid rgba(99, 102, 241, 0.2);">$1</code>');
-            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong style="color: #f8fafc; font-weight: 700;">$1</strong>');
+            safeText = safeText.replace(/`([^`]+)`/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">$1</code>');
+            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong class="ol-text" style="font-weight: 700;">$1</strong>');
             
             // Lists
-            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span style="color: #6366f1;">•</span><span>$1</span></div>');
+            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span class="ol-brand-text">•</span><span class="ol-text">$1</span></div>');
 
             return safeText.replace(/\n/g, '<br>');
         };
@@ -4122,72 +4202,68 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                     -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
                 }
             </style>
-            <div class="glass-panel" style="
+            <div class="glass-panel ol-bg" style="
                 border-radius: 32px; width: 95%; max-width: 1000px; height: 85vh;
                 display: flex; flex-direction: column;
-                box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.8); overflow: hidden;
+                box-shadow: 0 40px 80px -20px var(--ol-shadow); overflow: hidden;
                 animation: modal-reveal 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             ">
                 <!-- Header -->
-                <div style="
-                    padding: 24px 32px; border-bottom: 1px solid rgba(255,255,255,0.06);
+                <div class="ol-bg ol-border" style="
+                    padding: 24px 32px; border-bottom-width: 1px; border-bottom-style: solid;
                     display: flex; justify-content: space-between; align-items: center;
-                    background: rgba(15, 23, 42, 0.5);
                 ">
                     <div style="display: flex; align-items: center; gap: 20px;">
-                        <div style="
-                            width: 50px; height: 50px; background: linear-gradient(135deg, #6366f1, #8b5cf6, #d946ef);
+                        <div class="ol-brand-bg ol-brand-text" style="
+                            width: 50px; height: 50px;
                             border-radius: 16px; display: flex; align-items: center; justify-content: center;
-                            color: white; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
                             animation: scraper-glow 3s infinite;
                         ">
                             ${getIcon('sparkles', 'scraper-icon-md')}
                         </div>
                         <div>
-                            <h3 style="margin: 0; color: white; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; font-family: 'Plus Jakarta Sans', sans-serif;">Gemini AI Assistant</h3>
+                            <h3 class="ol-text" style="margin: 0; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; font-family: 'Plus Jakarta Sans', sans-serif;">Gemini AI Assistant</h3>
                             <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
                                 <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 10px #10b981;"></div>
-                                <span id="currentModelName" style="font-size: 12px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <span id="currentModelName" class="ol-text-sub" style="font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
                                     ${GEMINI_MODELS.find(m => m.id === getGeminiConfig().model)?.name || 'Unknown Model'}
                                 </span>
                             </div>
                         </div>
                     </div>
                     <div style="display: flex; gap: 12px;">
-                        <button id="geminiSettingsBtn" style="
-                            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1;
+                        <button id="geminiSettingsBtn" class="ol-surface ol-border ol-text-sub ol-btn-hover" style="
+                            border-width: 1px; border-style: solid;
                             padding: 10px 18px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
                             font-size: 14px; transition: all 0.3s; font-weight: 600;
-                        " onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.transform='translateY(-1px)'" 
-                           onmouseout="this.style.background='rgba(255,255,255,0.03)';this.style.transform='translateY(0)'">
+                        ">
                             ${getIcon('settings', 'scraper-icon-sm')} Cấu hình
                         </button>
-                        <button id="closeGeminiModal" style="
-                            background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.1); color: #f87171;
+                        <button id="closeGeminiModal" class="ol-surface ol-border" style="
+                            border-width: 1px; border-style: solid; color: #f87171;
                             width: 44px; height: 44px; border-radius: 14px; cursor: pointer;
                             display: flex; align-items: center; justify-content: center; transition: all 0.3s;
-                        " onmouseover="this.style.background='rgba(239, 68, 68, 0.2)';this.style.transform='rotate(90deg)'" 
-                           onmouseout="this.style.background='rgba(239, 68, 68, 0.05)';this.style.transform='rotate(0)'">
+                        " onmouseover="this.style.background='rgba(239, 68, 68, 0.1)';this.style.transform='rotate(90deg)'" 
+                           onmouseout="this.style.background='transparent';this.style.transform='rotate(0)'">
                             ${getIcon('x')}
                         </button>
                     </div>
                 </div>
                 
                 <!-- Chat Area -->
-                <div id="geminiContentArea" class="chat-scrollbar" style="
-                    flex: 1; overflow-y: auto; padding: 40px; background: transparent;
+                <div id="geminiContentArea" class="chat-scrollbar ol-surface" style="
+                    flex: 1; overflow-y: auto; padding: 40px; 
                     display: flex; flex-direction: column; gap: 10px;
-                    background-image: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.03) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(217, 70, 239, 0.03) 0px, transparent 50%);
                 ">
                     <div style="text-align: center; margin-bottom: 40px;">
-                        <span style="background: rgba(255,255,255,0.03); padding: 6px 16px; border-radius: 20px; font-size: 11px; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.05);">Phiên làm việc mới</span>
+                        <span class="ol-bg ol-border ol-text-sub" style="padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-width: 1px; border-style: solid;">Phiên làm việc mới</span>
                     </div>
                 </div>
 
                 <!-- Input Area -->
-                <div style="
-                    padding: 24px 40px; border-top: 1px solid rgba(255,255,255,0.06);
-                    background: rgba(15, 23, 42, 0.4); display: flex; flex-direction: column; gap: 12px;
+                <div class="ol-bg ol-border" style="
+                    padding: 24px 40px; border-top-width: 1px; border-top-style: solid;
+                    display: flex; flex-direction: column; gap: 12px;
                 ">
                     <!-- Image Preview Strip -->
                     <div id="imagePreviewContainer" class="chat-scrollbar" style="
@@ -4195,28 +4271,25 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                         ${allImages.length === 0 ? 'display: none;' : ''}
                     "></div>
 
-                    <div style="
-                        background: #0f172a; border: 1.5px solid rgba(255,255,255,0.08);
+                    <div class="ol-surface ol-border" style="
                         border-radius: 24px; padding: 10px; display: flex; gap: 12px;
-                        transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-                        align-items: flex-end;
+                        transition: all 0.3s ease; box-shadow: 0 4px 20px var(--ol-shadow);
+                        align-items: flex-end; border-width: 1.5px; border-style: solid;
                     " id="inputContainer">
                         
                         <!-- Image Control Button -->
                         ${allImages.length > 0 ? `
                         <div style="position: relative;">
-                            <button id="imageModeBtn" style="
-                                width: 44px; height: 44px; background: transparent; color: #6366f1;
-                                border: none; border-radius: 14px; cursor: pointer;
+                            <button id="imageModeBtn" class="ol-brand-bg ol-brand-text" style="
+                                width: 44px; height: 44px; border: none; border-radius: 14px; cursor: pointer;
                                 display: flex; align-items: center; justify-content: center; transition: all 0.2s;
-                                background: rgba(99, 102, 241, 0.1);
                             " title="Tùy chọn ảnh">
                                 ${getIcon('image')}
                             </button>
-                            <div id="imageModeMenu" style="
+                            <div id="imageModeMenu" class="ol-surface ol-border" style="
                                 position: absolute; bottom: 55px; left: 0; width: 180px;
-                                background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-                                border-radius: 16px; padding: 6px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+                                border-width: 1px; border-style: solid;
+                                border-radius: 16px; padding: 6px; box-shadow: 0 10px 30px var(--ol-shadow);
                                 display: none; flex-direction: column; gap: 2px; z-index: 100;
                             ">
                                 <div class="mode-item" data-mode="all" style="padding: 10px; border-radius: 8px; cursor: pointer; color: #e2e8f0; font-size: 13px; display: flex; align-items: center; gap: 8px;">
@@ -4519,13 +4592,15 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       const secsTotal = elapsedTotal % 60;
 
       const resultContainer = document.createElement('div');
+      resultContainer.className = 'ol-bg';
+      if (localStorage.getItem('ol_theme') === 'dark') resultContainer.classList.add('scraper-dark');
+
       Object.assign(resultContainer.style, {
         position: 'fixed',
         top: '0',
         left: '0',
         right: '0',
         bottom: '0',
-        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d1b2a 100%)',
         zIndex: '9999',
         overflowY: 'auto',
         fontFamily: "'Inter', -apple-system, sans-serif"
@@ -4538,9 +4613,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         <div style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
           
           <!-- Hero Header -->
-          <div style="
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.3);
+          <div class="ol-brand-bg ol-border" style="
+            border-width: 1px; border-style: solid;
             border-radius: 32px;
             padding: 48px;
             text-align: center;
@@ -4549,28 +4623,24 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             overflow: hidden;
           ">
             <div style="position: relative; z-index: 1;">
-              <div style="color: #a5b4fc; margin-bottom: 20px;">${getIcon('rocket', 'scraper-icon-lg')}</div>
-              <h1 style="
+              <div class="ol-brand-text" style="margin-bottom: 20px;">${getIcon('rocket', 'scraper-icon-lg')}</div>
+              <h1 class="ol-text" style="
                 font-size: 36px;
                 font-weight: 800;
-                background: linear-gradient(135deg, #fff, #a5b4fc);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
                 margin: 0 0 12px 0;
               ">Scrape Hoàn Thành!</h1>
-              <p style="color: rgba(255,255,255,0.7); font-size: 16px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                ${modeIcon} Chế độ: ${modeLabel}
+              <p class="ol-text-sub" style="font-size: 16px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                <span class="ol-brand-text" style="display:flex; align-items:center;">${modeIcon}</span> Chế độ: ${modeLabel}
               </p>
-              <div style="
+              <div class="ol-surface ol-text-sub ol-border" style="
                 display: inline-flex;
                 align-items: center;
                 gap: 8px;
-                background: rgba(255,255,255,0.1);
                 padding: 8px 16px;
                 border-radius: 20px;
                 margin-top: 16px;
-                color: rgba(255,255,255,0.8);
                 font-size: 14px;
+                border-width: 1px; border-style: solid;
               ">
                 ${getIcon('clock', 'scraper-icon-sm')}
                 <span>Thời gian: ${minsTotal}m ${secsTotal}s</span>
@@ -4585,28 +4655,26 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             gap: 16px;
             margin-bottom: 32px;
           ">
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.05));
-              border: 1px solid rgba(16, 185, 129, 0.3);
+            <div class="ol-surface ol-border" style="
+              border-width: 1px; border-style: solid;
               border-radius: 20px;
               padding: 24px;
               text-align: center;
             ">
-              <div style="color: #10b981; margin-bottom: 8px;">${getIcon('clipboard', 'scraper-icon-md')}</div>
-              <div style="font-size: 42px; font-weight: 800; color: #10b981;">${questionCount}</div>
-              <div style="color: #6ee7b7; font-size: 13px; font-weight: 600; margin-top: 4px;">CÂU HỎI</div>
+              <div class="ol-success-text" style="margin-bottom: 8px; display:flex; justify-content:center;">${getIcon('clipboard', 'scraper-icon-md')}</div>
+              <div class="ol-success-text" style="font-size: 42px; font-weight: 800;">${questionCount}</div>
+              <div class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em;">CÂU HỎI</div>
             </div>
             
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.05));
-              border: 1px solid rgba(59, 130, 246, 0.3);
+            <div class="ol-surface ol-border" style="
+              border-width: 1px; border-style: solid;
               border-radius: 20px;
               padding: 24px;
               text-align: center;
             ">
-              <div style="color: #3b82f6; margin-bottom: 8px;">${getIcon('image', 'scraper-icon-md')}</div>
-              <div style="font-size: 42px; font-weight: 800; color: #3b82f6;">${allImages.length}</div>
-              <div style="color: #93c5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">HÌNH ẢNH</div>
+              <div class="ol-brand-text" style="margin-bottom: 8px; display:flex; justify-content:center;">${getIcon('image', 'scraper-icon-md')}</div>
+              <div class="ol-brand-text" style="font-size: 42px; font-weight: 800;">${allImages.length}</div>
+              <div class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em;">HÌNH ẢNH</div>
             </div>
             
             <div class="scraper-stat-card" style="
@@ -4621,17 +4689,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               <div style="color: #c4b5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
             </div>
             
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(236, 72, 153, 0.05));
-              border: 1px solid rgba(236, 72, 153, 0.3);
+            <div class="ol-surface ol-border" style="
+              border-width: 1px; border-style: solid;
               border-radius: 20px;
               padding: 24px;
               text-align: center;
             ">
-              <div id="currentModeDisplay" style="color: #ec4899; display: flex; align-items: center; justify-content: center; height: 50px;">
+              <div id="currentModeDisplay" class="ol-brand-text" style="display: flex; align-items: center; justify-content: center; height: 50px;">
                 ${isAIMode ? getIcon('bot', 'scraper-icon-lg') : getIcon('fileText', 'scraper-icon-lg')}
               </div>
-              <div style="color: #f9a8d4; font-size: 13px; font-weight: 600; margin-top: 4px;">
+              <div class="ol-text-sub" style="font-size: 13px; font-weight: 600; margin-top: 4px; text-transform: uppercase;">
                 ${isAIMode ? 'CHẾ ĐỘ AI' : 'CHẾ ĐỘ THƯỜNG'}
               </div>
             </div>
@@ -4648,7 +4715,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #10b981, #059669);
+              background: var(--ol-success);
               color: white;
               border: none;
               border-radius: 16px;
@@ -4658,7 +4725,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: center;
               gap: 10px;
               cursor: pointer;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               ${getIcon('copy')}
               <span>Copy Toàn Bộ</span>
             </button>
@@ -4667,7 +4735,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #3b82f6, #2563eb);
+              background: var(--ol-brand);
               color: white;
               border: none;
               border-radius: 16px;
@@ -4677,7 +4745,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: center;
               gap: 10px;
               cursor: pointer;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               ${getIcon('image')}
               <span>Copy Link Ảnh</span>
             </button>
@@ -4686,7 +4755,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+              background: #8b5cf6; /* Keep violet for contrast or use var if added */
               color: white;
               border: none;
               border-radius: 16px;
@@ -4696,7 +4765,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: center;
               gap: 10px;
               cursor: pointer;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               ${isAIMode ? getIcon('fileText') : getIcon('bot')}
               <span>${isAIMode ? 'Chế độ Thường' : 'Chế độ AI'}</span>
             </button>
@@ -4705,7 +4775,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #10b981, #059669);
+              background: var(--ol-success);
               color: white;
               border: none;
               border-radius: 16px;
@@ -4715,20 +4785,21 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: center;
               gap: 10px;
               cursor: pointer;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               ${getIcon('download')}
               <span>Tải File</span>
             </button>
             
             ${allImages.length > 0 ? `
-            <label style="
+            <label class="ol-brand-bg ol-border ol-text" style="
                 display: flex; align-items: center; gap: 8px; cursor: pointer;
-                background: rgba(99, 102, 241, 0.1); padding: 0 16px; border-radius: 16px;
-                border: 1px solid rgba(99, 102, 241, 0.3); flex: 0 0 auto;
-                transition: all 0.2s; user-select: none;
-            " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'">
-                <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: #8b5cf6; cursor: pointer;">
-                <span style="color: #e2e8f0; font-size: 14px; font-weight: 600;">Gửi kèm ảnh</span>
+                padding: 0 16px; border-radius: 16px;
+                border-width: 1px; border-style: solid;
+                flex: 0 0 auto; transition: all 0.2s; user-select: none;
+            ">
+                <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: var(--ol-brand); cursor: pointer;">
+                <span style="font-size: 14px; font-weight: 600;">Gửi kèm ảnh</span>
             </label>
             ` : ''}
 
@@ -4736,7 +4807,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+              background: var(--ol-brand);
               color: white;
               border: none;
               border-radius: 16px;
@@ -4748,7 +4819,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               cursor: pointer;
               position: relative;
               overflow: hidden;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               <div style="
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
@@ -4763,7 +4835,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               flex: 1;
               min-width: 150px;
               padding: 18px 24px;
-              background: linear-gradient(135deg, #6b7280, #4b5563);
+              background: #6b7280;
               color: white;
               border: none;
               border-radius: 16px;
@@ -4773,7 +4845,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: center;
               gap: 10px;
               cursor: pointer;
-            ">
+              transition: all 0.2s;
+            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
               ${getIcon('x')}
               <span>Đóng</span>
             </button>
@@ -4781,9 +4854,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           
           <!-- Images Gallery -->
           ${allImages.length > 0 ? `
-            <div style="
-              background: rgba(255,255,255,0.05);
-              border: 1px solid rgba(255,255,255,0.1);
+            <div class="ol-surface ol-border" style="
+              border-width: 1px; border-style: solid;
               border-radius: 24px;
               padding: 24px;
               margin-bottom: 32px;
@@ -4794,14 +4866,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
               justify-content: space-between;
               margin-bottom: 20px;
             ">
-              <h3 style="color: white; margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+              <h3 class="ol-text" style="margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
                 ${getIcon('image')} Thư viện Hình ảnh
               </h3>
               <div style="display: flex; gap: 10px; align-items: center;">
-                <span style="color: #9ca3af; font-size: 12px;">Click để phóng to</span>
-                <span style="
-                  background: rgba(59, 130, 246, 0.2);
-                  color: #93c5fd;
+                <span class="ol-text-sub" style="font-size: 12px;">Click để phóng to</span>
+                <span class="ol-brand-bg ol-brand-text" style="
                   padding: 6px 14px;
                   border-radius: 20px;
                   font-size: 13px;
