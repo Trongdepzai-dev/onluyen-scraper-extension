@@ -1,0 +1,14 @@
+{
+  "version": "3.7",
+  "message": "Cập nhật mới mang lại tính năng tối ưu hóa cho việc sử dụng extension, cải thiện hiệu suất và tính năng phím tắt.",
+  "platforms": {
+    "chrome": {
+      "url": "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde",
+      "force_update": false
+    },
+    "edge": {
+      "url": "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde",
+      "force_update": true
+    }
+  }
+}

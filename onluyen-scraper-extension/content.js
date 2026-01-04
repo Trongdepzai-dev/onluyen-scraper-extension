@@ -166,7 +166,8 @@ if (window.hasRunScraper) {
       tag: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
       pencil: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
       circle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>',
-      link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>'
+      link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+      messageSquare: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>'
     };
 
     const getIcon = (name, className = '') => {
@@ -513,14 +514,18 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
       
       :root {
+        --scraper-bg: #ffffff;
+        --scraper-text-primary: #111827;
+        --scraper-text-secondary: #6b7280;
+        --scraper-border: #e5e7eb;
         --scraper-primary: #6366f1;
-        --scraper-primary-dark: #4f46e5;
         --scraper-success: #10b981;
         --scraper-warning: #f59e0b;
         --scraper-danger: #ef4444;
-        --scraper-info: #3b82f6;
-        --scraper-bg-glass: rgba(17, 24, 39, 0.85);
-        --scraper-border-glass: rgba(255, 255, 255, 0.1);
+        --scraper-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --scraper-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --scraper-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --scraper-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       }
       
       .scraper-icon {
@@ -534,6 +539,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       .scraper-icon-lg { width: 3em; height: 3em; }
       .scraper-icon-md { width: 1.5em; height: 1.5em; }
       .scraper-icon-sm { width: 1em; height: 1em; }
+      .scraper-icon-xs { width: 0.875em; height: 0.875em; }
       .scraper-icon-spin { animation: scraper-spin 1s linear infinite; }
 
       @keyframes scraper-float {
@@ -556,12 +562,6 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         to { transform: translateX(0); opacity: 1; }
       }
       
-      @keyframes scraper-gradient-flow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      
       @keyframes scraper-spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
@@ -581,14 +581,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       .scraper-panel {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         animation: scraper-slide-in-right 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
       }
       
       .scraper-btn {
         position: relative;
         overflow: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: all 0.2s ease;
         font-family: 'Inter', sans-serif;
         font-weight: 600;
         letter-spacing: 0.01em;
@@ -596,47 +596,35 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         align-items: center;
         justify-content: center;
         gap: 8px;
-        border-radius: 12px;
+        border-radius: 10px;
+        cursor: pointer;
       }
 
       .scraper-btn-rounded {
         border-radius: 9999px;
       }
       
-      .scraper-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s;
-      }
-      
-      .scraper-btn:hover::before {
-        left: 100%;
-      }
-      
       .scraper-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.3);
-        filter: brightness(1.1);
+        transform: translateY(-1px);
+        filter: brightness(0.98);
       }
       
       .scraper-btn:active {
-        transform: translateY(0) scale(0.96);
+        transform: translateY(0) scale(0.98);
       }
       
       .scraper-stat-card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
+        transition: all 0.3s ease;
+        border-radius: 16px;
+        background: #f9fafb;
+        border: 1px solid #f3f4f6;
       }
       
       .scraper-stat-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 20px 40px -12px rgba(0,0,0,0.4);
+        transform: translateY(-2px);
+        background: #ffffff;
+        box-shadow: var(--scraper-shadow);
+        border-color: #e5e7eb;
       }
       
       .scraper-stat-number.updated {
@@ -675,27 +663,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       }
       
       .scraper-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.1);
         border-radius: 10px;
         transition: all 0.3s;
       }
       
       .scraper-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.2);
-      }
-      
-      .scraper-scrollbar::-webkit-scrollbar-track {
-        background: rgba(0, 0, 0, 0.05);
-        border-radius: 3px;
-      }
-      
-      .scraper-scrollbar::-webkit-scrollbar-thumb {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 3px;
-      }
-      
-      .scraper-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgba(0, 0, 0, 0.2);
       }
       
       .scraper-image-grid {
@@ -710,12 +684,15 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         border-radius: 12px;
         transition: all 0.3s ease;
         cursor: pointer;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
       }
       
       .scraper-image-card:hover {
-        transform: scale(1.05);
+        transform: scale(1.02);
         z-index: 10;
-        box-shadow: 0 12px 36px rgba(0,0,0,0.3);
+        box-shadow: var(--scraper-shadow-lg);
+        border-color: #d1d5db;
       }
 
       .scraper-lightbox {
@@ -724,13 +701,13 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(5, 5, 10, 0.95);
+        background: rgba(255, 255, 255, 0.95);
         z-index: 100000;
         display: flex;
         align-items: center;
         justify-content: center;
         animation: scraper-fade-in 0.3s ease;
-        backdrop-filter: blur(10px);
+        backdrop-filter: blur(8px);
       }
 
       @keyframes scraper-fade-in {
@@ -743,88 +720,92 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         max-width: 90vw;
         max-height: 90vh;
         animation: scraper-zoom-in 0.3s ease;
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--scraper-shadow-xl);
+        padding: 8px;
+        border: 1px solid #e5e7eb;
       }
 
       @keyframes scraper-zoom-in {
-        from { transform: scale(0.9); opacity: 0; }
+        from { transform: scale(0.95); opacity: 0; }
         to { transform: scale(1); opacity: 1; }
       }
 
       .scraper-lightbox img {
-        max-width: 90vw;
-        max-height: 85vh;
+        max-width: 85vw;
+        max-height: 80vh;
         object-fit: contain;
-        border-radius: 12px;
-        box-shadow: 0 25px 80px rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
       }
 
       .scraper-lightbox-close {
         position: absolute;
-        top: -50px;
-        right: 0;
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        width: 44px;
-        height: 44px;
+        top: -20px;
+        right: -20px;
+        background: white;
+        color: #ef4444;
+        border: 1px solid #fee2e2;
+        box-shadow: var(--scraper-shadow);
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.2s ease;
         cursor: pointer;
+        z-index: 10;
       }
 
       .scraper-lightbox-close:hover {
-        background: rgba(239, 68, 68, 0.8);
+        background: #ef4444;
+        color: white;
         transform: rotate(90deg);
       }
 
       .scraper-lightbox-info {
         position: absolute;
-        bottom: -50px;
+        bottom: 20px;
         left: 50%;
         transform: translateX(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        padding: 10px 24px;
-        border-radius: 20px;
-        color: white;
-        font-size: 14px;
-        font-weight: 500;
+        background: white;
+        padding: 8px 20px;
+        border-radius: 9999px;
+        color: #374151;
+        font-size: 13px;
+        font-weight: 600;
         white-space: nowrap;
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: var(--scraper-shadow-lg);
+        border: 1px solid #e5e7eb;
       }
 
       .scraper-lightbox-nav {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        width: 50px;
-        height: 50px;
+        background: white;
+        color: #111827;
+        border: 1px solid #e5e7eb;
+        box-shadow: var(--scraper-shadow);
+        width: 48px;
+        height: 48px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         transition: all 0.2s ease;
-        backdrop-filter: blur(4px);
       }
 
       .scraper-lightbox-nav:hover {
-        background: rgba(255, 255, 255, 0.2);
+        background: #f9fafb;
         transform: translateY(-50%) scale(1.1);
+        border-color: #d1d5db;
       }
 
-      .scraper-lightbox-nav.prev { left: -70px; }
-      .scraper-lightbox-nav.next { right: -70px; }
-
-      .scraper-image-card {
-        cursor: pointer;
-      }
+      .scraper-lightbox-nav.prev { left: -80px; }
+      .scraper-lightbox-nav.next { right: -80px; }
 
       .scraper-image-card:hover::after {
         content: '';
@@ -834,7 +815,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         transform: translate(-50%, -50%);
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(255, 255, 255, 0.2);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -851,15 +832,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         cursor: pointer;
         position: relative;
         overflow: hidden;
+        background: white;
       }
 
       .scraper-mode-select-btn:hover {
-        transform: scale(1.02);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        transform: translateY(-4px);
+        box-shadow: var(--scraper-shadow-xl);
       }
       
       .scraper-mode-select-btn:active {
-        transform: scale(0.98);
+        transform: translateY(-2px);
       }
     `;
     document.head.appendChild(styleSheet);
@@ -870,17 +852,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     const toastContainer = document.createElement('div');
     Object.assign(toastContainer.style, {
       position: 'fixed',
-      bottom: '20px',
-      left: '20px',
+      bottom: '24px',
+      left: '24px',
       zIndex: '2147483647',
       display: 'flex',
       flexDirection: 'column',
-      gap: '10px'
+      gap: '12px'
     });
     document.body.appendChild(toastContainer);
 
     function showToast(message, type = 'info', duration = 3000) {
-      // Giới hạn tối đa 3 toasts cùng lúc để tránh spam
       if (toastContainer.children.length >= 3) {
         toastContainer.children[0].remove();
       }
@@ -906,43 +887,42 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       Object.assign(toast.style, {
         background: '#ffffff',
-        color: '#1f2937', // Gray 800
-        padding: '12px 16px',
-        borderRadius: '10px',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)', // Soft shadow
+        color: '#1f2937', 
+        padding: '14px 18px',
+        borderRadius: '12px',
+        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
         fontFamily: "'Inter', sans-serif",
         fontSize: '14px',
         fontWeight: '500',
-        maxWidth: '320px',
-        border: '1px solid #f3f4f6', // Gray 100
+        maxWidth: '360px',
+        border: '1px solid #f3f4f6',
         borderLeft: `4px solid ${accentColor}`,
         backdropFilter: 'blur(8px)'
       });
       
       toast.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-          <span style="color: ${accentColor}; display: flex; align-items: center;">${icons[type]}</span>
-          <span style="line-height: 1.4;">${message}</span>
+        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+          <span style="color: ${accentColor}; display: flex; align-items: center; background: ${accentColor}15; padding: 6px; border-radius: 8px;">${icons[type]}</span>
+          <span style="line-height: 1.5;">${message}</span>
         </div>
         <button class="scraper-toast-close" style="
           background: transparent; border: none; color: #9ca3af; 
-          cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 4px;
-          border-radius: 6px; transition: all 0.2s;
+          cursor: pointer; padding: 6px; display: flex; align-items: center; margin-left: 4px;
+          border-radius: 8px; transition: all 0.2s;
         " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
           onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
           ${getIcon('x', 'scraper-icon-sm')}
         </button>
       `;
       
-      // Add click handler for close button
       const closeBtn = toast.querySelector('.scraper-toast-close');
       if (closeBtn) {
         closeBtn.onclick = () => {
           toast.style.opacity = '0';
-          toast.style.transform = 'translateX(-100%)';
+          toast.style.transform = 'translateX(-20px)';
           setTimeout(() => toast.remove(), 300);
         };
       }
@@ -951,7 +931,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       setTimeout(() => {
         toast.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        toast.style.transform = 'translateX(-100%)';
+        toast.style.transform = 'translateX(-20px)';
         toast.style.opacity = '0';
         setTimeout(() => toast.remove(), 300);
       }, duration);
@@ -962,33 +942,37 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
           position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-          background: 'rgba(0, 0, 0, 0.7)', backdropFilter: 'blur(8px)',
+          background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(4px)',
           zIndex: '200001', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.3s ease'
+          fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.2s ease'
         });
 
         overlay.innerHTML = `
           <div style="
-            background: #1e293b; border-radius: 24px; padding: 32px; width: 380px;
-            border: 1px solid rgba(255,255,255,0.1); color: white;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            background: #ffffff; border-radius: 20px; padding: 32px; width: 400px;
+            border: 1px solid #e5e7eb; color: #1f2937;
+            box-shadow: var(--scraper-shadow-xl);
             text-align: center;
           ">
-            <div style="color: #f59e0b; margin-bottom: 20px;">
+            <div style="
+              width: 56px; height: 56px; background: #fffbeb; color: #f59e0b;
+              border-radius: 50%; display: flex; align-items: center; justifyContent: center;
+              margin: 0 auto 20px auto;
+            ">
               ${getIcon('alertTriangle', 'scraper-icon-lg')}
             </div>
-            <h3 style="margin: 0 0 12px 0; font-size: 20px; font-weight: 700;">${title}</h3>
-            <p style="color: #94a3b8; font-size: 15px; line-height: 1.6; margin-bottom: 28px;">${message}</p>
+            <h3 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #111827;">${title}</h3>
+            <p style="color: #6b7280; font-size: 15px; line-height: 1.6; margin-bottom: 28px;">${message}</p>
             <div style="display: flex; gap: 12px;">
               <button id="confirmCancel" style="
-                flex: 1; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-                border-radius: 12px; color: #cbd5e1; cursor: pointer; font-weight: 600; transition: all 0.2s;
-              " onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">Hủy</button>
+                flex: 1; padding: 12px; background: white; border: 1px solid #e5e7eb;
+                border-radius: 12px; color: #4b5563; cursor: pointer; font-weight: 600; transition: all 0.2s;
+              " onmouseover="this.style.background='#f9fafb';this.style.borderColor='#d1d5db'" onmouseout="this.style.background='white';this.style.borderColor='#e5e7eb'">Hủy</button>
               <button id="confirmOk" style="
-                flex: 1; padding: 12px; background: linear-gradient(135deg, #6366f1, #4f46e5); border: none;
+                flex: 1; padding: 12px; background: #6366f1; border: none;
                 border-radius: 12px; color: white; cursor: pointer; font-weight: 600; transition: all 0.2s;
-                box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-              " onmouseover="this.style.transform='translateY(-1px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">Đồng ý</button>
+                box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+              " onmouseover="this.style.background='#4f46e5';this.style.transform='translateY(-1px)'" onmouseout="this.style.background='#6366f1';this.style.transform='translateY(0)'">Đồng ý</button>
             </div>
           </div>
         `;
@@ -1218,130 +1202,128 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     function showUpdateModal(info) {
       return new Promise((resolve) => {
+        // Detect Browser
+        const userAgent = navigator.userAgent;
+        const isEdge = userAgent.indexOf("Edg") > -1;
+        const browserKey = isEdge ? 'edge' : 'chrome';
+        const browserName = isEdge ? 'Microsoft Edge' : 'Google Chrome / Brave';
+
+        // Get Config (New Structure vs Old Structure)
+        let config = {};
+        if (info.platforms && info.platforms[browserKey]) {
+            config = info.platforms[browserKey];
+        } else if (info.links) {
+            config = { url: info.links[browserKey], force_update: false };
+        }
+        
+        // Fallback url
+        const downloadUrl = config.url || (isEdge ? 
+            "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde" : 
+            "https://github.com/Trongdepzai-dev/onluyen-scraper-extension/releases");
+        
+        const isForceUpdate = !!config.force_update;
+
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
           position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-          background: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(8px)',
+          background: 'rgba(255, 255, 255, 0.8)', backdropFilter: 'blur(4px)',
           zIndex: '100001', display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.4s ease'
         });
 
         overlay.innerHTML = `
           <div style="
-            background: linear-gradient(135deg, #1e1b4b, #312e81);
+            background: #ffffff;
             border-radius: 32px; padding: 40px; max-width: 500px; width: 90%;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-            text-align: center; color: white;
+            box-shadow: var(--scraper-shadow-xl); border: 1px solid #e5e7eb;
+            text-align: center; color: #1f2937;
           ">
-            <div style="color: #818cf8; margin-bottom: 24px; animation: scraper-float 3s ease-in-out infinite;">
+            <div style="
+              width: 64px; height: 64px; background: #eef2ff; color: #6366f1;
+              border-radius: 20px; display: flex; align-items: center; justifyContent: center;
+              margin: 0 auto 24px auto; animation: scraper-float 3s ease-in-out infinite;
+            ">
               ${getIcon('refreshCw', 'scraper-icon-lg')}
             </div>
-            <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, #fff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Cập Nhật Mới Sẵn Sàng!</h2>
-            <div style="background: rgba(255,255,255,0.05); padding: 12px 20px; border-radius: 16px; margin-bottom: 24px; display: inline-block; border: 1px solid rgba(255,255,255,0.1);">
-              <span style="color: #a5b4fc; font-weight: 700;">v${info.version}</span>
-              <span style="color: rgba(255,255,255,0.4); margin: 0 10px;">•</span>
-              <span style="color: rgba(255,255,255,0.6);">${info.release_date}</span>
+            <h2 style="font-size: 26px; font-weight: 800; margin-bottom: 12px; color: #111827;">
+                ${isForceUpdate ? 'Cập Nhật Bắt Buộc!' : 'Cập Nhật Mới Sẵn Sàng!'}
+            </h2>
+            <div style="background: #f3f4f6; padding: 10px 20px; border-radius: 9999px; margin-bottom: 24px; display: inline-block; border: 1px solid #e5e7eb;">
+              <span style="color: #6366f1; font-weight: 700;">v${info.version}</span>
+              <span style="color: #9ca3af; margin: 0 10px;">•</span>
+              <span style="color: #6b7280;">${info.release_date || new Date().toISOString().split('T')[0]}</span>
             </div>
-            <p style="color: rgba(255,255,255,0.8); font-size: 15px; line-height: 1.6; margin-bottom: 32px; text-align: left; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 16px;">
+            <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin-bottom: 32px; text-align: left; background: #f9fafb; padding: 20px; border-radius: 16px; border: 1px solid #f3f4f6;">
               ${info.message}
             </p>
-            <div id="updateActionButtons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-              <!-- Edge Button (Recommended) -->
-              <a href="${info.links.edge}" target="_blank" style="
-                background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; padding: 16px; border-radius: 16px;
-                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
-                box-shadow: 0 10px 20px -5px rgba(8, 145, 178, 0.4);
-              " onmouseover="this.style.transform='translateY(-2px)';this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)';this.style.filter='none'">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                   Microsoft Edge
-                </div>
-                <span style="font-size: 11px; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 10px;">Khuyên dùng</span>
+            
+            <div id="updateActionButtons" style="display: flex; flex-direction: column; gap: 12px;">
+              <!-- Main Download Button -->
+              <a href="${downloadUrl}" target="_blank" id="downloadBtn" style="
+                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); 
+                color: white; padding: 16px; border-radius: 16px;
+                text-decoration: none; font-weight: 700; font-size: 16px; transition: all 0.2s;
+                display: flex; align-items: center; justify-content: center; gap: 8px;
+                box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+              " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                ${getIcon('download', 'scraper-icon-sm')} Tải bản mới cho ${browserName}
               </a>
               
-              <!-- Chrome/Brave Button -->
-              <a href="#" id="chromeUpdateBtn" style="
-                background: rgba(255,255,255,0.05); color: white; padding: 16px; border-radius: 16px;
-                text-decoration: none; font-weight: 700; font-size: 14px; transition: all 0.3s ease;
-                display: flex; align-items: center; justify-content: center; gap: 8px;
-                border: 1px solid rgba(255,255,255,0.1);
-              " onmouseover="this.style.background='rgba(255,255,255,0.15)';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.05)';this.style.transform='translateY(0)'">
-                ${getIcon('download', 'scraper-icon-sm')} Chrome / Brave
-              </a>
-            </div>
-            
-            <!-- Custom Confirmation Step (Hidden by default) -->
-            <div id="chromeConfirmStep" style="display: none; flex-direction: column; gap: 12px; animation: scraper-fade-in 0.3s ease;">
-                <p style="color: #a5b4fc; font-weight: 600; margin-bottom: 8px;">Bạn đã biết cách cập nhật Extension thủ công chưa?</p>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <button id="knowUpdateBtn" style="
-                        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;
-                        padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600;
-                        transition: all 0.2s;
-                    " onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                        Rồi (Tải ngay)
-                    </button>
-                    <button id="dontKnowUpdateBtn" style="
-                        background: linear-gradient(135deg, #6366f1, #4f46e5); border: none; color: white;
-                        padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600;
-                        transition: all 0.2s;
-                    " onmouseover="this.style.filter='brightness(1.1)'" onmouseout="this.style.filter='none'">
-                        Chưa (Xem hướng dẫn)
-                    </button>
-                </div>
-                <button id="backToOptionsBtn" style="
-                    margin-top: 8px; background: transparent; border: none; color: rgba(255,255,255,0.4);
-                    font-size: 12px; cursor: pointer; text-decoration: underline;
-                ">Quay lại</button>
+              <!-- Manual Guide Button (if zip) -->
+              ${!isEdge ? `
+              <button id="guideBtn" style="
+                background: white; border: 1px solid #e5e7eb; color: #4b5563;
+                padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 14px;
+                transition: all 0.2s;
+              " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                Cách cài đặt thủ công?
+              </button>` : ''}
             </div>
 
+            <!-- Skip Button (Hidden if Force Update) -->
+            ${!isForceUpdate ? `
             <button id="skipUpdateBtn" style="
-              margin-top: 24px; background: transparent; border: none; color: rgba(255,255,255,0.4);
+              margin-top: 24px; background: transparent; border: none; color: #9ca3af;
               font-size: 14px; cursor: pointer; transition: color 0.2s;
               font-weight: 500;
-            " onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">Để sau</button>
+            " onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">Để sau</button>
+            ` : ''}
           </div>
         `;
 
         document.body.appendChild(overlay);
         
-        const actionButtons = document.getElementById('updateActionButtons');
-        const confirmStep = document.getElementById('chromeConfirmStep');
         const skipBtn = document.getElementById('skipUpdateBtn');
+        const guideBtn = document.getElementById('guideBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
 
-        // Handle Chrome/Brave click
-        document.getElementById('chromeUpdateBtn').onclick = (e) => {
-            e.preventDefault();
-            actionButtons.style.display = 'none';
-            confirmStep.style.display = 'flex';
-            skipBtn.style.display = 'none'; // Hide skip button during confirmation to focus user
-        };
+        // Logic hướng dẫn cài thủ công cho Chrome (file zip)
+        if (guideBtn) {
+            guideBtn.onclick = () => {
+                window.open('https://github.com/Trongdepzai-dev/onluyen-scraper-extension#c%C3%A0i-%C4%91%E1%BA%B7t-th%E1%BB%A7-c%C3%B4ng-t%E1%BB%AB-source-code', '_blank');
+            };
+        }
 
-        // Handle "Know how to update" (Yes)
-        document.getElementById('knowUpdateBtn').onclick = () => {
-             window.open(info.links.chrome, '_blank');
-             overlay.remove(); // Close modal after action
-             resolve();
-        };
-
-        // Handle "Don't know how to update" (No)
-        document.getElementById('dontKnowUpdateBtn').onclick = () => {
-             window.open('https://github.com/Trongdepzai-dev/onluyen-scraper-extension/blob/main/HOW2UPDATE.md', '_blank');
-             window.location.href = info.links.chrome;
-             overlay.remove(); // Close modal after action
-             resolve();
-        };
-
-        // Handle "Back"
-        document.getElementById('backToOptionsBtn').onclick = () => {
-            confirmStep.style.display = 'none';
-            actionButtons.style.display = 'grid';
-            skipBtn.style.display = 'block';
-        };
-
-        document.getElementById('skipUpdateBtn').onclick = () => {
-          overlay.remove();
-          resolve();
+        if (skipBtn) {
+          skipBtn.onclick = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+              overlay.remove();
+              resolve();
+            }, 400);
+          };
+        }
+        
+        // Khi bấm download
+        downloadBtn.onclick = () => {
+             // Optional: Có thể đóng modal sau khi bấm tải nếu không force update
+             if (!isForceUpdate) {
+                setTimeout(() => {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 400);
+                    resolve();
+                }, 1000);
+             }
         };
       });
     }
@@ -1358,8 +1340,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           left: '0',
           right: '0',
           bottom: '0',
-          background: 'rgba(0, 0, 0, 0.7)',
-          backdropFilter: 'blur(6px)',
+          background: 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(8px)',
           zIndex: '99999',
           display: 'flex',
           alignItems: 'center',
@@ -1369,154 +1351,164 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
         overlay.innerHTML = `
           <div style="
-            background: linear-gradient(135deg, rgba(17, 24, 39, 0.98), rgba(31, 41, 55, 0.98));
+            background: #ffffff;
             border-radius: 32px;
             padding: 48px;
             max-width: 700px;
             width: 90%;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: var(--scraper-shadow-xl);
+            border: 1px solid #e5e7eb;
           ">
             <!-- Header -->
             <div style="text-align: center; margin-bottom: 40px;">
-              <div style="color: #a5b4fc; margin-bottom: 16px;">
+              <div style="
+                color: #6366f1; margin: 0 auto 20px auto; 
+                width: 72px; height: 72px; background: #eef2ff;
+                border-radius: 24px; display: flex; align-items: center; justify-content: center;
+              ">
                 ${getIcon('rocket', 'scraper-icon-lg')}
               </div>
               <h1 style="
                 font-size: 32px;
                 font-weight: 800;
-                background: linear-gradient(135deg, #fff, #a5b4fc);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
+                color: #111827;
                 margin: 0 0 12px 0;
+                letter-spacing: -0.02em;
               ">Auto Scraper v${chrome.runtime.getManifest().version}</h1>
-              <p style="color: rgba(255,255,255,0.6); font-size: 16px; margin: 0;">
-                Chọn chế độ scrape phù hợp với loại bài của bạn
+              <p style="color: #6b7280; font-size: 16px; margin: 0;">
+                Công cụ hỗ trợ học tập thông minh
               </p>
               <a href="https://github.com/Trongdepzai-dev/" target="_blank" style="
                 display: inline-block;
                 margin-top: 12px;
-                color: rgba(255,255,255,0.3);
-                font-size: 12px;
+                color: #9ca3af;
+                font-size: 13px;
                 text-decoration: none;
                 transition: color 0.2s;
                 font-weight: 500;
-              " onmouseover="this.style.color='#a5b4fc'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+              " onmouseover="this.style.color='#6366f1'" onmouseout="this.style.color='#9ca3af'">
                 Made by B.Trọng
               </a>
             </div>
             
             <!-- Mode Buttons -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 32px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px;">
               
               <!-- Homework Mode -->
               <div id="homeworkModeBtn" class="scraper-mode-select-btn" style="
-                background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.05));
-                border: 1px solid rgba(16, 185, 129, 0.3);
+                background: #ffffff;
+                border: 2px solid #e5e7eb;
                 border-radius: 24px;
                 padding: 32px 24px;
                 text-align: center;
+                transition: all 0.2s ease;
               ">
-                <div style="color: #10b981; margin-bottom: 16px;">
+                <div style="
+                  color: #10b981; margin: 0 auto 20px auto;
+                  width: 64px; height: 64px; background: #ecfdf5;
+                  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+                ">
                   ${getIcon('book', 'scraper-icon-lg')}
                 </div>
-                <div style="font-size: 20px; font-weight: 700; color: #10b981; margin-bottom: 8px;">
+                <div style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">
                   BÀI TẬP
                 </div>
-                <div style="font-size: 14px; font-weight: 600; color: #6ee7b7; margin-bottom: 12px;">
+                <div style="font-size: 13px; font-weight: 600; color: #10b981; margin-bottom: 16px; letter-spacing: 0.05em;">
                   HOMEWORK MODE
                 </div>
-                <div style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6;">
+                <div style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                   Click qua từng câu<br>
-                  Có nút "Trả lời", "Bỏ qua"<br>
-                  Scrape động từng câu
+                  Có nút "Trả lời", "Bỏ qua"
                 </div>
                 <div style="
-                  margin-top: 16px;
-                  background: rgba(16, 185, 129, 0.2);
+                  background: #f3f4f6;
                   padding: 8px 16px;
-                  border-radius: 20px;
+                  border-radius: 9999px;
                   display: inline-block;
-                  color: #6ee7b7;
+                  color: #4b5563;
                   font-size: 12px;
                   font-weight: 600;
                 ">
-                  ${getIcon('check', 'scraper-icon-xs')} Dành riêng OnLuyen.vn
+                  ${getIcon('check', 'scraper-icon-xs')} OnLuyen.vn
                 </div>
               </div>
               
               <!-- Exam Mode -->
               <div id="examModeBtn" class="scraper-mode-select-btn" style="
-                background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
-                border: 1px solid rgba(99, 102, 241, 0.3);
+                background: #ffffff;
+                border: 2px solid #e5e7eb;
                 border-radius: 24px;
                 padding: 32px 24px;
                 text-align: center;
+                transition: all 0.2s ease;
               ">
-                <div style="color: #6366f1; margin-bottom: 16px;">
+                <div style="
+                  color: #6366f1; margin: 0 auto 20px auto;
+                  width: 64px; height: 64px; background: #eef2ff;
+                  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+                ">
                   ${getIcon('fileText', 'scraper-icon-lg')}
                 </div>
-                <div style="font-size: 20px; font-weight: 700; color: #6366f1; margin-bottom: 8px;">
+                <div style="font-size: 20px; font-weight: 700; color: #111827; margin-bottom: 8px;">
                   BÀI THI
                 </div>
-                <div style="font-size: 14px; font-weight: 600; color: #a5b4fc; margin-bottom: 12px;">
+                <div style="font-size: 13px; font-weight: 600; color: #6366f1; margin-bottom: 16px; letter-spacing: 0.05em;">
                   EXAM MODE
                 </div>
-                <div style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6;">
+                <div style="color: #6b7280; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
                   Tất cả câu trên 1 trang<br>
-                  Không cần click<br>
-                  Scrape tĩnh toàn bộ
+                  Không cần click
                 </div>
                 <div style="
-                  margin-top: 16px;
-                  background: rgba(99, 102, 241, 0.2);
+                  background: #f3f4f6;
                   padding: 8px 16px;
-                  border-radius: 20px;
+                  border-radius: 9999px;
                   display: inline-block;
-                  color: #a5b4fc;
+                  color: #4b5563;
                   font-size: 12px;
                   font-weight: 600;
                 ">
-                  ${getIcon('check', 'scraper-icon-xs')} Bài kiểm tra, Đề thi
+                  ${getIcon('check', 'scraper-icon-xs')} Bài kiểm tra
                 </div>
               </div>
             </div>
             
-            <!-- Cancel Button -->
+            <!-- Footer Actions -->
             <div style="text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center;">
               <button id="checkUpdateBtn" style="
-                background: rgba(99, 102, 241, 0.1);
-                border: 1px solid rgba(99, 102, 241, 0.2);
-                color: #a5b4fc;
-                padding: 8px 16px;
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                color: #6366f1;
+                padding: 10px 20px;
                 border-radius: 12px;
-                font-size: 12px;
+                font-size: 13px;
                 cursor: pointer;
                 transition: all 0.2s;
                 display: flex;
                 align-items: center;
-                gap: 6px;
+                gap: 8px;
                 font-weight: 600;
-              " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'" onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'">
+                box-shadow: var(--scraper-shadow-sm);
+              " onmouseover="this.style.background='#f9fafb';this.style.borderColor='#d1d5db'" onmouseout="this.style.background='white';this.style.borderColor='#e5e7eb'">
                 ${getIcon('refreshCw', 'scraper-icon-sm')} Kiểm tra cập nhật
               </button>
 
               <button id="cancelModeBtn" style="
-                background: rgba(255,255,255,0.05);
-                border: 1px solid rgba(255,255,255,0.1);
-                color: rgba(255,255,255,0.5);
-                padding: 12px 32px;
-                border-radius: 12px;
+                background: transparent;
+                border: none;
+                color: #9ca3af;
+                padding: 8px 16px;
                 font-size: 14px;
                 cursor: pointer;
                 transition: all 0.2s;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                gap: 8px;
+                gap: 6px;
                 margin: 0 auto;
-              ">
-                ${getIcon('x', 'scraper-icon-sm')} Hủy bỏ
+                font-weight: 500;
+              " onmouseover="this.style.color='#6b7280'" onmouseout="this.style.color='#9ca3af'">
+                Hủy bỏ
               </button>
             </div>
           </div>
@@ -1549,14 +1541,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         const btns = overlay.querySelectorAll('.scraper-mode-select-btn');
         btns.forEach(btn => {
           btn.onmouseenter = () => {
+            btn.style.transform = 'translateY(-4px)';
+            btn.style.boxShadow = 'var(--scraper-shadow-lg)';
             btn.style.borderColor = btn.id === 'homeworkModeBtn' 
-              ? 'rgba(16, 185, 129, 0.8)' 
-              : 'rgba(99, 102, 241, 0.8)';
+              ? '#10b981' 
+              : '#6366f1';
           };
           btn.onmouseleave = () => {
-            btn.style.borderColor = btn.id === 'homeworkModeBtn'
-              ? 'rgba(16, 185, 129, 0.4)'
-              : 'rgba(99, 102, 241, 0.4)';
+            btn.style.transform = 'translateY(0)';
+            btn.style.boxShadow = 'none';
+            btn.style.borderColor = '#e5e7eb';
           };
         });
       });
@@ -1576,116 +1570,135 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       let isMinimized = false;
 
       const modeColor = mode === 'homework' ? '#10b981' : '#6366f1';
+      const modeBg = mode === 'homework' ? '#ecfdf5' : '#eef2ff';
       const modeIcon = mode === 'homework' ? getIcon('book', 'scraper-icon-md') : getIcon('fileText', 'scraper-icon-md');
       const modeText = mode === 'homework' ? 'HOMEWORK' : 'EXAM';
 
       Object.assign(statusPanel.style, {
         position: 'fixed',
-        top: '20px',
-        right: '20px',
+        top: '24px',
+        right: '24px',
         zIndex: '10000',
-        background: 'rgba(17, 24, 39, 0.95)',
+        background: '#ffffff',
         borderRadius: '24px',
         padding: '0',
-        boxShadow: '0 25px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1)',
-        minWidth: '360px',
+        boxShadow: 'var(--scraper-shadow-xl)',
+        minWidth: '340px',
         fontFamily: "'Inter', -apple-system, sans-serif",
         overflow: 'hidden',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        backdropFilter: 'blur(20px)'
+        backdropFilter: 'blur(12px)',
+        border: '1px solid #e5e7eb'
       });
 
       statusPanel.innerHTML = `
         <!-- Header -->
         <div id="panelHeader" style="
-          background: linear-gradient(135deg, ${modeColor}, ${mode === 'homework' ? '#059669' : '#4f46e5'});
-          padding: 20px 24px;
+          background: #ffffff;
+          padding: 16px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
           cursor: move;
+          border-bottom: 1px solid #f3f4f6;
         ">
-          <div style="display: flex; align-items: center; gap: 14px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
             <div style="
-              width: 50px; height: 50px;
-              background: rgba(255,255,255,0.2);
-              border-radius: 16px;
+              width: 44px; height: 44px;
+              background: ${modeBg};
+              border-radius: 12px;
               display: flex;
               align-items: center;
               justify-content: center;
-              color: white;
+              color: ${modeColor};
             " id="statusIcon">${modeIcon}</div>
             <div>
               <div style="display: flex; align-items: center; gap: 8px;">
                 <div id="statusTitle" style="
                   font-weight: 700;
-                  font-size: 18px;
-                  color: white;
-                  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                  font-size: 16px;
+                  color: #111827;
                 ">Đang Khởi Tạo...</div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 6px; margin-top: 2px;">
                 <span style="
-                  background: rgba(255,255,255,0.2);
+                  background: ${modeBg};
                   padding: 2px 8px;
-                  border-radius: 8px;
+                  border-radius: 6px;
                   font-size: 10px;
                   font-weight: 700;
-                  color: white;
+                  color: ${modeColor};
+                  letter-spacing: 0.05em;
                 ">${modeText}</span>
+                <span id="statusSubtitle" style="
+                  font-size: 12px;
+                  color: #6b7280;
+                ">Chuẩn bị...</span>
               </div>
-              <div id="statusSubtitle" style="
-                font-size: 13px;
-                color: rgba(255,255,255,0.8);
-                margin-top: 2px;
-              ">Chuẩn bị thu thập dữ liệu</div>
             </div>
           </div>
-          <button id="minimizeBtn" class="scraper-btn scraper-btn-rounded" style="
-            width: 36px; height: 36px;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-          " title="Thu nhỏ">${getIcon('minus', 'scraper-icon-sm')}</button>
+          <div style="display: flex; gap: 8px;">
+            <button id="feedbackBtn" class="scraper-btn" style="
+              width: 32px; height: 32px;
+              background: transparent;
+              border: 1px solid #f3f4f6;
+              color: #6b7280;
+              border-radius: 8px;
+              padding: 0;
+              cursor: pointer;
+            " title="Góp ý">${getIcon('messageSquare', 'scraper-icon-sm')}</button>
+            <button id="minimizeBtn" class="scraper-btn" style="
+              width: 32px; height: 32px;
+              background: transparent;
+              border: 1px solid #f3f4f6;
+              color: #6b7280;
+              border-radius: 8px;
+              padding: 0;
+            " title="Thu nhỏ">${getIcon('minus', 'scraper-icon-sm')}</button>
+          </div>
         </div>
         
         <!-- Body -->
-        <div id="panelBody" style="padding: 20px 24px;">
+        <div id="panelBody" style="padding: 20px;">
           <!-- Live Status -->
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
-            <div class="scraper-live-indicator" style="
-              position: relative;
-              width: 10px; height: 10px;
-              background: #10b981;
-              border-radius: 50%;
-            "></div>
-            <span id="liveStatus" style="
-              background: rgba(16, 185, 129, 0.2);
-              color: #10b981;
-              padding: 4px 10px;
-              border-radius: 20px;
-              font-size: 11px;
-              font-weight: 600;
-              text-transform: uppercase;
-            ">ĐANG HOẠT ĐỘNG</span>
-            <span style="color: #9ca3af; font-size: 12px;" id="elapsedTime">00:00</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="scraper-live-indicator" style="
+                position: relative;
+                width: 8px; height: 8px;
+                background: #10b981;
+                border-radius: 50%;
+              "></div>
+              <span id="liveStatus" style="
+                color: #10b981;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+              ">ĐANG HOẠT ĐỘNG</span>
+            </div>
+            <span style="
+              color: #6b7280; 
+              font-size: 12px; 
+              font-family: 'JetBrains Mono', monospace;
+              background: #f3f4f6;
+              padding: 2px 8px;
+              border-radius: 6px;
+            " id="elapsedTime">00:00</span>
           </div>
           
           <!-- Progress Bar -->
           <div style="
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            height: 8px;
+            background: #f3f4f6;
+            border-radius: 9999px;
+            height: 6px;
             overflow: hidden;
             margin-bottom: 20px;
           ">
             <div id="progressBar" class="scraper-progress-bar" style="
               height: 100%;
               width: 0%;
-              border-radius: 12px;
+              border-radius: 9999px;
               transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             "></div>
           </div>
@@ -1697,139 +1710,96 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             gap: 12px;
             margin-bottom: 20px;
           ">
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
-              border: 1px solid rgba(16, 185, 129, 0.3);
-              border-radius: 16px;
-              padding: 16px;
-              text-align: center;
-            ">
+            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
               <div id="questionNum" class="scraper-stat-number" style="
-                font-size: 28px;
-                font-weight: 800;
-                color: #10b981;
-                line-height: 1;
+                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="
-                font-size: 11px;
-                color: #6ee7b7;
-                margin-top: 6px;
-                font-weight: 600;
-                text-transform: uppercase;
-              ">Câu hỏi</div>
+              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">Câu hỏi</div>
             </div>
             
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
-              border: 1px solid rgba(59, 130, 246, 0.3);
-              border-radius: 16px;
-              padding: 16px;
-              text-align: center;
-            ">
+            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
               <div id="imageNum" class="scraper-stat-number" style="
-                font-size: 28px;
-                font-weight: 800;
-                color: #3b82f6;
-                line-height: 1;
+                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="
-                font-size: 11px;
-                color: #93c5fd;
-                margin-top: 6px;
-                font-weight: 600;
-                text-transform: uppercase;
-              ">Hình ảnh</div>
+              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">Hình ảnh</div>
             </div>
             
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.1));
-              border: 1px solid rgba(245, 158, 11, 0.3);
-              border-radius: 16px;
-              padding: 16px;
-              text-align: center;
-            ">
+            <div class="scraper-stat-card" style="padding: 12px; text-align: center;">
               <div id="retryNum" class="scraper-stat-number" style="
-                font-size: 28px;
-                font-weight: 800;
-                color: #f59e0b;
-                line-height: 1;
+                font-size: 24px; font-weight: 800; color: #111827; line-height: 1; margin-bottom: 4px;
               ">0</div>
-              <div style="
-                font-size: 11px;
-                color: #fcd34d;
-                margin-top: 6px;
-                font-weight: 600;
-                text-transform: uppercase;
-              ">${mode === 'homework' ? 'Retry' : 'Loại'}</div>
+              <div style="font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase;">${mode === 'homework' ? 'Retry' : 'Skip'}</div>
             </div>
           </div>
           
           <!-- Current Question -->
           <div id="currentQuestionCard" style="
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 20px;
           ">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: white;">
-              ${getIcon('fileText')}
-              <span style="color: #a5b4fc; font-size: 12px; font-weight: 600; text-transform: uppercase;">
-                Đang xử lý
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <span style="color: #6366f1;">${getIcon('fileText', 'scraper-icon-sm')}</span>
+              <span style="color: #4b5563; font-size: 11px; font-weight: 700; text-transform: uppercase;">
+                TIẾN TRÌNH XỬ LÝ
               </span>
             </div>
             <div id="currentQText" style="
-              color: white;
-              font-size: 14px;
+              color: #111827;
+              font-size: 13px;
               font-weight: 500;
               line-height: 1.5;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+              overflow: hidden;
             ">Đang chờ...</div>
             <div id="waitingBtn" style="
-              color: #9ca3af;
+              color: #6b7280;
               font-size: 12px;
               margin-top: 8px;
+              display: flex; align-items: center; gap: 6px;
             "></div>
           </div>
           
           <!-- Action Buttons -->
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <button id="pauseBtn" class="scraper-btn" style="
-              padding: 14px;
-              background: linear-gradient(135deg, #f59e0b, #d97706);
-              color: white;
-              border: none;
-              border-radius: 14px;
-              font-size: 14px;
-              cursor: pointer;
+              padding: 12px;
+              background: #fffbeb;
+              border: 1px solid #fcd34d;
+              color: #d97706;
+              border-radius: 12px;
+              font-size: 13px;
             ">
               ${getIcon('pause')}
               <span>TẠM DỪNG</span>
             </button>
             
             <button id="stopBtn" class="scraper-btn" style="
-              padding: 14px;
-              background: linear-gradient(135deg, #ef4444, #dc2626);
-              color: white;
-              border: none;
-              border-radius: 14px;
-              font-size: 14px;
-              cursor: pointer;
+              padding: 12px;
+              background: #fef2f2;
+              border: 1px solid #fecaca;
+              color: #dc2626;
+              border-radius: 12px;
+              font-size: 13px;
             ">
               ${getIcon('square')}
-              <span>DỪNG</span>
+              <span>DỪNG LẠI</span>
             </button>
           </div>
           
           <button id="modeBtn" class="scraper-btn" style="
             width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            background: linear-gradient(135deg, #8b5cf6, #6366f1);
-            color: white;
-            border: none;
-            border-radius: 14px;
-            font-size: 14px;
-            cursor: pointer;
+            padding: 12px;
+            margin-top: 12px;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            color: #4b5563;
+            border-radius: 12px;
+            font-size: 13px;
           ">
             ${getIcon('bot')}
             <span>CHẾ ĐỘ AI</span>
@@ -1838,17 +1808,20 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         
         <!-- Footer -->
         <div style="
-          background: rgba(0,0,0,0.2);
-          padding: 12px 24px;
+          background: #f9fafb;
+          padding: 10px 20px;
           display: flex;
           align-items: center;
           justify-content: space-between;
+          border-top: 1px solid #f3f4f6;
         ">
-          <span style="color: #6b7280; font-size: 11px;">Auto Scraper v${chrome.runtime.getManifest().version} • ${modeText}</span>
-          <div style="display: flex; gap: 4px;">
-            <span style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></span>
-            <span style="width: 6px; height: 6px; background: #3b82f6; border-radius: 50%;"></span>
-            <span style="width: 6px; height: 6px; background: #8b5cf6; border-radius: 50%;"></span>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="color: #9ca3af; font-size: 11px; font-weight: 500;">v${chrome.runtime.getManifest().version}</span>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <div style="width: 6px; height: 6px; background: #d1d5db; border-radius: 50%;"></div>
+            <div style="width: 6px; height: 6px; background: #9ca3af; border-radius: 50%;"></div>
+            <div style="width: 6px; height: 6px; background: #6b7280; border-radius: 50%;"></div>
           </div>
         </div>
       `;
@@ -1859,6 +1832,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       panelElements = {
         header: document.getElementById('panelHeader'),
         body: document.getElementById('panelBody'),
+        feedbackBtn: document.getElementById('feedbackBtn'),
         minimizeBtn: document.getElementById('minimizeBtn'),
         statusIcon: document.getElementById('statusIcon'),
         statusTitle: document.getElementById('statusTitle'),
@@ -1875,6 +1849,11 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         liveStatus: document.getElementById('liveStatus'),
         elapsedTime: document.getElementById('elapsedTime')
       };
+
+      // Feedback button handler
+      if (panelElements.feedbackBtn) {
+          panelElements.feedbackBtn.onclick = () => showFeedbackModal();
+      }
 
       // Drag functionality
       panelElements.header.addEventListener('mousedown', (e) => {
@@ -1901,7 +1880,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       panelElements.minimizeBtn.addEventListener('click', () => {
         isMinimized = !isMinimized;
         panelElements.body.style.display = isMinimized ? 'none' : 'block';
-        statusPanel.style.minWidth = isMinimized ? 'auto' : '360px';
+        statusPanel.style.minWidth = isMinimized ? 'auto' : '340px';
         panelElements.minimizeBtn.innerHTML = isMinimized ? getIcon('square', 'scraper-icon-sm') : getIcon('minus', 'scraper-icon-sm');
       });
 
@@ -1940,16 +1919,20 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         isPaused = !isPaused;
         if (isPaused) {
           panelElements.pauseBtn.innerHTML = `${getIcon('play')}<span>TIẾP TỤC</span>`;
-          panelElements.pauseBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+          panelElements.pauseBtn.style.background = '#ecfdf5';
+          panelElements.pauseBtn.style.borderColor = '#6ee7b7';
+          panelElements.pauseBtn.style.color = '#059669';
+          
           panelElements.liveStatus.textContent = 'TẠM DỪNG';
-          panelElements.liveStatus.style.background = 'rgba(245, 158, 11, 0.2)';
           panelElements.liveStatus.style.color = '#f59e0b';
           showToast('Đã tạm dừng', 'info');
         } else {
           panelElements.pauseBtn.innerHTML = `${getIcon('pause')}<span>TẠM DỪNG</span>`;
-          panelElements.pauseBtn.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+          panelElements.pauseBtn.style.background = '#fffbeb';
+          panelElements.pauseBtn.style.borderColor = '#fcd34d';
+          panelElements.pauseBtn.style.color = '#d97706';
+          
           panelElements.liveStatus.textContent = 'ĐANG HOẠT ĐỘNG';
-          panelElements.liveStatus.style.background = 'rgba(16, 185, 129, 0.2)';
           panelElements.liveStatus.style.color = '#10b981';
           showToast('Tiếp tục scraper', 'success');
         }
@@ -1961,8 +1944,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           ? `${getIcon('fileText')}<span>CHẾ ĐỘ THƯỜNG</span>`
           : `${getIcon('bot')}<span>CHẾ ĐỘ AI</span>`;
         panelElements.modeBtn.style.background = isAIMode
-          ? 'linear-gradient(135deg, #10b981, #059669)'
-          : 'linear-gradient(135deg, #8b5cf6, #6366f1)';
+          ? '#f3f4f6'
+          : '#eef2ff';
+        panelElements.modeBtn.style.borderColor = isAIMode
+          ? '#e5e7eb'
+          : '#c7d2fe';
+        panelElements.modeBtn.style.color = isAIMode
+          ? '#4b5563'
+          : '#4f46e5';
         showToast(`Chuyển sang ${isAIMode ? 'chế độ AI' : 'chế độ thường'}`, 'info');
       };
     }
@@ -5113,6 +5102,167 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         resultContainer.remove();
         window.hasRunScraper = false;
       };
+    }
+
+    function showFeedbackModal() {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(2, 6, 23, 0.7)', backdropFilter: 'blur(8px)',
+            zIndex: '100005', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.3s ease'
+        });
+
+        overlay.innerHTML = `
+            <div style="
+                background: #ffffff; border-radius: 20px; padding: 24px; width: 400px;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                border: 1px solid #f3f4f6;
+            ">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="
+                            width: 40px; height: 40px; background: #e0e7ff; 
+                            border-radius: 12px; display: flex; alignItems: center; justifyContent: center;
+                            color: #4f46e5;
+                        ">${getIcon('messageSquare', 'scraper-icon-md')}</div>
+                        <div>
+                            <h2 style="margin: 0; font-size: 18px; font-weight: 700; color: #111827;">Góp ý / Báo lỗi</h2>
+                            <p style="margin: 2px 0 0; font-size: 13px; color: #6b7280;">Chúng tôi luôn lắng nghe bạn</p>
+                        </div>
+                    </div>
+                    <button id="closeFeedbackBtn" style="
+                        background: transparent; border: none; color: #9ca3af; cursor: pointer;
+                        padding: 8px; border-radius: 8px; transition: all 0.2s;
+                    " onmouseover="this.style.background='#f3f4f6';this.style.color='#4b5563'" 
+                      onmouseout="this.style.background='transparent';this.style.color='#9ca3af'">
+                        ${getIcon('x', 'scraper-icon-sm')}
+                    </button>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #374151;">Loại phản hồi</label>
+                    <div style="display: flex; gap: 10px;">
+                        <label style="flex: 1; cursor: pointer;">
+                            <input type="radio" name="feedbackType" value="feedback" checked style="display: none;">
+                            <div class="feedback-type-option" style="
+                                padding: 10px; border: 2px solid #e5e7eb; border-radius: 10px;
+                                text-align: center; font-size: 13px; font-weight: 500; color: #4b5563;
+                                transition: all 0.2s;
+                            ">💡 Góp ý tính năng</div>
+                        </label>
+                        <label style="flex: 1; cursor: pointer;">
+                            <input type="radio" name="feedbackType" value="bug" style="display: none;">
+                            <div class="feedback-type-option" style="
+                                padding: 10px; border: 2px solid #e5e7eb; border-radius: 10px;
+                                text-align: center; font-size: 13px; font-weight: 500; color: #4b5563;
+                                transition: all 0.2s;
+                            ">🐛 Báo lỗi</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #374151;">Nội dung</label>
+                    <textarea id="feedbackMessage" placeholder="Mô tả chi tiết ý kiến hoặc lỗi bạn gặp phải..." style="
+                        width: 100%; height: 100px; padding: 12px; border: 1px solid #d1d5db;
+                        border-radius: 12px; font-family: inherit; font-size: 14px; color: #1f2937;
+                        resize: vertical; outline: none; box-sizing: border-box; transition: border-color 0.2s;
+                    " onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#d1d5db'"></textarea>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 6px; font-size: 13px; font-weight: 600; color: #374151;">Liên hệ (Tùy chọn)</label>
+                    <input type="text" id="feedbackContact" placeholder="Email hoặc Facebook (để chúng tôi phản hồi)" style="
+                        width: 100%; padding: 10px 12px; border: 1px solid #d1d5db;
+                        border-radius: 12px; font-family: inherit; font-size: 14px; color: #1f2937;
+                        outline: none; box-sizing: border-box; transition: border-color 0.2s;
+                    " onfocus="this.style.borderColor='#4f46e5'" onblur="this.style.borderColor='#d1d5db'">
+                </div>
+
+                <button id="sendFeedbackBtn" style="
+                    width: 100%; padding: 12px; background: #4f46e5; color: white; border: none;
+                    border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;
+                    display: flex; align-items: center; justify-content: center; gap: 8px;
+                    transition: background 0.2s;
+                " onmouseover="this.style.background='#4338ca'" onmouseout="this.style.background='#4f46e5'">
+                    ${getIcon('send', 'scraper-icon-sm')} Gửi phản hồi
+                </button>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Styling logic for radio buttons
+        const radioInputs = overlay.querySelectorAll('input[name="feedbackType"]');
+        const updateRadioStyles = () => {
+            radioInputs.forEach(input => {
+                const labelDiv = input.nextElementSibling;
+                if (input.checked) {
+                    labelDiv.style.borderColor = '#4f46e5';
+                    labelDiv.style.background = '#e0e7ff';
+                    labelDiv.style.color = '#4f46e5';
+                } else {
+                    labelDiv.style.borderColor = '#e5e7eb';
+                    labelDiv.style.background = 'transparent';
+                    labelDiv.style.color = '#4b5563';
+                }
+            });
+        };
+        radioInputs.forEach(input => input.addEventListener('change', updateRadioStyles));
+        updateRadioStyles(); // Initial state
+
+        // Close handlers
+        const close = () => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 300);
+        };
+        overlay.onclick = (e) => { if (e.target === overlay) close(); };
+        document.getElementById('closeFeedbackBtn').onclick = close;
+
+        // Send handler
+        document.getElementById('sendFeedbackBtn').onclick = async () => {
+            const btn = document.getElementById('sendFeedbackBtn');
+            const message = document.getElementById('feedbackMessage').value.trim();
+            const contact = document.getElementById('feedbackContact').value.trim();
+            const type = document.querySelector('input[name="feedbackType"]:checked').value;
+
+            if (!message) {
+                showToast('Vui lòng nhập nội dung!', 'warning');
+                document.getElementById('feedbackMessage').focus();
+                return;
+            }
+
+            // UI Loading state
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')} Đang gửi...`;
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            try {
+                // Call local server (or production URL in real app)
+                const response = await fetch('http://localhost:3000/api/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ type, message, contact })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Cảm ơn đóng góp của bạn!', 'success');
+                    close();
+                } else {
+                    throw new Error(data.error || 'Lỗi server');
+                }
+            } catch (err) {
+                console.error('Feedback Error:', err);
+                showToast('Gửi thất bại! Hãy thử lại sau.', 'error');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
+        };
     }
 
     // ============================================================ 

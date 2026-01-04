@@ -36,9 +36,10 @@ async function runScraper(tab) {
 // Lắng nghe tin nhắn từ Content Script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "checkUpdate") {
-    fetch('https://scintillating-kangaroo-6a27a8.netlify.app/update_info.json?t=' + Date.now(), {
-      cache: 'no-cache'
-    })
+    // URL Localhost (Thay bằng URL production khi deploy)
+    const UPDATE_URL = 'http://localhost:3000/update_info.json';
+    
+    fetch(UPDATE_URL + '?t=' + Date.now(), { cache: 'no-cache' })
       .then(response => response.json())
       .then(data => sendResponse({ success: true, data: data }))
       .catch(error => sendResponse({ success: false, error: error.message }));

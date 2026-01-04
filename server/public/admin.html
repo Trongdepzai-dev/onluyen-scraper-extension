@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OnLuyen Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .slide-up { animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #68D391; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen text-gray-800">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md p-8 rounded-2xl shadow-xl slide-up bg-white">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">Admin Portal</h1>
+                <p class="text-gray-500 text-sm mt-1">Đăng nhập để quản lý</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <input type="password" id="password" class="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Mật khẩu...">
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg">Truy cập Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD SCREEN -->
+    <div id="dashboardSection" class="hidden min-h-screen flex flex-col">
+        <!-- Navbar -->
+        <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between h-16">
+                    <div class="flex items-center gap-8">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold">OL</div>
+                            <span class="font-bold text-xl tracking-tight text-gray-900">Admin</span>
+                        </div>
+                        <div class="hidden md:flex gap-1">
+                            <button onclick="switchTab('feedback')" id="tab-feedback" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-900">Góp ý</button>
+                            <button onclick="switchTab('update')" id="tab-update" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900">Cập nhật</button>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="text-gray-500 hover:text-red-600"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- FEEDBACK TAB -->
+            <div id="view-feedback" class="slide-up">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Hộp thư góp ý</h2>
+                    <button onclick="loadFeedbacks()" class="px-3 py-1 bg-white border rounded shadow-sm hover:bg-gray-50"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
+                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="message-square" class="w-6 h-6"></i></div>
+                        <div><p class="text-sm text-gray-500">Tổng</p><p class="text-2xl font-bold" id="statTotal">0</p></div>
+                    </div>
+                    <!-- More stats if needed -->
+                </div>
+                <div id="feedbackList" class="space-y-4"></div>
+            </div>
+
+            <!-- UPDATE TAB -->
+            <div id="view-update" class="hidden slide-up">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-900">Quản lý Cập nhật</h2>
+                    <button onclick="saveConfig()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow flex items-center gap-2">
+                        <i data-lucide="save" class="w-4 h-4"></i> Lưu cấu hình
+                    </button>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Thông tin chung</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Phiên bản mới nhất</label>
+                            <input type="text" id="conf-version" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="1.0.0">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Thông báo cập nhật</label>
+                            <input type="text" id="conf-message" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Có gì mới?">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- CHROME CONFIG -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="chrome" class="w-24 h-24"></i></div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <i data-lucide="chrome" class="w-6 h-6 text-blue-500"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">Google Chrome</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Link tải (.zip hoặc Store)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="conf-chrome-url" class="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-blue-500">
+                                    <button onclick="triggerUpload('chrome')" class="px-3 py-2 bg-gray-100 border rounded-lg hover:bg-gray-200 text-gray-600" title="Upload file"><i data-lucide="upload" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
+                                <span class="text-sm font-medium text-gray-700">Force Update (Bắt buộc)</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="conf-chrome-force" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- EDGE CONFIG -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="compass" class="w-24 h-24"></i></div>
+                        <div class="flex items-center gap-3 mb-4">
+                            <i data-lucide="compass" class="w-6 h-6 text-green-500"></i>
+                            <h3 class="text-lg font-semibold text-gray-800">Microsoft Edge</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Link tải (.zip hoặc Store)</label>
+                                <div class="flex gap-2">
+                                    <input type="text" id="conf-edge-url" class="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-green-500">
+                                    <button onclick="triggerUpload('edge')" class="px-3 py-2 bg-gray-100 border rounded-lg hover:bg-gray-200 text-gray-600" title="Upload file"><i data-lucide="upload" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
+                                <span class="text-sm font-medium text-gray-700">Force Update (Bắt buộc)</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="conf-edge-force" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Hidden Input for File Upload -->
+    <input type="file" id="fileInput" accept=".zip,.crx" class="hidden">
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
+        <i data-lucide="info" class="w-5 h-5"></i><span id="toastMsg">Msg</span>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        let currentTarget = null; // 'chrome' or 'edge' for upload
+
+        // --- AUTH ---
+        function handleLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('password').value;
+            fetch('/api/admin/config?password=' + pass)
+                .then(res => {
+                    if (res.status === 401) throw new Error('Sai mật khẩu');
+                    localStorage.setItem('admin_pass', pass);
+                    switchView('dashboard');
+                    loadFeedbacks();
+                    loadConfig();
+                })
+                .catch(err => showToast(err.message));
+        }
+
+        // --- TABS ---
+        function switchTab(tab) {
+            document.getElementById('view-feedback').classList.add('hidden');
+            document.getElementById('view-update').classList.add('hidden');
+            document.getElementById('tab-feedback').className = "px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900";
+            document.getElementById('tab-update').className = "px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900";
+
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('tab-' + tab).className = "px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-900";
+        }
+
+        // --- FEEDBACK LOGIC ---
+        async function loadFeedbacks() {
+            const pass = localStorage.getItem('admin_pass');
+            const res = await fetch('/api/admin/feedbacks?password=' + pass);
+            if(res.status === 401) return logout();
+            const data = await res.json();
+            
+            document.getElementById('statTotal').textContent = data.length;
+            const container = document.getElementById('feedbackList');
+            container.innerHTML = data.map(item => `
+                <div class="bg-white p-4 rounded-lg border shadow-sm">
+                    <div class="flex justify-between mb-2">
+                        <span class="font-semibold text-indigo-600">${escapeHtml(item.contact)}</span>
+                        <span class="text-xs text-gray-400">${new Date(item.timestamp).toLocaleString()}</span>
+                    </div>
+                    <p class="text-gray-700 whitespace-pre-wrap">${escapeHtml(item.message)}</p>
+                    <div class="mt-2 text-xs uppercase font-bold tracking-wide ${item.type==='bug'?'text-red-500':'text-green-500'}">${item.type}</div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // --- UPDATE LOGIC ---
+        async function loadConfig() {
+            const pass = localStorage.getItem('admin_pass');
+            const res = await fetch('/api/admin/config?password=' + pass);
+            const data = await res.json();
+
+            // Support old format or new format
+            const chromeData = data.platforms?.chrome || (data.links ? { url: data.links.chrome } : {}) || {};
+            const edgeData = data.platforms?.edge || (data.links ? { url: data.links.edge } : {}) || {};
+
+            document.getElementById('conf-version').value = data.version || '';
+            document.getElementById('conf-message').value = data.message || '';
+            
+            document.getElementById('conf-chrome-url').value = chromeData.url || '';
+            document.getElementById('conf-chrome-force').checked = !!chromeData.force_update;
+            
+            document.getElementById('conf-edge-url').value = edgeData.url || '';
+            document.getElementById('conf-edge-force').checked = !!edgeData.force_update;
+        }
+
+        async function saveConfig() {
+            const config = {
+                version: document.getElementById('conf-version').value,
+                message: document.getElementById('conf-message').value,
+                platforms: {
+                    chrome: {
+                        url: document.getElementById('conf-chrome-url').value,
+                        force_update: document.getElementById('conf-chrome-force').checked
+                    },
+                    edge: {
+                        url: document.getElementById('conf-edge-url').value,
+                        force_update: document.getElementById('conf-edge-force').checked
+                    }
+                }
+            };
+
+            const pass = localStorage.getItem('admin_pass');
+            const res = await fetch('/api/admin/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'x-admin-password': pass },
+                body: JSON.stringify({ config })
+            });
+            
+            if (res.ok) showToast('Đã lưu cấu hình cập nhật!');
+            else showToast('Lỗi khi lưu!');
+        }
+
+        // --- UPLOAD LOGIC ---
+        function triggerUpload(target) {
+            currentTarget = target;
+            document.getElementById('fileInput').click();
+        }
+
+        document.getElementById('fileInput').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const btnIcon = document.querySelector(`button[onclick="triggerUpload('${currentTarget}')"] i`);
+            btnIcon.setAttribute('data-lucide', 'loader');
+            lucide.createIcons();
+
+            try {
+                const pass = localStorage.getItem('admin_pass');
+                const res = await fetch('/api/admin/upload', {
+                    method: 'POST',
+                    headers: { 'x-admin-password': pass },
+                    body: formData
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById(`conf-${currentTarget}-url`).value = data.url;
+                    showToast('Upload thành công!');
+                } else {
+                    showToast('Upload thất bại!');
+                }
+            } catch (err) {
+                showToast('Lỗi kết nối!');
+            } finally {
+                // Reset icon
+                btnIcon.setAttribute('data-lucide', 'upload');
+                lucide.createIcons();
+                e.target.value = ''; // Reset input
+            }
+        });
+
+        // --- UTILS ---
+        function switchView(view) {
+            document.getElementById('loginSection').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').classList.add('slide-up');
+        }
+        function logout() { localStorage.removeItem('admin_pass'); location.reload(); }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        }
+        function escapeHtml(text) { return text ? text.replace(/</g, "&lt;") : ''; }
+
+        // Auto Login
+        if (localStorage.getItem('admin_pass')) {
+            document.getElementById('password').value = localStorage.getItem('admin_pass');
+            document.querySelector('form').dispatchEvent(new Event('submit'));
+        }
+    </script>
+</body>
+</html>
