@@ -4,7 +4,7 @@
   "platforms": {
     "chrome": {
       "url": "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde",
-      "force_update": false
+      "force_update": true
     },
     "edge": {
       "url": "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde",

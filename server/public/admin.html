@@ -1,58 +1,350 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OnLuyen Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .slide-up { animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        /* Toggle Switch */
-        .toggle-checkbox:checked { right: 0; border-color: #68D391; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Animated Gradient Background */
+        .gradient-bg {
+            background: linear-gradient(-45deg, #667eea, #764ba2, #6B8DD6, #8E37D7);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Floating Particles */
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 20s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Glass Morphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Card Hover Effects */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.15);
+        }
+        .dark .card-hover:hover {
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.4);
+        }
+        
+        /* Gradient Border */
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2px;
+            border-radius: 1rem;
+        }
+        .gradient-border-inner {
+            background: white;
+            border-radius: calc(1rem - 2px);
+        }
+        .dark .gradient-border-inner {
+            background: #1e293b;
+        }
+        
+        /* Animations */
+        .slide-up {
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Pulse Ring */
+        .pulse-ring {
+            animation: pulseRing 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulseRing {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Shimmer Loading */
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .dark .shimmer {
+            background: linear-gradient(90deg, #334155 25%, #475569 50%, #334155 75%);
+            background-size: 200% 100%;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        /* Input Focus Animation */
+        .input-animated {
+            transition: all 0.3s ease;
+        }
+        .input-animated:focus {
+            transform: scale(1.02);
+        }
+        
+        /* Stat Card Gradient */
+        .stat-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .stat-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+        .stat-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        
+        /* Badge Animation */
+        .badge-pulse {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+        @keyframes badgePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        /* Button Shine Effect */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to right,
+                transparent,
+                rgba(255,255,255,0.3),
+                transparent
+            );
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.6s;
+        }
+        .btn-shine:hover::after {
+            transform: rotate(45deg) translateX(100%);
+        }
+        
+        /* Sidebar Active Indicator */
+        .nav-active {
+            position: relative;
+        }
+        .nav-active::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
     </style>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' },
+                        dark: { bg: '#0f172a', card: '#1e293b', border: '#334155', hover: '#2d3a4f' }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gray-50 min-h-screen text-gray-800">
+<body class="bg-gray-50 text-gray-800 dark:bg-dark-bg dark:text-gray-100 transition-colors duration-300">
 
     <!-- LOGIN SCREEN -->
-    <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
-        <div class="glass w-full max-w-md p-8 rounded-2xl shadow-xl slide-up bg-white">
+    <div id="loginSection" class="min-h-screen gradient-bg flex items-center justify-center p-4 relative">
+        <!-- Floating Particles -->
+        <div class="particles">
+            <div class="particle" style="left:10%; animation-delay:0s; animation-duration:25s;"></div>
+            <div class="particle" style="left:20%; animation-delay:2s; animation-duration:20s;"></div>
+            <div class="particle" style="left:30%; animation-delay:4s; animation-duration:28s;"></div>
+            <div class="particle" style="left:40%; animation-delay:1s; animation-duration:22s;"></div>
+            <div class="particle" style="left:50%; animation-delay:3s; animation-duration:24s;"></div>
+            <div class="particle" style="left:60%; animation-delay:5s; animation-duration:26s;"></div>
+            <div class="particle" style="left:70%; animation-delay:2s; animation-duration:21s;"></div>
+            <div class="particle" style="left:80%; animation-delay:4s; animation-duration:23s;"></div>
+            <div class="particle" style="left:90%; animation-delay:1s; animation-duration:27s;"></div>
+        </div>
+        
+        <div class="w-full max-w-md slide-up relative z-10">
+            <!-- Logo & Brand -->
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 backdrop-blur-xl rounded-3xl mb-4 shadow-2xl">
+                    <i data-lucide="shield-check" class="w-10 h-10 text-white"></i>
                 </div>
-                <h1 class="text-2xl font-bold text-gray-900">Admin Portal</h1>
-                <p class="text-gray-500 text-sm mt-1">Đăng nhập để quản lý</p>
+                <h1 class="text-3xl font-bold text-white mb-2">OnLuyen Admin</h1>
+                <p class="text-white/70">Đăng nhập để truy cập bảng điều khiển</p>
             </div>
-            <form onsubmit="handleLogin(event)" class="space-y-4">
-                <input type="password" id="password" class="w-full pl-4 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Mật khẩu...">
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition-all shadow-lg">Truy cập Dashboard</button>
-            </form>
+            
+            <!-- Login Card -->
+            <div class="glass p-8 rounded-3xl shadow-2xl">
+                <form onsubmit="handleLogin(event)" class="space-y-6">
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                            <i data-lucide="key" class="w-4 h-4"></i>
+                            Mật khẩu quản trị
+                        </label>
+                        <div class="relative">
+                            <input type="password" id="password" 
+                                class="input-animated w-full px-5 py-4 border-2 border-gray-200 dark:border-dark-border rounded-2xl outline-none focus:border-primary-500 bg-gray-50 dark:bg-gray-800/50 dark:text-white transition-all text-lg" 
+                                placeholder="Nhập mật khẩu...">
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                                <i data-lucide="eye" id="eyeIcon" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" id="loginBtn" class="btn-shine w-full bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white font-semibold py-4 rounded-2xl transition-all shadow-lg shadow-primary-500/30 flex items-center justify-center gap-3 text-lg">
+                        <span>Truy cập Dashboard</span>
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                </form>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200 dark:border-dark-border">
+                    <p class="text-center text-sm text-gray-500 dark:text-gray-400">
+                        <i data-lucide="lock" class="w-4 h-4 inline mr-1"></i>
+                        Kết nối được mã hóa SSL
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Version Info -->
+            <p class="text-center text-white/50 text-sm mt-6">
+                Dashboard v2.0 • Powered by OnLuyen
+            </p>
         </div>
     </div>
 
     <!-- DASHBOARD SCREEN -->
     <div id="dashboardSection" class="hidden min-h-screen flex flex-col">
         <!-- Navbar -->
-        <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav class="bg-white/80 dark:bg-dark-card/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-dark-border sticky top-0 z-50 transition-colors">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
-                    <div class="flex items-center gap-8">
+                    <div class="flex items-center gap-6 md:gap-10">
+                        <!-- Logo -->
                         <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center font-bold">OL</div>
-                            <span class="font-bold text-xl tracking-tight text-gray-900">Admin</span>
+                            <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-purple-600 text-white rounded-xl flex items-center justify-center font-bold text-lg shadow-lg shadow-primary-500/30">
+                                OL
+                            </div>
+                            <div class="hidden sm:block">
+                                <span class="font-bold text-xl text-gray-900 dark:text-white">Admin</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 block -mt-1">Dashboard</span>
+                            </div>
                         </div>
-                        <div class="hidden md:flex gap-1">
-                            <button onclick="switchTab('feedback')" id="tab-feedback" class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-900">Góp ý</button>
-                            <button onclick="switchTab('update')" id="tab-update" class="px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900">Cập nhật</button>
+                        
+                        <!-- Navigation Tabs -->
+                        <div class="flex gap-1 bg-gray-100 dark:bg-dark-hover p-1 rounded-xl">
+                            <button onclick="switchTab('feedback')" id="tab-feedback" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                                <i data-lucide="message-circle" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">Góp ý</span>
+                                <span id="feedbackBadge" class="hidden bg-red-500 text-white text-xs px-2 py-0.5 rounded-full badge-pulse">0</span>
+                            </button>
+                            <button onclick="switchTab('update')" id="tab-update" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                <span class="hidden sm:inline">Cập nhật</span>
+                            </button>
                         </div>
                     </div>
-                    <button onclick="logout()" class="text-gray-500 hover:text-red-600"><i data-lucide="log-out" class="w-5 h-5"></i></button>
+                    
+                    <div class="flex items-center gap-2">
+                        <!-- Dark Mode Toggle -->
+                        <button onclick="toggleTheme()" class="p-2.5 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-dark-hover transition-all hover:scale-105" title="Chế độ Sáng/Tối">
+                            <i data-lucide="moon" class="w-5 h-5 hidden dark:block"></i>
+                            <i data-lucide="sun" class="w-5 h-5 block dark:hidden"></i>
+                        </button>
+                        
+                        <!-- User Menu -->
+                        <div class="relative group">
+                            <button class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-dark-hover transition-all">
+                                <div class="w-8 h-8 bg-gradient-to-br from-primary-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                    <i data-lucide="user" class="w-4 h-4 text-white"></i>
+                                </div>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400"></i>
+                            </button>
+                            
+                            <!-- Dropdown -->
+                            <div class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-dark-card rounded-xl shadow-xl border border-gray-200 dark:border-dark-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all transform scale-95 group-hover:scale-100 origin-top-right">
+                                <div class="p-2">
+                                    <div class="px-3 py-2 border-b border-gray-100 dark:border-dark-border mb-2">
+                                        <p class="font-medium text-gray-900 dark:text-white text-sm">Quản trị viên</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">admin@onluyen.vn</p>
+                                    </div>
+                                    <button onclick="logout()" class="w-full px-3 py-2 text-left text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors flex items-center gap-2 text-sm">
+                                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                                        Đăng xuất
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -61,92 +353,246 @@
             
             <!-- FEEDBACK TAB -->
             <div id="view-feedback" class="slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Hộp thư góp ý</h2>
-                    <button onclick="loadFeedbacks()" class="px-3 py-1 bg-white border rounded shadow-sm hover:bg-gray-50"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white p-6 rounded-xl shadow-sm border flex items-center gap-4">
-                        <div class="p-3 bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="message-square" class="w-6 h-6"></i></div>
-                        <div><p class="text-sm text-gray-500">Tổng</p><p class="text-2xl font-bold" id="statTotal">0</p></div>
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                            <div class="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
+                                <i data-lucide="inbox" class="w-6 h-6 text-primary-600 dark:text-primary-400"></i>
+                            </div>
+                            Hộp thư góp ý
+                        </h2>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Quản lý và phản hồi góp ý từ người dùng</p>
                     </div>
-                    <!-- More stats if needed -->
+                    <div class="flex gap-2">
+                        <button onclick="loadFeedbacks()" class="px-4 py-2.5 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-dark-hover text-gray-700 dark:text-gray-200 transition-all hover:scale-105 flex items-center gap-2">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            <span class="hidden sm:inline">Làm mới</span>
+                        </button>
+                    </div>
                 </div>
+                
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="card-hover bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2 stat-gradient-1 rounded-xl">
+                                <i data-lucide="mail" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <span class="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">+12%</span>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statTotal">0</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Tổng tin nhắn</p>
+                    </div>
+                    
+                    <div class="card-hover bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2 stat-gradient-2 rounded-xl">
+                                <i data-lucide="bug" class="w-5 h-5 text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statBugs">0</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Báo lỗi</p>
+                    </div>
+                    
+                    <div class="card-hover bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2 stat-gradient-3 rounded-xl">
+                                <i data-lucide="lightbulb" class="w-5 h-5 text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statIdeas">0</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Ý tưởng</p>
+                    </div>
+                    
+                    <div class="card-hover bg-white dark:bg-dark-card p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="p-2 stat-gradient-4 rounded-xl">
+                                <i data-lucide="clock" class="w-5 h-5 text-white"></i>
+                            </div>
+                        </div>
+                        <p class="text-2xl font-bold text-gray-900 dark:text-white" id="statToday">0</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Hôm nay</p>
+                    </div>
+                </div>
+                
+                <!-- Search & Filter -->
+                <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                    <div class="relative flex-1">
+                        <i data-lucide="search" class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" id="searchFeedback" onkeyup="filterFeedbacks()" placeholder="Tìm kiếm góp ý..." class="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all">
+                    </div>
+                    <select id="filterType" onchange="filterFeedbacks()" class="px-4 py-3 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border rounded-xl outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer">
+                        <option value="all">Tất cả loại</option>
+                        <option value="bug">🐛 Báo lỗi</option>
+                        <option value="feature">💡 Ý tưởng</option>
+                    </select>
+                </div>
+                
+                <!-- Feedback List -->
                 <div id="feedbackList" class="space-y-4"></div>
+                
+                <!-- Loading Skeleton -->
+                <div id="feedbackSkeleton" class="hidden space-y-4">
+                    <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border">
+                        <div class="flex justify-between mb-4">
+                            <div class="h-5 w-32 shimmer rounded"></div>
+                            <div class="h-4 w-24 shimmer rounded"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="h-4 w-full shimmer rounded"></div>
+                            <div class="h-4 w-3/4 shimmer rounded"></div>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border">
+                        <div class="flex justify-between mb-4">
+                            <div class="h-5 w-40 shimmer rounded"></div>
+                            <div class="h-4 w-20 shimmer rounded"></div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="h-4 w-full shimmer rounded"></div>
+                            <div class="h-4 w-1/2 shimmer rounded"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- UPDATE TAB -->
             <div id="view-update" class="hidden slide-up">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900">Quản lý Cập nhật</h2>
-                    <button onclick="saveConfig()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow flex items-center gap-2">
-                        <i data-lucide="save" class="w-4 h-4"></i> Lưu cấu hình
+                <!-- Header -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                            <div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                                <i data-lucide="package" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                            </div>
+                            Quản lý Cập nhật
+                        </h2>
+                        <p class="text-gray-500 dark:text-gray-400 mt-1">Cấu hình phiên bản và link tải extension</p>
+                    </div>
+                    <button onclick="saveConfig()" id="saveBtn" class="btn-shine px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30 flex items-center gap-2 font-medium transition-all hover:scale-105">
+                        <i data-lucide="save" class="w-5 h-5"></i>
+                        Lưu cấu hình
                     </button>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-                    <h3 class="text-lg font-semibold mb-4 text-gray-800">Thông tin chung</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Phiên bản mới nhất</label>
-                            <input type="text" id="conf-version" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="1.0.0">
+                <!-- General Config -->
+                <div class="gradient-border mb-6">
+                    <div class="gradient-border-inner p-6">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+                                <i data-lucide="settings" class="w-5 h-5 text-primary-600 dark:text-primary-400"></i>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Thông tin chung</h3>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Thông báo cập nhật</label>
-                            <input type="text" id="conf-message" class="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Có gì mới?">
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="tag" class="w-4 h-4"></i>
+                                    Phiên bản mới nhất
+                                </label>
+                                <input type="text" id="conf-version" class="input-animated w-full border-2 border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-gray-800 transition-all" placeholder="1.0.0">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                    <i data-lucide="message-square" class="w-4 h-4"></i>
+                                    Thông báo cập nhật
+                                </label>
+                                <input type="text" id="conf-message" class="input-animated w-full border-2 border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white rounded-xl px-4 py-3 outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-gray-800 transition-all" placeholder="Có gì mới?">
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Browser Configs -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <!-- CHROME CONFIG -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="chrome" class="w-24 h-24"></i></div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <i data-lucide="chrome" class="w-6 h-6 text-blue-500"></i>
-                            <h3 class="text-lg font-semibold text-gray-800">Google Chrome</h3>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Link tải (.zip hoặc Store)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="conf-chrome-url" class="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-blue-500">
-                                    <button onclick="triggerUpload('chrome')" class="px-3 py-2 bg-gray-100 border rounded-lg hover:bg-gray-200 text-gray-600" title="Upload file"><i data-lucide="upload" class="w-4 h-4"></i></button>
+                    <div class="card-hover bg-white dark:bg-dark-card rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden">
+                        <div class="h-2 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                                        <i data-lucide="chrome" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Google Chrome</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Chrome Web Store</p>
+                                    </div>
                                 </div>
+                                <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-medium rounded-full">ACTIVE</span>
                             </div>
-                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
-                                <span class="text-sm font-medium text-gray-700">Force Update (Bắt buộc)</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="conf-chrome-force" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                </label>
+                            
+                            <div class="space-y-4">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Link tải (.zip hoặc Store)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="conf-chrome-url" class="flex-1 border-2 border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none focus:border-blue-500 transition-all">
+                                        <button onclick="triggerUpload('chrome')" class="px-4 py-3 bg-blue-100 dark:bg-blue-900/30 border-2 border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-200 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-all hover:scale-105" title="Upload file">
+                                            <i data-lucide="upload" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-800 p-4 rounded-xl border border-gray-100 dark:border-dark-border">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500"></i>
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Force Update</span>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Bắt buộc người dùng cập nhật</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="conf-chrome-force" class="sr-only peer">
+                                        <div class="w-14 h-7 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:shadow after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <!-- EDGE CONFIG -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 p-4 opacity-10"><i data-lucide="compass" class="w-24 h-24"></i></div>
-                        <div class="flex items-center gap-3 mb-4">
-                            <i data-lucide="compass" class="w-6 h-6 text-green-500"></i>
-                            <h3 class="text-lg font-semibold text-gray-800">Microsoft Edge</h3>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Link tải (.zip hoặc Store)</label>
-                                <div class="flex gap-2">
-                                    <input type="text" id="conf-edge-url" class="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:ring-green-500">
-                                    <button onclick="triggerUpload('edge')" class="px-3 py-2 bg-gray-100 border rounded-lg hover:bg-gray-200 text-gray-600" title="Upload file"><i data-lucide="upload" class="w-4 h-4"></i></button>
+                    <div class="card-hover bg-white dark:bg-dark-card rounded-2xl shadow-sm border border-gray-100 dark:border-dark-border overflow-hidden">
+                        <div class="h-2 bg-gradient-to-r from-green-500 to-teal-500"></div>
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-3 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                                        <i data-lucide="compass" class="w-6 h-6 text-green-600 dark:text-green-400"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Microsoft Edge</h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">Edge Add-ons</p>
+                                    </div>
                                 </div>
+                                <span class="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 text-xs font-medium rounded-full">ACTIVE</span>
                             </div>
-                            <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg border">
-                                <span class="text-sm font-medium text-gray-700">Force Update (Bắt buộc)</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="conf-edge-force" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                                </label>
+                            
+                            <div class="space-y-4">
+                                <div class="space-y-2">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Link tải (.zip hoặc Store)</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="conf-edge-url" class="flex-1 border-2 border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-white rounded-xl px-4 py-3 text-sm outline-none focus:border-green-500 transition-all">
+                                        <button onclick="triggerUpload('edge')" class="px-4 py-3 bg-green-100 dark:bg-green-900/30 border-2 border-green-200 dark:border-green-800 rounded-xl hover:bg-green-200 dark:hover:bg-green-900/50 text-green-600 dark:text-green-400 transition-all hover:scale-105" title="Upload file">
+                                            <i data-lucide="upload" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-800 p-4 rounded-xl border border-gray-100 dark:border-dark-border">
+                                    <div class="flex items-center gap-3">
+                                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-500"></i>
+                                        <div>
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Force Update</span>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">Bắt buộc người dùng cập nhật</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="conf-edge-force" class="sr-only peer">
+                                        <div class="w-14 h-7 bg-gray-300 dark:bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:shadow after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -154,23 +600,95 @@
             </div>
 
         </main>
+        
+        <!-- Footer -->
+        <footer class="border-t border-gray-200 dark:border-dark-border bg-white/50 dark:bg-dark-card/50 backdrop-blur-xl">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p>© 2025 OnLuyen. All rights reserved.</p>
+                    <p>Made with 💜 for education</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Hidden Input for File Upload -->
     <input type="file" id="fileInput" accept=".zip,.crx" class="hidden">
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-4 right-4 bg-gray-900 text-white px-6 py-3 rounded-lg shadow-lg transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 z-50">
-        <i data-lucide="info" class="w-5 h-5"></i><span id="toastMsg">Msg</span>
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-20 opacity-0 transition-all duration-500 z-50">
+        <div class="glass px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 min-w-[300px]">
+            <div id="toastIcon" class="p-2 rounded-xl bg-green-100 dark:bg-green-900/30">
+                <i data-lucide="check-circle" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
+            </div>
+            <div class="flex-1">
+                <p id="toastTitle" class="font-semibold text-gray-900 dark:text-white text-sm">Thành công</p>
+                <p id="toastMsg" class="text-gray-500 dark:text-gray-400 text-sm">Message</p>
+            </div>
+            <button onclick="hideToast()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl max-w-md w-full scale-in p-6">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-600 dark:text-red-400"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Xác nhận đăng xuất</h3>
+                <p class="text-gray-500 dark:text-gray-400 mb-6">Bạn có chắc chắn muốn đăng xuất khỏi tài khoản admin?</p>
+                <div class="flex gap-3">
+                    <button onclick="hideModal()" class="flex-1 px-4 py-3 border border-gray-200 dark:border-dark-border rounded-xl hover:bg-gray-50 dark:hover:bg-dark-hover transition-colors font-medium">Hủy</button>
+                    <button onclick="confirmLogout()" class="flex-1 px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors font-medium">Đăng xuất</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
         lucide.createIcons();
-        let currentTarget = null; // 'chrome' or 'edge' for upload
+        let currentTarget = null;
+        let allFeedbacks = [];
+
+        // --- THEME LOGIC ---
+        function initTheme() {
+            if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        initTheme();
+
+        // --- PASSWORD VISIBILITY ---
+        function togglePasswordVisibility() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('eyeIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
 
         // --- AUTH ---
         function handleLogin(e) {
             e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Đang xác thực...';
+            btn.disabled = true;
+            lucide.createIcons();
+            
             const pass = document.getElementById('password').value;
             fetch('/api/admin/config?password=' + pass)
                 .then(res => {
@@ -180,49 +698,159 @@
                     loadFeedbacks();
                     loadConfig();
                 })
-                .catch(err => showToast(err.message));
+                .catch(err => {
+                    showToast(err.message, 'error');
+                    btn.innerHTML = '<span>Truy cập Dashboard</span><i data-lucide="arrow-right" class="w-5 h-5"></i>';
+                    btn.disabled = false;
+                    lucide.createIcons();
+                });
         }
 
         // --- TABS ---
         function switchTab(tab) {
             document.getElementById('view-feedback').classList.add('hidden');
             document.getElementById('view-update').classList.add('hidden');
-            document.getElementById('tab-feedback').className = "px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900";
-            document.getElementById('tab-update').className = "px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-900";
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'dark:bg-dark-card', 'text-primary-600', 'dark:text-primary-400', 'shadow-sm');
+                btn.classList.add('text-gray-500', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-white');
+            });
 
-            document.getElementById('view-' + tab).classList.remove('hidden');
-            document.getElementById('tab-' + tab).className = "px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-900";
+            const activeTab = document.getElementById('tab-' + tab);
+            activeTab.classList.remove('text-gray-500', 'dark:text-gray-400', 'hover:text-gray-900', 'dark:hover:text-white');
+            activeTab.classList.add('bg-white', 'dark:bg-dark-card', 'text-primary-600', 'dark:text-primary-400', 'shadow-sm');
+            
+            const view = document.getElementById('view-' + tab);
+            view.classList.remove('hidden');
+            view.classList.add('fade-in');
         }
 
-        // --- FEEDBACK LOGIC ---
+        // --- FEEDBACK ---
         async function loadFeedbacks() {
+            const skeleton = document.getElementById('feedbackSkeleton');
+            const list = document.getElementById('feedbackList');
+            skeleton.classList.remove('hidden');
+            list.innerHTML = '';
+            
             const pass = localStorage.getItem('admin_pass');
             const res = await fetch('/api/admin/feedbacks?password=' + pass);
             if(res.status === 401) return logout();
             const data = await res.json();
             
+            allFeedbacks = data;
+            skeleton.classList.add('hidden');
+            
+            // Update stats
             document.getElementById('statTotal').textContent = data.length;
+            document.getElementById('statBugs').textContent = data.filter(f => f.type === 'bug').length;
+            document.getElementById('statIdeas').textContent = data.filter(f => f.type === 'feature').length;
+            
+            const today = new Date().toDateString();
+            document.getElementById('statToday').textContent = data.filter(f => new Date(f.timestamp).toDateString() === today).length;
+            
+            // Update badge
+            const badge = document.getElementById('feedbackBadge');
+            if (data.length > 0) {
+                badge.textContent = data.length > 99 ? '99+' : data.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+            
+            renderFeedbacks(data);
+        }
+        
+        function renderFeedbacks(data) {
             const container = document.getElementById('feedbackList');
-            container.innerHTML = data.map(item => `
-                <div class="bg-white p-4 rounded-lg border shadow-sm">
-                    <div class="flex justify-between mb-2">
-                        <span class="font-semibold text-indigo-600">${escapeHtml(item.contact)}</span>
-                        <span class="text-xs text-gray-400">${new Date(item.timestamp).toLocaleString()}</span>
+            
+            if (data.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-20 bg-white dark:bg-dark-card rounded-2xl border-2 border-dashed border-gray-200 dark:border-dark-border">
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i data-lucide="inbox" class="w-10 h-10 text-gray-300 dark:text-gray-600"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Chưa có góp ý nào</h3>
+                        <p class="text-gray-500 dark:text-gray-400">Các góp ý từ người dùng sẽ xuất hiện ở đây</p>
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = data.map((item, index) => `
+                <div class="card-hover bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm fade-in" style="animation-delay: ${index * 0.05}s">
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br ${item.type === 'bug' ? 'from-red-400 to-pink-500' : 'from-green-400 to-emerald-500'} flex items-center justify-center text-white font-bold text-sm">
+                                ${item.contact ? item.contact.charAt(0).toUpperCase() : '?'}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900 dark:text-white">${escapeHtml(item.contact) || 'Ẩn danh'}</p>
+                                <p class="text-xs text-gray-400 flex items-center gap-1">
+                                    <i data-lucide="clock" class="w-3 h-3"></i>
+                                    ${formatTime(item.timestamp)}
+                                </p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full ${item.type === 'bug' ? 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400' : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'}">
+                            ${item.type === 'bug' ? '🐛 Lỗi' : '💡 Ý tưởng'}
+                        </span>
                     </div>
-                    <p class="text-gray-700 whitespace-pre-wrap">${escapeHtml(item.message)}</p>
-                    <div class="mt-2 text-xs uppercase font-bold tracking-wide ${item.type==='bug'?'text-red-500':'text-green-500'}">${item.type}</div>
+                    <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed pl-13">${escapeHtml(item.message)}</p>
+                    
+                    <div class="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-dark-border">
+                        <button onclick="replyFeedback('${escapeHtml(item.contact)}')" class="px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-lg transition-colors flex items-center gap-1">
+                            <i data-lucide="reply" class="w-3 h-3"></i> Phản hồi
+                        </button>
+                        <button onclick="copyFeedback('${escapeHtml(item.message).replace(/'/g, "\\'")}')" class="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex items-center gap-1">
+                            <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                        </button>
+                    </div>
                 </div>
             `).join('');
             lucide.createIcons();
         }
+        
+        function filterFeedbacks() {
+            const search = document.getElementById('searchFeedback').value.toLowerCase();
+            const type = document.getElementById('filterType').value;
+            
+            let filtered = allFeedbacks.filter(f => {
+                const matchSearch = f.message.toLowerCase().includes(search) || (f.contact && f.contact.toLowerCase().includes(search));
+                const matchType = type === 'all' || f.type === type;
+                return matchSearch && matchType;
+            });
+            
+            renderFeedbacks(filtered);
+        }
+        
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Vừa xong';
+            if (diff < 3600000) return `${Math.floor(diff/60000)} phút trước`;
+            if (diff < 86400000) return `${Math.floor(diff/3600000)} giờ trước`;
+            if (diff < 604800000) return `${Math.floor(diff/86400000)} ngày trước`;
+            
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        
+        function replyFeedback(contact) {
+            showToast(`Sẽ gửi email đến: ${contact}`, 'info');
+        }
+        
+        function copyFeedback(text) {
+            navigator.clipboard.writeText(text);
+            showToast('Đã sao chép nội dung!', 'success');
+        }
 
-        // --- UPDATE LOGIC ---
+        // --- CONFIG ---
         async function loadConfig() {
             const pass = localStorage.getItem('admin_pass');
             const res = await fetch('/api/admin/config?password=' + pass);
             const data = await res.json();
 
-            // Support old format or new format
             const chromeData = data.platforms?.chrome || (data.links ? { url: data.links.chrome } : {}) || {};
             const edgeData = data.platforms?.edge || (data.links ? { url: data.links.edge } : {}) || {};
 
@@ -237,6 +865,11 @@
         }
 
         async function saveConfig() {
+            const btn = document.getElementById('saveBtn');
+            btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Đang lưu...';
+            btn.disabled = true;
+            lucide.createIcons();
+            
             const config = {
                 version: document.getElementById('conf-version').value,
                 message: document.getElementById('conf-message').value,
@@ -259,11 +892,17 @@
                 body: JSON.stringify({ config })
             });
             
-            if (res.ok) showToast('Đã lưu cấu hình cập nhật!');
-            else showToast('Lỗi khi lưu!');
+            setTimeout(() => {
+                btn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Lưu cấu hình';
+                btn.disabled = false;
+                lucide.createIcons();
+                
+                if (res.ok) showToast('Đã lưu cấu hình cập nhật!', 'success');
+                else showToast('Lỗi khi lưu!', 'error');
+            }, 500);
         }
 
-        // --- UPLOAD LOGIC ---
+        // --- UPLOAD ---
         function triggerUpload(target) {
             currentTarget = target;
             document.getElementById('fileInput').click();
@@ -276,8 +915,8 @@
             const formData = new FormData();
             formData.append('file', file);
             
-            const btnIcon = document.querySelector(`button[onclick="triggerUpload('${currentTarget}')"] i`);
-            btnIcon.setAttribute('data-lucide', 'loader');
+            const btn = document.querySelector(`button[onclick="triggerUpload('${currentTarget}')"]`);
+            btn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i>';
             lucide.createIcons();
 
             try {
@@ -291,17 +930,16 @@
                 
                 if (data.success) {
                     document.getElementById(`conf-${currentTarget}-url`).value = data.url;
-                    showToast('Upload thành công!');
+                    showToast('Upload thành công!', 'success');
                 } else {
-                    showToast('Upload thất bại!');
+                    showToast('Upload thất bại!', 'error');
                 }
             } catch (err) {
-                showToast('Lỗi kết nối!');
+                showToast('Lỗi kết nối!', 'error');
             } finally {
-                // Reset icon
-                btnIcon.setAttribute('data-lucide', 'upload');
+                btn.innerHTML = '<i data-lucide="upload" class="w-5 h-5"></i>';
                 lucide.createIcons();
-                e.target.value = ''; // Reset input
+                e.target.value = '';
             }
         });
 
@@ -309,16 +947,56 @@
         function switchView(view) {
             document.getElementById('loginSection').classList.add('hidden');
             document.getElementById('dashboardSection').classList.remove('hidden');
-            document.getElementById('dashboardSection').classList.add('slide-up');
+            document.getElementById('dashboardSection').classList.add('fade-in');
+            switchTab('feedback');
         }
-        function logout() { localStorage.removeItem('admin_pass'); location.reload(); }
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            t.classList.remove('translate-y-20', 'opacity-0');
-            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3000);
+        
+        function logout() {
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
         }
-        function escapeHtml(text) { return text ? text.replace(/</g, "&lt;") : ''; }
+        
+        function hideModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+        }
+        
+        function confirmLogout() {
+            localStorage.removeItem('admin_pass');
+            location.reload();
+        }
+        
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const title = document.getElementById('toastTitle');
+            
+            const types = {
+                success: { bg: 'bg-green-100 dark:bg-green-900/30', icon: 'check-circle', color: 'text-green-600 dark:text-green-400', title: 'Thành công' },
+                error: { bg: 'bg-red-100 dark:bg-red-900/30', icon: 'x-circle', color: 'text-red-600 dark:text-red-400', title: 'Lỗi' },
+                info: { bg: 'bg-blue-100 dark:bg-blue-900/30', icon: 'info', color: 'text-blue-600 dark:text-blue-400', title: 'Thông tin' }
+            };
+            
+            const t = types[type];
+            icon.className = `p-2 rounded-xl ${t.bg}`;
+            icon.innerHTML = `<i data-lucide="${t.icon}" class="w-5 h-5 ${t.color}"></i>`;
+            title.textContent = t.title;
+            document.getElementById('toastMsg').textContent = msg;
+            
+            lucide.createIcons();
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 4000);
+        }
+        
+        function hideToast() {
+            document.getElementById('toast').classList.add('translate-y-20', 'opacity-0');
+        }
+        
+        function escapeHtml(text) { 
+            if (!text) return '';
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+        }
 
         // Auto Login
         if (localStorage.getItem('admin_pass')) {

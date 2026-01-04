@@ -1202,13 +1202,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     function showUpdateModal(info) {
       return new Promise((resolve) => {
-        // Detect Browser
+        // 1. Detect Browser
         const userAgent = navigator.userAgent;
         const isEdge = userAgent.indexOf("Edg") > -1;
         const browserKey = isEdge ? 'edge' : 'chrome';
         const browserName = isEdge ? 'Microsoft Edge' : 'Google Chrome / Brave';
 
-        // Get Config (New Structure vs Old Structure)
+        // 2. Get Config
+        // Ưu tiên config mới (platforms), fallback config cũ (links)
         let config = {};
         if (info.platforms && info.platforms[browserKey]) {
             config = info.platforms[browserKey];
@@ -1216,12 +1217,34 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             config = { url: info.links[browserKey], force_update: false };
         }
         
-        // Fallback url
-        const downloadUrl = config.url || (isEdge ? 
-            "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde" : 
-            "https://github.com/Trongdepzai-dev/onluyen-scraper-extension/releases");
-        
+        // 3. Determine URL & Force Update Status
+        const defaultEdgeStore = "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde";
+        const defaultChromeRepo = "https://github.com/Trongdepzai-dev/onluyen-scraper-extension/releases";
+
+        // Logic URL: Nếu Admin cấu hình thì dùng Admin, không thì dùng Default
+        // Với Chrome: Admin thường sẽ upload file .zip lên server -> config.url sẽ là link localhost/downloads/...
+        const downloadUrl = config.url || (isEdge ? defaultEdgeStore : defaultChromeRepo);
         const isForceUpdate = !!config.force_update;
+        
+        // Logic Button Label
+        let btnLabel = "";
+        let btnIcon = "download";
+        
+        if (isEdge) {
+            // Nếu URL chứa microsoft -> Store
+            if (downloadUrl.includes("microsoft.com")) {
+                btnLabel = "Mở Microsoft Edge Store";
+                btnIcon = "shoppingBag"; // Giả sử dùng icon shopping bag hoặc external link
+            } else {
+                btnLabel = "Tải bản mới (.zip)";
+            }
+        } else {
+            // Chrome luôn là file zip thủ công
+            btnLabel = "Tải gói cập nhật (.zip)";
+        }
+
+        console.log('[OnLuyen Update] Browser:', browserName);
+        console.log('[OnLuyen Update] Download URL:', downloadUrl);
 
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
@@ -1259,25 +1282,30 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
             
             <div id="updateActionButtons" style="display: flex; flex-direction: column; gap: 12px;">
               <!-- Main Download Button -->
-              <a href="${downloadUrl}" target="_blank" id="downloadBtn" style="
+              <div id="downloadBtn" style="
                 background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); 
-                color: white; padding: 16px; border-radius: 16px;
+                color: white; padding: 16px; border-radius: 16px; cursor: pointer;
                 text-decoration: none; font-weight: 700; font-size: 16px; transition: all 0.2s;
                 display: flex; align-items: center; justify-content: center; gap: 8px;
                 box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
               " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
-                ${getIcon('download', 'scraper-icon-sm')} Tải bản mới cho ${browserName}
-              </a>
+                ${getIcon(btnIcon, 'scraper-icon-sm')} ${btnLabel}
+              </div>
               
-              <!-- Manual Guide Button (if zip) -->
+              <!-- Manual Guide Button (Always show for Chrome/Brave) -->
               ${!isEdge ? `
-              <button id="guideBtn" style="
-                background: white; border: 1px solid #e5e7eb; color: #4b5563;
-                padding: 12px; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 14px;
-                transition: all 0.2s;
-              " onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
-                Cách cài đặt thủ công?
-              </button>` : ''}
+              <div style="display: flex; gap: 8px; align-items: center; justify-content: center; margin-top: 4px;">
+                  <span style="font-size: 12px; color: #ef4444; font-weight: 600; display: flex; align-items: center; gap: 4px;">
+                    ${getIcon('alertTriangle', 'scraper-icon-xs')} Chrome cần cài đặt thủ công
+                  </span>
+                  <button id="guideBtn" style="
+                    background: transparent; border: none; color: #4f46e5;
+                    padding: 4px; cursor: pointer; font-weight: 700; font-size: 12px;
+                    text-decoration: underline;
+                  ">
+                    Xem hướng dẫn
+                  </button>
+              </div>` : ''}
             </div>
 
             <!-- Skip Button (Hidden if Force Update) -->
@@ -1297,13 +1325,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         const guideBtn = document.getElementById('guideBtn');
         const downloadBtn = document.getElementById('downloadBtn');
 
-        // Logic hướng dẫn cài thủ công cho Chrome (file zip)
+        // Logic hướng dẫn
         if (guideBtn) {
             guideBtn.onclick = () => {
-                window.open('https://github.com/Trongdepzai-dev/onluyen-scraper-extension#c%C3%A0i-%C4%91%E1%BA%B7t-th%E1%BB%A7-c%C3%B4ng-t%E1%BB%AB-source-code', '_blank');
+                window.open('https://github.com/Trongdepzai-dev/onluyen-scraper-extension/blob/main/HOW2UPDATE.md', '_blank');
             };
         }
 
+        // Logic Skip
         if (skipBtn) {
           skipBtn.onclick = () => {
             overlay.style.opacity = '0';
@@ -1314,9 +1343,14 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           };
         }
         
-        // Khi bấm download
+        // Logic Download
         downloadBtn.onclick = () => {
-             // Optional: Có thể đóng modal sau khi bấm tải nếu không force update
+             console.log('[OnLuyen Update] Downloading:', downloadUrl);
+             window.open(downloadUrl, '_blank');
+             
+             // Nếu là Edge Store -> Có thể đóng luôn modal
+             // Nếu là Chrome (Zip) -> Nên giữ modal hoặc hiện hướng dẫn? 
+             // Hiện tại logic là đóng modal sau 1s nếu không phải force update
              if (!isForceUpdate) {
                 setTimeout(() => {
                     overlay.style.opacity = '0';
