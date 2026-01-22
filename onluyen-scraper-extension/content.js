@@ -2356,6 +2356,16 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       if (!node) return '';
       if (node.tagName && node.tagName.toLowerCase() === 'text') return (node.textContent || '').trim();
 
+      // Fix: Handle SVG use tag with data-c (hex char code)
+      if (node.tagName && node.tagName.toLowerCase() === 'use') {
+        const dataC = node.getAttribute('data-c');
+        if (dataC) {
+          try {
+            return String.fromCodePoint(parseInt(dataC, 16));
+          } catch(e) {}
+        }
+      }
+
       const mml = node.getAttribute ? node.getAttribute('data-mml-node') : null;
       const children = () => Array.from(node.children || []).filter(ch => ch.getAttribute && ch.getAttribute('data-mml-node'));
 
@@ -2954,12 +2964,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         questionImages = [...ctx.images, ...q.images];
         
         let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ ${getIcon('pencil', 'scraper-icon-sm')} ${cauText} • TỰ LUẬN\n`;
+        textNormal += `║ ✏️ ${cauText} • TỰ LUẬN\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        if (ctx.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} Đề bài: ${ctx.text}\n`;
-        if (q.text) textNormal += `║ ${getIcon('help', 'scraper-icon-sm')} Câu hỏi: ${q.text}\n`;
+        if (ctx.text) textNormal += `║ 📋 Đề bài: ${ctx.text}\n`;
+        if (q.text) textNormal += `║ ❓ Câu hỏi: ${q.text}\n`;
         if (questionImages.length > 0) {
-          textNormal += `║ ${getIcon('image', 'scraper-icon-sm')} Ảnh: ${questionImages.length} hình\n`;
+          textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
         }
         textNormal += `${createSeparator("end")}\n`;
         
@@ -2975,27 +2985,49 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       const trueFalse = document.querySelectorAll('.true-false');
       if (trueFalse.length > 0) {
         const titleStatic = document.querySelector('.title-static');
+        const questionName = document.querySelector('.question-name');
+
         const ts = titleStatic ? extractIntelligentText(titleStatic) : { text: '', images: [] };
-        questionImages = [...ts.images];
+        const qn = questionName ? extractIntelligentText(questionName) : { text: '', images: [] };
         
-        const childContents = document.querySelectorAll('.child-content .fadein, .child-content');
+        questionImages = [...ts.images, ...qn.images];
+        
+        // FIX: Only select the container to avoid duplication
+        const childWrappers = document.querySelectorAll('.child-content');
         
         let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ ${getIcon('check', 'scraper-icon-sm')} ${cauText} • ĐÚNG/SAI\n`;
+        textNormal += `║ ✅ ${cauText} • ĐÚNG/SAI\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        if (ts.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} ${ts.text}\n`;
+        if (ts.text) textNormal += `║ 📋 ${ts.text}\n`;
+        if (qn.text) textNormal += `║ ❓ Câu hỏi: ${qn.text}\n`;
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ ${getIcon('circle', 'scraper-icon-sm')} Các ý:\n`;
+        textNormal += `║ ⚪ Các ý:\n`;
         
         let textAI = `\n━━━ ${cauText} [ĐÚNG/SAI] ━━━\n`;
-        if (ts.text) textAI += `${ts.text}\n\n`;
+        if (ts.text) textAI += `${ts.text}\n`;
+        if (qn.text) textAI += `${qn.text}\n\n`;
+        else textAI += `\n`;
         
         const opts = ['a)', 'b)', 'c)', 'd)'];
-        childContents.forEach((child, i) => {
-          const c = extractIntelligentText(child);
+        childWrappers.forEach((wrapper, i) => {
+          // Try to find the content element (.fadein) directly to get clean text
+          let target = wrapper.querySelector('.fadein');
+          
+          // Fallback mechanism if structure is different
+          if (!target) {
+             const clone = wrapper.cloneNode(true);
+             // Remove garbage elements that might clutter the text
+             clone.querySelectorAll('.true-false, .option-char').forEach(el => el.remove());
+             target = clone;
+          }
+
+          const c = extractIntelligentText(target);
           if (c.text) {
-            textNormal += `║    ${opts[i] || (i+1)+')'} ${c.text}\n`;
-            textAI += `${opts[i] || (i+1)+')'} ${c.text}\n`;
+            // Clean up any potential leading labels like "a)" if they persist
+            let cleanText = c.text.replace(/^[a-d]\)\s*/i, '').trim();
+            
+            textNormal += `║    ${opts[i] || (i+1)+')'} ${cleanText}\n`;
+            textAI += `${opts[i] || (i+1)+')'} ${cleanText}\n`;
           }
           questionImages = [...questionImages, ...c.images];
         });
@@ -3019,10 +3051,10 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       questionImages = [...qn.images, ...db.images];
       
       let textNormal = `\n${createSeparator("start")}\n`;
-      textNormal += `║ ${getIcon('target', 'scraper-icon-sm')} ${cauText} • TRẮC NGHIỆM\n`;
+      textNormal += `║ 🎯 ${cauText} • TRẮC NGHIỆM\n`;
       textNormal += `${createSeparator("thin")}\n`;
-      if (db.text) textNormal += `║ ${getIcon('clipboard', 'scraper-icon-sm')} Đề bài: ${db.text}\n`;
-      if (qn.text) textNormal += `║ ${getIcon('help', 'scraper-icon-sm')} Câu hỏi: ${qn.text}\n`;
+      if (db.text) textNormal += `║ 📋 Đề bài: ${db.text}\n`;
+      if (qn.text) textNormal += `║ ❓ Câu hỏi: ${qn.text}\n`;
       
       let textAI = `\n━━━ ${cauText} [TRẮC NGHIỆM] ━━━\n`;
       if (db.text) textAI += `📋 ${db.text}\n`;
@@ -3030,7 +3062,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       if (options.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ ${getIcon('circle', 'scraper-icon-sm')} Lựa chọn:\n`;
+        textNormal += `║ ⚪ Lựa chọn:\n`;
         
         options.forEach(opt => {
           const label = opt.querySelector('.question-option-label');
@@ -3049,7 +3081,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       if (questionImages.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ ${getIcon('image', 'scraper-icon-sm')} Ảnh: ${questionImages.length} hình\n`;
+        textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
       }
       
       textNormal += `${createSeparator("end")}\n`;
