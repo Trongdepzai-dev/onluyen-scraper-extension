@@ -3250,12 +3250,31 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       // Replace MathJax with LaTeX
       clone.querySelectorAll('mjx-container').forEach(mjx => {
-        const latex = mjxToLatexExam(mjx);
+        let latex = mjxToLatexExam(mjx);
+        
+        // Fallback: Try extracting from SVG if MML failed
+        if (!latex) {
+           const svg = mjx.querySelector('svg');
+           if (svg) {
+             const svgText = parseSVGMath(svg);
+             if (svgText) latex = svgText;
+           }
+        }
+
         mjx.replaceWith(latex ? ` $${latex}$ ` : '');
       });
 
-      // Remove SVG
-      clone.querySelectorAll('svg').forEach(svg => svg.remove());
+      // Process remaining standalone SVGs or failed mathjax SVGs
+      clone.querySelectorAll('svg').forEach(svg => {
+         const svgText = parseSVGMath(svg);
+         if (svgText) {
+            const span = document.createElement('span');
+            span.textContent = ` $${svgText}$ `;
+            svg.replaceWith(span);
+         } else {
+            svg.remove();
+         }
+      });
 
       // ===== THÊM PHẦN NÀY - Chuyển định dạng thành ký hiệu =====
       // Xử lý underline trước (thường nằm trong cùng)
@@ -3467,12 +3486,12 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
       questions.forEach(q => {
         out.push(createSeparator("start"));
-        out.push(`║ ${getIcon('pin', 'scraper-icon-sm')} CÂU ${q.number} ${q.score ? `(${q.score} điểm)` : ''}`);
+        out.push(`║ 📌 CÂU ${q.number} ${q.score ? `(${q.score} điểm)` : ''}`);
         out.push(createSeparator("thin"));
 
-        if (q.title) out.push(`║ ${getIcon('clipboard', 'scraper-icon-sm')} Yêu cầu: ${q.title}`);
-        if (q.content) out.push(`║ ${getIcon('pencil', 'scraper-icon-sm')} Đề bài: ${q.content}`);
-        if (q.answerPrompt) out.push(`║ ${getIcon('pencil', 'scraper-icon-sm')} Điền: ${q.answerPrompt}`);
+        if (q.title) out.push(`║ 📋 Yêu cầu: ${q.title}`);
+        if (q.content) out.push(`║ ✏️ Đề bài: ${q.content}`);
+        if (q.answerPrompt) out.push(`║ ✏️ Điền: ${q.answerPrompt}`);
 
         const typeNames = {
           'multiple-choice': 'Trắc nghiệm',
@@ -3480,38 +3499,38 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           'fill-blank': 'Điền khuyết',
           'unknown': 'Không xác định'
         };
-        out.push(`║ ${getIcon('tag', 'scraper-icon-sm')} Loại: ${typeNames[q.type] || q.type}`);
+        out.push(`║ 🏷️ Loại: ${typeNames[q.type] || q.type}`);
         out.push('');
 
         switch(q.type) {
           case 'multiple-choice':
-            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} CÁC ĐÁP ÁN:`);
+            out.push(`║ 📊 CÁC ĐÁP ÁN:`);
             Object.entries(q.data.answers).sort().forEach(([k, v]) => {
               out.push(`║    ${k}. ${v}`);
             });
             break;
 
           case 'true-false':
-            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} CÁC MỆNH ĐỀ:`);
+            out.push(`║ 📊 CÁC MỆNH ĐỀ:`);
             q.data.items.forEach(item => {
               out.push(`║    ${item.label} ${item.statement}`);
             });
             break;
 
           case 'fill-blank':
-            out.push(`║ ${getIcon('chart', 'scraper-icon-sm')} Số ô trống: ${q.data.blanks.length}`);
+            out.push(`║ 📊 Số ô trống: ${q.data.blanks.length}`);
             break;
         }
 
         // ===== THÊM PHẦN HIỂN THỊ ẢNH =====
         if (q.images && q.images.length > 0) {
           out.push(createSeparator("thin"));
-          out.push(`║ ${getIcon('image', 'scraper-icon-sm')} HÌNH ẢNH (${q.images.length}):`);
+          out.push(`║ 🖼️ HÌNH ẢNH (${q.images.length}):`);
           q.images.forEach((img, idx) => {
             if (img.isBase64) {
-              out.push(`║    [${idx + 1}] ${getIcon('chart', 'scraper-icon-xs')} Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`║    [${idx + 1}] 📊 Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             } else {
-              out.push(`║    [${idx + 1}] ${getIcon('link', 'scraper-icon-xs')} ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`║    [${idx + 1}] 🔗 ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             }
           });
         }
