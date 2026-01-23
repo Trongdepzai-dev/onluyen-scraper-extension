@@ -537,6 +537,9 @@ if (window.hasRunScraper) {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 12px;
+        contain: content;
+        content-visibility: auto;
+        contain-intrinsic-size: 1px 320px; /* Estimated height */
       }
       
       .scraper-image-card {
@@ -547,6 +550,8 @@ if (window.hasRunScraper) {
         cursor: pointer;
         background: #f3f4f6;
         border: 1px solid #e5e7eb;
+        will-change: transform;
+        contain: paint;
       }
       
       .scraper-image-card:hover {
@@ -2600,59 +2605,49 @@ if (window.hasRunScraper) {
     async function waitForContentLoaded(maxWaitTime = 8000) {
       return new Promise((resolve) => {
         let timeoutId;
-        let resolved = false;
+        let checkTimeout;
+        
+        const check = () => {
+          const loadingElements = document.querySelectorAll('app-loading');
+          if (loadingElements.length > 0) return false;
+
+          const fadeinSpans = document.querySelectorAll('.fadein');
+          for (const span of fadeinSpans) {
+            // Check if span is empty or contains loading spinner
+            if (span.querySelector('app-loading') || (!span.textContent.trim() && !span.querySelector('img'))) {
+              return false;
+            }
+          }
+          return true;
+        };
+
+        // Check immediately
+        if (check()) {
+          resolve(true);
+          return;
+        }
 
         const observer = new MutationObserver(() => {
-          const loadingElements = document.querySelectorAll('app-loading');
-          let allContentLoaded = true;
-          
-          const fadeinSpans = document.querySelectorAll('.fadein');
-          fadeinSpans.forEach(span => {
-            if (span.querySelector('app-loading') || !span.textContent.trim()) {
-              allContentLoaded = false;
+          if (checkTimeout) return; // Debounce
+          checkTimeout = setTimeout(() => {
+            checkTimeout = null;
+            if (check()) {
+              observer.disconnect();
+              clearTimeout(timeoutId);
+              resolve(true);
             }
-          });
-          
-          if (allContentLoaded && loadingElements.length === 0 && !resolved) {
-            resolved = true;
-            observer.disconnect();
-            clearTimeout(timeoutId);
-            resolve(true);
-          }
+          }, 20); // Fast debounce
         });
         
         observer.observe(document.body, {
           childList: true,
-          subtree: true,
-          attributes: true,
-          characterData: true
+          subtree: true
         });
         
         timeoutId = setTimeout(() => {
-          if (!resolved) {
-            resolved = true;
-            observer.disconnect();
-            resolve(true);
-          }
+          observer.disconnect();
+          resolve(true);
         }, maxWaitTime);
-        
-        // Check immediately
-        const loadingElements = document.querySelectorAll('app-loading');
-        if (loadingElements.length === 0 && !resolved) {
-          const fadeinSpans = document.querySelectorAll('.fadein');
-          let allLoaded = true;
-          fadeinSpans.forEach(span => {
-            if (span.querySelector('app-loading') || !span.textContent.trim()) {
-              allLoaded = false;
-            }
-          });
-          if (allLoaded) {
-            resolved = true;
-            observer.disconnect();
-            clearTimeout(timeoutId);
-            resolve(true);
-          }
-        }
       });
     }
 
@@ -2730,8 +2725,7 @@ if (window.hasRunScraper) {
       return null;
     }
 
-    async function clickButtonRepeatedly(maxAttempts = 50, interval = 200) {
-      // Chuyển đổi logic cũ sang thời gian chờ tối đa (mặc định khoảng 10s)
+    async function clickButtonRepeatedly(maxAttempts = 50, interval = 50) {
       const maxWaitTime = 15000; 
       const startTime = Date.now();
 
@@ -2740,23 +2734,21 @@ if (window.hasRunScraper) {
         let pollInterval = null;
         let resolved = false;
 
-        // Hàm dọn dẹp
         const cleanup = () => {
           if (observer) { observer.disconnect(); observer = null; }
           if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
         };
 
-        // Hàm thực hiện click "thần tốc"
         const triggerClick = (btn, source) => {
           if (resolved) return;
           resolved = true;
           cleanup();
 
           try {
-            // Combo click hủy diệt: Mousedown -> Mouseup -> Click
-            btn.element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
-            btn.element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
-            btn.element.click();
+            btn.element.click(); // Simple click first
+            // Backup events just in case
+            btn.element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+            btn.element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true }));
             
             resolve({ success: true, ...btn });
           } catch (e) {
@@ -2764,39 +2756,24 @@ if (window.hasRunScraper) {
           }
         };
 
-        // Hàm kiểm tra
         const checkBtn = (source) => {
           if (stopRequested || isPaused || resolved) return;
-          
           const btn = findClickableButton();
-          if (btn) {
-            triggerClick(btn, source);
-          }
+          if (btn) triggerClick(btn, source);
         };
 
-        // 1. Check ngay lập tức
         checkBtn('immediate');
         if (resolved) return;
 
-        // 2. Cập nhật UI
         if (panelElements.waitingBtn) {
            panelElements.waitingBtn.innerHTML = `${getIcon('search', 'scraper-icon-spin')} Đang chờ nút...`;
         }
 
-        // 3. Thiết lập Observer (Bắt biến động DOM)
         observer = new MutationObserver(() => checkBtn('mutation'));
-        observer.observe(document.body, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['disabled', 'class', 'style', 'hidden']
-        });
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'class', 'style'] });
 
-        // 4. Thiết lập Fast Polling 50ms (Backup cho trường hợp Observer miss)
         pollInterval = setInterval(() => {
-          checkBtn('poll-50ms');
-          
-          // Kiểm tra timeout
+          checkBtn('poll');
           if (Date.now() - startTime > maxWaitTime) {
             if (!resolved) {
               resolved = true;
@@ -2805,38 +2782,67 @@ if (window.hasRunScraper) {
               resolve({ success: false });
             }
           }
-        }, 50); // Kiểm tra mỗi 50ms = 20 lần/giây
+        }, interval);
       });
     }
 
     async function waitForQuestionChange(currentId, maxWaitTime = 10000) {
-      const startTime = Date.now();
-      
-      while (Date.now() - startTime < maxWaitTime) {
-        if (stopRequested) return false;
-        
+      return new Promise((resolve) => {
         const numDiv = document.querySelector('.num');
-        const fullText = numDiv ? (numDiv.textContent || '') : '';
         
-        const idMatch = fullText.match(/#(\d+)/);
-        const numMatch = fullText.match(/Câu[:\s]*(\d+)/i);
-        const newId = idMatch ? idMatch[1] : (numMatch ? numMatch[1] : null);
-        
-                if (newId && newId !== currentId) {
-        
-                  await fastSleep(100);
-        
-                  return true;
-        
-                }
-        
-                await fastSleep(50);
-        
-              }
-        
-              return false;
-        
+        // Helper to extract ID
+        const getNum = () => {
+            const el = document.querySelector('.num');
+            if (!el) return null;
+            const txt = el.textContent || '';
+            const idMatch = txt.match(/#(\d+)/);
+            const numMatch = txt.match(/Câu[:\s]*(\d+)/i);
+            return idMatch ? idMatch[1] : (numMatch ? numMatch[1] : null);
+        };
+
+        // If no numDiv, fallback to polling (legacy support)
+        if (!numDiv) {
+           let start = Date.now();
+           let interval = setInterval(() => {
+               if (Date.now() - start > maxWaitTime || stopRequested) {
+                   clearInterval(interval);
+                   resolve(false);
+                   return;
+               }
+               const newId = getNum();
+               if (newId && newId !== currentId) {
+                   clearInterval(interval);
+                   resolve(true);
+               }
+           }, 50);
+           return;
+        }
+
+        // Check immediately
+        const startId = getNum();
+        if (startId && startId !== currentId) {
+            resolve(true);
+            return;
+        }
+
+        // Observer
+        const observer = new MutationObserver(() => {
+            const newId = getNum();
+            if (newId && newId !== currentId) {
+                observer.disconnect();
+                clearTimeout(timeout);
+                resolve(true);
             }
+        });
+
+        observer.observe(numDiv, { childList: true, characterData: true, subtree: true });
+
+        const timeout = setTimeout(() => {
+            observer.disconnect();
+            resolve(false);
+        }, maxWaitTime);
+      });
+    }
 
     async function extractQuestionHomework() {
       await waitForContentLoaded();
@@ -3559,7 +3565,7 @@ if (window.hasRunScraper) {
           scrollContainer.scrollTop = currentScroll;
         }
 
-        await fastSleep(80); // Giảm từ 200ms xuống 80ms
+        await fastSleep(20); // Tăng tốc cực mạnh (80ms -> 20ms)
 
         // Cập nhật maxScroll (có thể tăng khi load thêm)
         maxScroll = Math.max(
@@ -4981,6 +4987,8 @@ if (window.hasRunScraper) {
                        position: relative; 
                      ">
                   <img src="${img.fullUrl || img.url}" 
+                       loading="lazy"
+                       decoding="async"
                        style="
                          width: 100%; 
                          height: 90px; 
