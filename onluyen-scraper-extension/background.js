@@ -45,6 +45,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       .catch(error => sendResponse({ success: false, error: error.message }));
     return true; // Giữ kênh tin nhắn mở cho phản hồi bất đồng bộ
   }
+
+  if (request.action === "getPrompt") {
+    fetch(chrome.runtime.getURL('PROMPT.md'))
+        .then(response => {
+            if (!response.ok) throw new Error("Failed to load");
+            return response.text();
+        })
+        .then(text => sendResponse({ success: true, data: text }))
+        .catch(error => sendResponse({ success: false, error: error.message }));
+    return true;
+  }
 });
 
 // Lắng nghe sự kiện click vào icon extension

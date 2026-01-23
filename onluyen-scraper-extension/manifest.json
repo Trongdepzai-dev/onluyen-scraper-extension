@@ -12,6 +12,12 @@
     "https://scintillating-kangaroo-6a27a8.netlify.app/*",
     "https://generativelanguage.googleapis.com/*"
   ],
+  "web_accessible_resources": [
+    {
+      "resources": ["PROMPT.md"],
+      "matches": ["*://*.onluyen.vn/*"]
+    }
+  ],
   "background": {
     "service_worker": "background.js"
   },

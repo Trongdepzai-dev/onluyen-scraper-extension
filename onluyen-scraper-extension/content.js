@@ -266,253 +266,21 @@ if (window.hasRunScraper) {
     // ============================================================ 
     // 🤖 DEFAULT AI PROMPT CONFIGURATION
     // ============================================================ 
-    let defaultAIPrompt = `# 🧠 HỆ THỐNG PHÂN TÍCH CÂU HỎI THÔNG MINH v${chrome.runtime.getManifest().version} - ENHANCED
+    let defaultAIPrompt = ""; // Loaded from PROMPT.md
 
-## 🎯 VAI TRÒ & NĂNG LỰC NÂNG CAO
-
-Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
-
-### 📋 XỬ LÝ ĐA DẠNG CÂU HỎI
-- ✅ Câu hỏi trắc nghiệm (Multiple Choice)
-- ✅ Câu hỏi tự luận (Essay)
-- ✅ Câu hỏi đúng/sai (True/False)
-- ✅ Câu hỏi điền khuyết (Fill-in-the-blank)
-- ✅ Câu hỏi ghép đôi (Matching)
-- ✅ Câu hỏi tình huống (Case Study)
-- ✅ Câu hỏi so sánh/phân tích (Compare/Analyze)
-
-### 🔧 CÔNG CỤ TÍCH HỢP
-\`\`\`
-┌─────────────────────────────────────────────────────────┐
-│  🔍 WEB_SEARCH    - Tìm kiếm thông tin mới nhất        │
-│  📊 CALCULATOR    - Tính toán phức tạp                 │
-│  📚 KNOWLEDGE_DB  - Tra cứu cơ sở dữ liệu kiến thức    │
-│  🔬 FACT_CHECK    - Xác minh thông tin                 │
-└─────────────────────────────────────────────────────────┘
-\`\`\`
-
----
-
-## ⚡ NGUYÊN TẮC VÀNG: TỰ ĐÁNH GIÁ & TÌM KIẾM
-
-\`\`\`
-┌────────────────────────────────────────────────────────────┐
-│  🚨 TRƯỚC KHI TRẢ LỜI, LUÔN TỰ HỎI:                       │
-│                                                            │
-│  1️⃣ Tôi có CHẮC CHẮN 100% về thông tin này không?         │
-│  2️⃣ Thông tin này có thể đã THAY ĐỔI/CẬP NHẬT không?      │
-│  3️⃣ Đây có phải kiến thức CHUYÊN MÔN SÂU cần xác minh?    │
-│  4️⃣ Có SỐ LIỆU/THỐNG KÊ cụ thể cần kiểm tra không?        │
-│                                                            │
-│  ➡️ NẾU BẤT KỲ CÂU NÀO = CÓ → BẮT BUỘC DÙNG SEARCH       │
-└────────────────────────────────────────────────────────────┘
-\`\`\`
-
----
-
-## 🔬 PHƯƠNG PHÁP TƯ DUY 7 LỚP (NÂNG CẤP)
-
-### 🔷 LỚP 1: PHÂN TÍCH ĐỀ BÀI (DECODE)
-\`\`\`
-📌 Checklist:
-□ Đọc kỹ TỪNG TỪ trong câu hỏi
-□ Highlight TỪ KHÓA chính (in đậm khi trả lời)
-□ Nhận diện LOẠI CÂU HỎI
-□ Phát hiện "bẫy ngôn ngữ" (luôn, không bao giờ, tất cả, duy nhất...)
-□ Xác định LĨNH VỰC chuyên môn
-□ Đánh giá MỨC ĐỘ KHÓ (1-5)
-\`\`\`
-
-### 🔷 LỚP 2: TỰ ĐÁNH GIÁ KIẾN THỨC (SELF-ASSESSMENT) ⭐ MỚI
-\`\`\`
-┌─────────────────────────────────────────────────────────┐
-│  🧠 KIỂM TRA NỘI BỘ:                                    │
-│                                                         │
-│  ❓ Tôi biết chắc câu trả lời? ──→ ✅ Tiếp tục LỚP 3   │
-│                                                         │
-│  ❓ Tôi KHÔNG CHẮC hoặc:                                │
-│     • Thông tin có thể outdated                         │
-│     • Cần số liệu/dữ kiện cụ thể                       │
-│     • Liên quan đến sự kiện gần đây                    │
-│     • Kiến thức chuyên ngành sâu                       │
-│     • Có nhiều nguồn khác nhau                         │
-│                                                         │
-│     ──→ 🔍 BẮT BUỘC: KÍCH HOẠT SEARCH                  │
-└─────────────────────────────────────────────────────────┘
-\`\`\`
-
-### 🔷 LỚP 3: TRÍCH XUẤT THÔNG TIN (EXTRACT)
-\`\`\`
-📌 Phân loại dữ kiện:
-┌──────────────────┬──────────────────┐
-│  📗 CHÍNH        │  📘 PHỤ          │
-│  (Core Facts)    │  (Supporting)    │
-├──────────────────┼──────────────────┤
-│  • ...           │  • ...           │
-│  • ...           │  • ...           │
-└──────────────────┴──────────────────┘
-
-📌 Dữ kiện CẦN XÁC MINH (nếu có):
-→ [Danh sách cần search]
-\`\`\`
-
-### 🔷 LỚP 4: TÌM KIẾM BỔ SUNG (SEARCH) ⭐ MỚI
-\`\`\`
-┌─────────────────────────────────────────────────────────┐
-│  🔍 KÍCH HOẠT SEARCH KHI:                               │
-│                                                         │
-│  ⚠️ Trigger tự động:                                    │
-│  • Câu hỏi về sự kiện sau 2023                         │
-│  • Yêu cầu số liệu thống kê cụ thể                     │
-│  • Tên người/tổ chức/địa điểm cần xác minh             │
-│  • Luật pháp/quy định (có thể thay đổi)                │
-│  • Công nghệ/sản phẩm mới                              │
-│  • Giá cả/thị trường                                   │
-│  • Nghiên cứu khoa học mới                             │
-│  • Khi độ tin cậy nội bộ < 85%                         │
-│                                                         │
-│  📋 Format search query:                                │
-│  [SEARCH]: "keyword chính xác + context"               │
-└─────────────────────────────────────────────────────────┘
-\`\`\`
-
-### 🔷 LỚP 5: XỬ LÝ & SUY LUẬN (PROCESS)
-\`\`\`
-📌 Áp dụng:
-• Kiến thức NỀN TẢNG đã verified
-• Kết quả từ SEARCH (nếu có)
-• Suy luận LOGIC đa chiều
-• So sánh NHIỀU NGUỒN (nếu có conflict)
-
-📌 Phương pháp suy luận:
-□ Deductive (Diễn dịch)
-□ Inductive (Quy nạp)  
-□ Abductive (Suy luận tốt nhất)
-\`\`\`
-
-### 🔷 LỚP 6: XÁC MINH CHÉO (CROSS-VERIFY) ⭐ NÂNG CẤP
-\`\`\`
-┌─────────────────────────────────────────────────────────┐
-│  ✅ CHECKLIST XÁC MINH:                                 │
-│                                                         │
-│  □ Logic NHẤT QUÁN?                                     │
-│  □ Khớp với thông tin GỐC từ đề bài?                   │
-│  □ Phù hợp với kết quả SEARCH?                         │
-│  □ Không có CONTRADICTION?                              │
-│  □ Nguồn thông tin ĐÁNG TIN CẬY?                       │
-│  □ Thông tin CÒN HIỆU LỰC (không outdated)?            │
-└─────────────────────────────────────────────────────────┘
-\`\`\`
-
-### 🔷 LỚP 7: TỔNG HỢP & TRÌNH BÀY (SYNTHESIZE)
-\`\`\`
-📌 Output bao gồm:
-• ĐÁP ÁN chính xác (highlight rõ ràng)
-• GIẢI THÍCH logic từng bước
-• NGUỒN THAM KHẢO (nếu có search)
-• MỨC ĐỘ TIN CẬY
-• LƯU Ý bổ sung (nếu cần)
-\`\`\`
-
----
-
-## 📊 THANG ĐỘ TIN CẬY NÂNG CAO
-
-| Mức | Icon | Trạng thái | Mô tả | Hành động |
-|-----|------|------------|-------|-----------|
-| 100% | 🟢 | CHẮC CHẮN | Bằng chứng trực tiếp + đã verify | Trả lời ngay |
-| 85-99% | 🔵 | RẤT CAO | Logic mạnh + kiến thức vững | Trả lời + ghi chú |
-| 70-84% | 🟡 | CAO | Có cơ sở tốt | Khuyến nghị search |
-| 50-69% | 🟠 | TRUNG BÌNH | Cần thêm thông tin | **BẮT BUỘC search** |
-| <50% | 🔴 | THẤP | Không đủ dữ liệu | **BẮT BUỘC search + cảnh báo** |
-
----
-
-## 🚀 QUY TRÌNH TRẢ LỜI CHUẨN
-
-\`\`\`
-╔═══════════════════════════════════════════════════════════╗
-║                   WORKFLOW XỬ LÝ                          ║
-╠═══════════════════════════════════════════════════════════╣
-║                                                           ║
-║   📥 NHẬN CÂU HỎI                                         ║
-║         ↓                                                 ║
-║   🔍 PHÂN TÍCH (Lớp 1)                                    ║
-║         ↓                                                 ║
-║   🧠 TỰ ĐÁNH GIÁ (Lớp 2)                                  ║
-║         ↓                                                 ║
-║   ┌─────────────────────────────────────┐                 ║
-║   │  Độ tin cậy ≥ 85%?                  │                 ║
-║   │                                     │                 ║
-║   │  ✅ CÓ → Tiếp tục xử lý            │                 ║
-║   │  ❌ KHÔNG → 🔍 SEARCH trước         │                 ║
-║   └─────────────────────────────────────┘                 ║
-║         ↓                                                 ║
-║   📊 TRÍCH XUẤT + XỬ LÝ (Lớp 3-5)                        ║
-║         ↓                                                 ║
-║   ✅ XÁC MINH CHÉO (Lớp 6)                                ║
-║         ↓                                                 ║
-║   📝 TỔNG HỢP & OUTPUT (Lớp 7)                            ║
-║                                                           ║
-╚═══════════════════════════════════════════════════════════╝
-\`\`\`
-
----
-
-## 📋 TEMPLATE OUTPUT CHUẨN
-
-\`\`\`
-═══════════════════════════════════════════════════════════
-📊 KẾT QUẢ PHÂN TÍCH
-═══════════════════════════════════════════════════════════
-
-🎯 LOẠI CÂU HỎI: [Trắc nghiệm/Tự luận/...]
-📚 LĨNH VỰC: [Tên lĩnh vực]
-⚡ ĐỘ KHÓ: [1-5]/5
-
-───────────────────────────────────────────────────────────
-✅ ĐÁP ÁN: [ĐÁP ÁN RÕ RÀNG]
-───────────────────────────────────────────────────────────
-
-📖 GIẢI THÍCH:
-[Giải thích logic từng bước]
-
-🔍 NGUỒN THAM KHẢO: (nếu có search)
-[Link/nguồn đã tra cứu]
-
-📈 ĐỘ TIN CẬY: [X]% [Icon tương ứng]
-
-💡 LƯU Ý THÊM: (nếu có)
-[Các lưu ý quan trọng]
-
-═══════════════════════════════════════════════════════════
-\`\`\`
-
----
-
-## ⚠️ HƯỚNG DẪN ĐẶC BIỆT
-
-### 🔴 LUÔN SEARCH KHI:
-\`\`\`
-• Không chắc chắn 100%
-• Câu hỏi về thời sự/sự kiện gần đây
-• Cần số liệu/thống kê cụ thể
-• Liên quan đến luật pháp/quy định
-• Thông tin khoa học/y tế cần cập nhật
-• Giá cả/thị trường/kinh tế
-• Công nghệ mới
-\`\`\`
-
-### 🟢 CÓ THỂ TRẢ LỜI TRỰC TIẾP KHI:
-\`\`\`
-• Kiến thức cơ bản/nền tảng ổn định
-• Định nghĩa/khái niệm chuẩn
-• Công thức toán/khoa học đã verified
-• Logic/suy luận thuần túy
-• Ngữ pháp/ngôn ngữ cơ bản
-\`\`\`
-
----`;
+    function loadDefaultPrompt() {
+        return new Promise((resolve) => {
+            chrome.runtime.sendMessage({ action: "getPrompt" }, (response) => {
+                if (chrome.runtime.lastError || !response || !response.success) {
+                    console.error('Error loading PROMPT.md via background', chrome.runtime.lastError || response?.error);
+                    defaultAIPrompt = "# Lỗi: Không thể tải PROMPT.md";
+                } else {
+                    defaultAIPrompt = response.data;
+                }
+                resolve();
+            });
+        });
+    }
 
     // Function to customize AI prompt
     function setCustomAIPrompt(newPrompt) {
@@ -2929,6 +2697,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       
       // 2. Tìm nút Bỏ qua hoặc Tiếp theo (Màu xám/Khác)
       const secondarySelectors = [
+        'button.btn-gray.btn-block', // Prioritize specific user request
         'div.btn.btn-gray', 
         'button.btn-gray', 
         '.btn-gray',
@@ -3677,7 +3446,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
       let out = [];
 
       // ===== THÊM AI PROMPT Ở ĐẦU =====
-      out.push(defaultAIPrompt);
+      const effectivePrompt = getEffectivePrompt();
+      out.push(effectivePrompt);
       out.push('');
       out.push('═'.repeat(60));
       out.push('📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH');
@@ -3870,7 +3640,8 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     
     async function runHomeworkMode() {
       // Initialize AI Prompt for Homework Mode
-      allResultsAI = defaultAIPrompt + '\n\n' + '═'.repeat(60) + '\n📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH\n' + '═'.repeat(60) + '\n\n';
+      const effectivePrompt = getEffectivePrompt();
+      allResultsAI = effectivePrompt + '\n\n' + '═'.repeat(60) + '\n📚 DỮ LIỆU CÂU HỎI CẦN PHÂN TÍCH\n' + '═'.repeat(60) + '\n\n';
       
       showToast('Bắt đầu scrape bài tập...', 'success');
       updateStatus('Đang khởi tạo...', 'Chuẩn bị thu thập', 'rocket');
@@ -4023,10 +3794,20 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         }
     };
 
+    function getEffectivePrompt() {
+        const settings = getScraperSettings();
+        if (settings.customPrompt && settings.customPrompt.trim().length > 0) {
+            return settings.customPrompt;
+        }
+        return defaultAIPrompt;
+    }
+
     function showGeminiSettingsModal() {
         return new Promise((resolve) => {
             const config = getGeminiConfig();
             const scraperSettings = getScraperSettings();
+            const effectivePrompt = getEffectivePrompt();
+
             const overlay = document.createElement('div');
             Object.assign(overlay.style, {
                 position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
@@ -4041,48 +3822,76 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
             overlay.innerHTML = `
                 <div style="
-                    background: #1e293b; border-radius: 24px; padding: 32px; width: 400px;
+                    background: #1e293b; border-radius: 24px; padding: 32px; width: 600px;
                     border: 1px solid rgba(255,255,255,0.1); color: white;
                     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                    max-height: 90vh; overflow-y: auto;
                 ">
                     <div style="text-align: center; margin-bottom: 24px;">
                         <div style="color: #8b5cf6; margin-bottom: 16px;">${getIcon('settings', 'scraper-icon-lg')}</div>
                         <h2 style="margin: 0; font-size: 24px;">Cấu hình</h2>
                     </div>
+
+                    <!-- Tabs -->
+                    <div style="display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                         <button id="tabGeneral" class="active-tab" style="background: transparent; border: none; color: #8b5cf6; font-weight: 600; padding: 8px 16px; cursor: pointer; border-bottom: 2px solid #8b5cf6;">Chung</button>
+                         <button id="tabPrompt" style="background: transparent; border: none; color: #94a3b8; font-weight: 500; padding: 8px 16px; cursor: pointer;">Prompt AI</button>
+                    </div>
                     
-                    <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                        <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">🤖 Gemini AI</h3>
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">API Key</label>
-                            <input type="password" id="geminiApiKey" value="${config.apiKey}" placeholder="Nhập Gemini API Key..." style="
-                                width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
-                                border-radius: 12px; color: white; outline: none; box-sizing: border-box;
-                            ">
-                            <div style="margin-top: 6px; font-size: 11px; color: #94a3b8;">
-                                Lấy key tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8b5cf6;">Google AI Studio</a>
+                    <div id="panelGeneral">
+                        <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                            <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">🤖 Gemini AI</h3>
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">API Key</label>
+                                <input type="password" id="geminiApiKey" value="${config.apiKey}" placeholder="Nhập Gemini API Key..." style="
+                                    width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                                    border-radius: 12px; color: white; outline: none; box-sizing: border-box;
+                                ">
+                                <div style="margin-top: 6px; font-size: 11px; color: #94a3b8;">
+                                    Lấy key tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8b5cf6;">Google AI Studio</a>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 0;">
+                                <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">Mô hình (Model)</label>
+                                <select id="geminiModel" style="
+                                    width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                                    border-radius: 12px; color: white; outline: none; box-sizing: border-box; cursor: pointer;
+                                ">
+                                    ${modelOptions}
+                                </select>
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 0;">
-                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">Mô hình (Model)</label>
-                            <select id="geminiModel" style="
-                                width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
-                                border-radius: 12px; color: white; outline: none; box-sizing: border-box; cursor: pointer;
-                            ">
-                                ${modelOptions}
-                            </select>
+                        <div style="margin-bottom: 32px;">
+                            <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">⚙️ Cài đặt chung</h3>
+                            <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none;">
+                                <input type="checkbox" id="autoStopAtEnd" ${scraperSettings.autoStopAtEnd ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
+                                <span style="color: #e2e8f0; font-size: 14px;">Tự động dừng khi gặp nút "Kết thúc"</span>
+                            </label>
                         </div>
                     </div>
 
-                    <div style="margin-bottom: 32px;">
-                        <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">⚙️ Cài đặt chung</h3>
-                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none;">
-                            <input type="checkbox" id="autoStopAtEnd" ${scraperSettings.autoStopAtEnd ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
-                            <span style="color: #e2e8f0; font-size: 14px;">Tự động dừng khi gặp nút "Kết thúc"</span>
-                        </label>
+                    <div id="panelPrompt" style="display: none;">
+                        <div style="margin-bottom: 24px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <label style="font-size: 14px; color: #cbd5e1;">Nội dung Prompt</label>
+                                <button id="resetPromptBtn" style="font-size: 12px; color: #f43f5e; background: transparent; border: none; cursor: pointer;">
+                                    Reset về mặc định (PROMPT.md)
+                                </button>
+                            </div>
+                            <textarea id="customPromptInput" style="
+                                width: 100%; height: 300px; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                                border-radius: 12px; color: #e2e8f0; outline: none; box-sizing: border-box;
+                                font-family: 'JetBrains Mono', monospace; font-size: 12px; resize: vertical;
+                            " placeholder="Nhập prompt tùy chỉnh...">${effectivePrompt}</textarea>
+                            <div style="margin-top: 8px; font-size: 11px; color: #94a3b8;">
+                                * Nếu để trống, hệ thống sẽ dùng file PROMPT.md gốc.
+                            </div>
+                        </div>
                     </div>
 
-                    <div style="display: flex; gap: 12px;">
+                    <div style="display: flex; gap: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;">
                         <button id="cancelGeminiConfig" style="
                             flex: 1; padding: 12px; background: rgba(255,255,255,0.1); border: none;
                             border-radius: 12px; color: white; cursor: pointer; font-weight: 600;
@@ -4097,6 +3906,42 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
             document.body.appendChild(overlay);
 
+            // Tab switching logic
+            const tabGeneral = document.getElementById('tabGeneral');
+            const tabPrompt = document.getElementById('tabPrompt');
+            const panelGeneral = document.getElementById('panelGeneral');
+            const panelPrompt = document.getElementById('panelPrompt');
+
+            const switchTab = (tab) => {
+                if (tab === 'general') {
+                    panelGeneral.style.display = 'block';
+                    panelPrompt.style.display = 'none';
+                    tabGeneral.style.color = '#8b5cf6';
+                    tabGeneral.style.borderBottom = '2px solid #8b5cf6';
+                    tabPrompt.style.color = '#94a3b8';
+                    tabPrompt.style.borderBottom = 'none';
+                } else {
+                    panelGeneral.style.display = 'none';
+                    panelPrompt.style.display = 'block';
+                    tabPrompt.style.color = '#8b5cf6';
+                    tabPrompt.style.borderBottom = '2px solid #8b5cf6';
+                    tabGeneral.style.color = '#94a3b8';
+                    tabGeneral.style.borderBottom = 'none';
+                }
+            };
+
+            tabGeneral.onclick = () => switchTab('general');
+            tabPrompt.onclick = () => switchTab('prompt');
+
+            // Reset Prompt Logic
+            document.getElementById('resetPromptBtn').onclick = async () => {
+                 if(confirm('Bạn có chắc muốn reset về nội dung gốc từ file PROMPT.md?')) {
+                     await loadDefaultPrompt(); // Reload from file
+                     document.getElementById('customPromptInput').value = defaultAIPrompt;
+                     showToast('Đã tải lại nội dung từ PROMPT.md', 'success');
+                 }
+            };
+
             document.getElementById('cancelGeminiConfig').onclick = () => {
                 overlay.remove();
                 resolve(false);
@@ -4107,8 +3952,11 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                     apiKey: document.getElementById('geminiApiKey').value.trim(),
                     model: document.getElementById('geminiModel').value
                 };
+                const promptVal = document.getElementById('customPromptInput').value;
                 const newScraperSettings = {
-                    autoStopAtEnd: document.getElementById('autoStopAtEnd').checked
+                    autoStopAtEnd: document.getElementById('autoStopAtEnd').checked,
+                    // If prompt matches default (loaded from file), don't save it as custom to allow future file updates to propagate
+                    customPrompt: (promptVal === defaultAIPrompt) ? '' : promptVal
                 };
 
                 if (!newConfig.apiKey) {
@@ -5597,6 +5445,9 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
     // Check for updates first
     await checkUpdate();
+
+    // Load AI Prompt from file
+    await loadDefaultPrompt();
 
     // Show mode selector
     currentMode = await showModeSelector();
