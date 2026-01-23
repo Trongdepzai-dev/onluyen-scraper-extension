@@ -4769,7 +4769,7 @@ if (window.hasRunScraper) {
             ">
               <div style="color: #8b5cf6; margin-bottom: 8px;">${getIcon('fileText', 'scraper-icon-md')}</div>
               <div style="font-size: 42px; font-weight: 800; color: #8b5cf6;">${allResults.length}</div>
-              <div style="color: #c4b5fd; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
+              <div style="color: #8b5cf6; opacity: 0.8; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
             </div>
             
             <div class="ol-surface ol-border" style="
@@ -4966,11 +4966,11 @@ if (window.hasRunScraper) {
             <div class="scraper-image-grid scraper-scrollbar" style="max-height: 320px; overflow-y: auto; padding-right: 8px;">
               ${allImages.slice(0, 100).map((img, i) => {
                 const optionLabelPart = img.optionLabel ? ' • ' + img.optionLabel : '';
-                const html = `<div class="scraper-image-card" 
+                const html = `<div class="scraper-image-card ol-border" 
                      data-img-index="${i}" 
                      style="
-                       background: rgba(255,255,255,0.05); 
-                       border: 1px solid rgba(255,255,255,0.1); 
+                       background: var(--ol-bg); 
+                       border-width: 1px; border-style: solid; 
                        position: relative; 
                      ">
                   <img src="${img.fullUrl || img.url}" 
@@ -5009,23 +5009,23 @@ if (window.hasRunScraper) {
           ` : ''}
           
           <!-- Content Display -->
-          <div style="
-            background: rgba(255,255,255,0.98);
+          <div class="ol-surface ol-border" style="
+            border-width: 1px; border-style: solid;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+            box-shadow: 0 25px 80px rgba(0,0,0,0.1);
           ">
-            <div style="
-              background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            <div class="ol-surface" style="
               padding: 20px 28px;
-              border-bottom: 1px solid #e2e8f0;
+              border-bottom: 1px solid var(--ol-border);
               display: flex;
               align-items: center;
               justify-content: space-between;
+              background: var(--ol-bg);
             ">
               <div style="display: flex; align-items: center; gap: 12px;">
-                ${getIcon('fileText', 'scraper-icon-md', 'color: #1e293b')}
-                <span style="font-weight: 700; color: #1e293b; font-size: 16px;">Nội dung thu thập</span>
+                ${getIcon('fileText', 'scraper-icon-md')}
+                <span class="ol-text" style="font-weight: 700; font-size: 16px;">Nội dung thu thập</span>
               </div>
               <div style="display: flex; gap: 6px;">
                 <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></div>
@@ -5034,13 +5034,12 @@ if (window.hasRunScraper) {
               </div>
             </div>
             
-            <pre id="resultContent" class="scraper-scrollbar" style="
+            <pre id="resultContent" class="scraper-scrollbar ol-text" style="
               font-family: 'JetBrains Mono', 'Fira Code', monospace;
               font-size: 13px;
               line-height: 1.7;
               padding: 28px;
               margin: 0;
-              color: #334155;
               max-height: 60vh;
               overflow-y: auto;
               white-space: pre-wrap;
@@ -5052,7 +5051,7 @@ if (window.hasRunScraper) {
           <div style="
             text-align: center;
             padding: 32px;
-            color: rgba(255,255,255,0.4);
+            color: var(--ol-text-sub);
             font-size: 13px;
           ">
             <!-- Open Source Section -->
@@ -5065,8 +5064,8 @@ if (window.hasRunScraper) {
                 animation: scraper-slide-up 0.6s ease;
             ">
                 <div style="color: #a5b4fc; margin-bottom: 12px;">${getIcon('github', 'scraper-icon-lg')}</div>
-                <h4 style="color: white; margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">Dự án Nguồn Mở (Open Source)</h4>
-                <p style="color: rgba(255,255,255,0.6); font-size: 13px; line-height: 1.6; margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto;">
+                <h4 style="color: var(--ol-text); margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">Dự án Nguồn Mở (Open Source)</h4>
+                <p style="color: var(--ol-text-sub); font-size: 13px; line-height: 1.6; margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto;">
                     Extension này hoàn toàn miễn phí và mã nguồn mở. Chúng mình rất trân trọng mọi sự đóng góp, ý tưởng hoặc báo lỗi từ cộng đồng qua Pull Requests!
                 </p>
                 <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" style="
@@ -5096,21 +5095,21 @@ if (window.hasRunScraper) {
                 padding: 4px 12px;
                 border-radius: 12px;
                 font-size: 11px;
-                color: #a5b4fc;
+                color: #818cf8;
               ">MathJax OCR</span>
               <span style="
                 background: rgba(16, 185, 129, 0.2);
                 padding: 4px 12px;
                 border-radius: 12px;
                 font-size: 11px;
-                color: #6ee7b7;
+                color: #10b981;
               ">Image Extract</span>
               <span style="
                 background: rgba(236, 72, 153, 0.2);
                 padding: 4px 12px;
                 border-radius: 12px;
                 font-size: 11px;
-                color: #f9a8d4;
+                color: #ec4899;
               ">AI Ready</span>
             </div>
           </div>
