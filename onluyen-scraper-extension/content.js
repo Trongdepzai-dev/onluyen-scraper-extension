@@ -4689,6 +4689,22 @@ if (window.hasRunScraper) {
             position: relative;
             overflow: hidden;
           ">
+            <button id="resultThemeBtn" class="ol-surface ol-border ol-text" style="
+              position: absolute;
+              top: 24px;
+              right: 24px;
+              width: 36px; height: 36px;
+              border-radius: 10px;
+              border-width: 1px; border-style: solid;
+              display: flex; align-items: center; justify-content: center;
+              cursor: pointer;
+              z-index: 10;
+              background: var(--ol-surface);
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Đổi giao diện Sáng/Tối">
+                ${localStorage.getItem('ol_theme') === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
+            </button>
+
             <div style="position: relative; z-index: 1;">
               <div class="ol-brand-text" style="margin-bottom: 20px;">${getIcon('rocket', 'scraper-icon-lg')}</div>
               <h1 class="ol-text" style="
@@ -5172,6 +5188,15 @@ if (window.hasRunScraper) {
             btn.innerHTML = `${getIcon('image')}<span>Copy Link Ảnh</span>`;
           }, 2000);
         }
+      };
+
+      // Theme Toggle Logic
+      document.getElementById('resultThemeBtn').onclick = () => {
+          const isDark = resultContainer.classList.toggle('scraper-dark');
+          localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
+          document.getElementById('resultThemeBtn').innerHTML = isDark 
+              ? getIcon('sun', 'scraper-icon-sm') 
+              : getIcon('moon', 'scraper-icon-sm');
       };
 
       document.getElementById('toggleModeResultBtn').onclick = () => {
