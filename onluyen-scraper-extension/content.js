@@ -233,6 +233,13 @@ if (window.hasRunScraper) {
       
       .ol-btn-hover:hover { background-color: var(--ol-hover) !important; }
       
+      /* View Transitions Support */
+      ::view-transition-old(root),
+      ::view-transition-new(root) {
+        animation: none;
+        mix-blend-mode: normal;
+      }
+
       /* SVG Fill Fix - Force currentColor inheritance with transition */
       .ol-brand-text svg, .ol-success-text svg, button svg { 
         stroke: currentColor !important; 
@@ -4700,8 +4707,8 @@ if (window.hasRunScraper) {
               cursor: pointer;
               z-index: 10;
               background: var(--ol-surface);
-              transition: transform 0.2s;
-            " onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" title="Đổi giao diện Sáng/Tối">
+              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            " onmouseover="this.style.transform='scale(1.1) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'" title="Đổi giao diện Sáng/Tối">
                 ${localStorage.getItem('ol_theme') === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
             </button>
 
@@ -5189,13 +5196,52 @@ if (window.hasRunScraper) {
         }
       };
 
-      // Theme Toggle Logic
-      document.getElementById('resultThemeBtn').onclick = () => {
-          const isDark = resultContainer.classList.toggle('scraper-dark');
-          localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
-          document.getElementById('resultThemeBtn').innerHTML = isDark 
-              ? getIcon('sun', 'scraper-icon-sm') 
-              : getIcon('moon', 'scraper-icon-sm');
+      // Theme Toggle Logic with Animation
+      document.getElementById('resultThemeBtn').onclick = (e) => {
+          const toggleTheme = () => {
+              const isDark = resultContainer.classList.toggle('scraper-dark');
+              localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
+              document.getElementById('resultThemeBtn').innerHTML = isDark 
+                  ? getIcon('sun', 'scraper-icon-sm') 
+                  : getIcon('moon', 'scraper-icon-sm');
+          };
+
+          if (!document.startViewTransition) {
+              toggleTheme();
+              return;
+          }
+
+          const x = e.clientX;
+          const y = e.clientY;
+          const endRadius = Math.hypot(
+              Math.max(x, window.innerWidth - x),
+              Math.max(y, window.innerHeight - y)
+          );
+
+          const transition = document.startViewTransition(() => {
+              toggleTheme();
+          });
+
+          transition.ready.then(() => {
+              const clipPath = [
+                  `circle(0px at ${x}px ${y}px)`,
+                  `circle(${endRadius}px at ${x}px ${y}px)`,
+              ];
+              document.documentElement.animate(
+                  {
+                      clipPath: resultContainer.classList.contains('scraper-dark')
+                          ? clipPath
+                          : [...clipPath].reverse(),
+                  },
+                  {
+                      duration: 400,
+                      easing: 'ease-in-out',
+                      pseudoElement: resultContainer.classList.contains('scraper-dark')
+                          ? '::view-transition-new(root)'
+                          : '::view-transition-old(root)',
+                  }
+              );
+          });
       };
 
       document.getElementById('toggleModeResultBtn').onclick = () => {
