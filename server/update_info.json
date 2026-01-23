@@ -1,6 +1,13 @@
 {
   "version": "3.7",
   "message": "Cập nhật mới mang lại tính năng tối ưu hóa cho việc sử dụng extension, cải thiện hiệu suất và tính năng phím tắt.",
+  "announcement": {
+    "enabled": false,
+    "title": "Thông báo hệ thống",
+    "content": "Chào mừng bạn đến với OnLuyen Scraper!",
+    "type": "info"
+  },
+  "maintenance": false,
   "platforms": {
     "chrome": {
       "url": "https://microsoftedge.microsoft.com/addons/detail/jfnjmcpocmkbdknlglbahglkbkjifpde",

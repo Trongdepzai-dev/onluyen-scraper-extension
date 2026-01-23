@@ -553,6 +553,18 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
         localStorage.setItem('scraper_gemini_config', JSON.stringify(config));
     }
 
+    function getScraperSettings() {
+        try {
+            const stored = localStorage.getItem('scraper_settings');
+            if (stored) return JSON.parse(stored);
+        } catch (e) { }
+        return { autoStopAtEnd: true };
+    }
+
+    function saveScraperSettings(settings) {
+        localStorage.setItem('scraper_settings', JSON.stringify(settings));
+    }
+
     async function callGeminiAPI(messages, apiKey, modelId) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
         
@@ -1242,6 +1254,26 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
 
             if (response && response.success) {
               const updateInfo = response.data;
+
+              // 1. Kiểm tra bảo trì
+              if (updateInfo.maintenance) {
+                showMaintenanceModal();
+                resolve();
+                return;
+              }
+
+              // 2. Kiểm tra thông báo hệ thống
+              if (updateInfo.announcement && updateInfo.announcement.enabled) {
+                const ann = updateInfo.announcement;
+                const lastAnnId = localStorage.getItem('ol_last_ann_id');
+                const currentAnnId = btoa(encodeURIComponent(ann.title + ann.content));
+                
+                if (lastAnnId !== currentAnnId || manual) {
+                  showAnnouncementModal(ann);
+                  localStorage.setItem('ol_last_ann_id', currentAnnId);
+                }
+              }
+
               const currentVersion = chrome.runtime.getManifest().version;
               
               if (isNewerVersion(updateInfo.version, currentVersion)) {
@@ -1434,6 +1466,105 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
              }
         };
       });
+    }
+
+    function showMaintenanceModal() {
+      const overlay = document.createElement('div');
+      Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+        background: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(8px)',
+        zIndex: '100002', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.4s ease'
+      });
+
+      overlay.innerHTML = `
+        <div style="
+          background: #ffffff; border-radius: 32px; padding: 40px; 
+          max-width: 450px; width: 90%; text-align: center;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          border: 1px solid #fee2e2;
+        ">
+          <div style="
+            width: 80px; height: 80px; background: #fef2f2; color: #ef4444;
+            border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px auto;
+          ">
+            ${getIcon('alertTriangle', 'scraper-icon-xl')}
+          </div>
+          <h2 style="font-size: 24px; font-weight: 800; margin-bottom: 12px; color: #991b1b;">
+            Hệ Thống Bảo Trì
+          </h2>
+          <p style="color: #7f1d1d; font-size: 15px; line-height: 1.6; margin-bottom: 0;">
+            Hiện tại hệ thống đang được bảo trì để nâng cấp. Vui lòng quay lại sau ít phút. Xin lỗi vì sự bất tiện này!
+          </p>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      // Không resolve, chặn người dùng sử dụng tiếp
+    }
+
+    function showAnnouncementModal(ann) {
+      const colors = {
+        info: { bg: '#eef2ff', text: '#4338ca', icon: 'info', title: '#1e1b4b' },
+        success: { bg: '#f0fdf4', text: '#15803d', icon: 'checkCircle', title: '#064e3b' },
+        warning: { bg: '#fffbeb', text: '#b45309', icon: 'alertTriangle', title: '#451a03' },
+        error: { bg: '#fef2f2', text: '#b91c1c', icon: 'alertCircle', title: '#450a0a' }
+      };
+      const theme = colors[ann.type] || colors.info;
+
+      const overlay = document.createElement('div');
+      Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+        background: 'rgba(0, 0, 0, 0.4)', backdropFilter: 'blur(4px)',
+        zIndex: '100001', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.3s ease'
+      });
+
+      overlay.innerHTML = `
+        <div style="
+          background: #ffffff; border-radius: 24px; padding: 32px; 
+          max-width: 400px; width: 90%; text-align: center;
+          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+          position: relative;
+        ">
+          <button id="closeAnnBtn" style="
+            position: absolute; top: 16px; right: 16px; background: transparent;
+            border: none; cursor: pointer; color: #9ca3af;
+          ">
+            ${getIcon('x', 'scraper-icon-sm')}
+          </button>
+          <div style="
+            width: 56px; height: 56px; background: ${theme.bg}; color: ${theme.text};
+            border-radius: 16px; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px auto;
+          ">
+            ${getIcon(theme.icon, 'scraper-icon-md')}
+          </div>
+          <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: ${theme.title};">
+            ${ann.title}
+          </h3>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin-bottom: 24px;">
+            ${ann.content}
+          </h3>
+          <button id="okAnnBtn" style="
+            width: 100%; background: #111827; color: white; padding: 12px;
+            border-radius: 12px; font-weight: 600; cursor: pointer; border: none;
+          ">
+            Đã hiểu
+          </button>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      
+      const close = () => {
+        overlay.style.opacity = '0';
+        overlay.style.transform = 'scale(0.95)';
+        setTimeout(() => overlay.remove(), 300);
+      };
+
+      overlay.querySelector('#closeAnnBtn').onclick = close;
+      overlay.querySelector('#okAnnBtn').onclick = close;
     }
 
     // ============================================================
@@ -3805,6 +3936,29 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
           }
           
           if (stopRequested) break;
+
+          // 🆕 FEATURE: Auto-stop if "Kết thúc" button is found
+          const scraperSettings = getScraperSettings();
+          if (scraperSettings.autoStopAtEnd) {
+            const potentialFinishBtns = document.querySelectorAll('button.btn-gray, button.btn');
+            let foundFinish = false;
+            for (const btn of potentialFinishBtns) {
+              // Check visibility and text
+              if (btn.offsetParent !== null && !btn.disabled) {
+                const txt = (btn.textContent || '').trim();
+                if (txt === 'Kết thúc') {
+                  foundFinish = true;
+                  break;
+                }
+              }
+            }
+            if (foundFinish) {
+              updateStatus('Đã hoàn thành', 'Phát hiện nút Kết thúc', 'check');
+              showToast('Đã đến cuối bài (Nút Kết thúc)', 'success');
+              stopRequested = true;
+              break;
+            }
+          }
           
           // Click button - tối ưu tần suất
           updateStatus('Tìm nút tiếp theo...', 'Click liên tục', 'refreshCw', 'Đang tìm...');
@@ -3872,6 +4026,7 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
     function showGeminiSettingsModal() {
         return new Promise((resolve) => {
             const config = getGeminiConfig();
+            const scraperSettings = getScraperSettings();
             const overlay = document.createElement('div');
             Object.assign(overlay.style, {
                 position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
@@ -3892,28 +4047,39 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                 ">
                     <div style="text-align: center; margin-bottom: 24px;">
                         <div style="color: #8b5cf6; margin-bottom: 16px;">${getIcon('settings', 'scraper-icon-lg')}</div>
-                        <h2 style="margin: 0; font-size: 24px;">Cấu hình Gemini</h2>
+                        <h2 style="margin: 0; font-size: 24px;">Cấu hình</h2>
                     </div>
                     
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">API Key</label>
-                        <input type="password" id="geminiApiKey" value="${config.apiKey}" placeholder="Nhập Gemini API Key..." style="
-                            width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
-                            border-radius: 12px; color: white; outline: none; box-sizing: border-box;
-                        ">
-                        <div style="margin-top: 6px; font-size: 11px; color: #94a3b8;">
-                            Lấy key tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8b5cf6;">Google AI Studio</a>
+                    <div style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                        <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">🤖 Gemini AI</h3>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">API Key</label>
+                            <input type="password" id="geminiApiKey" value="${config.apiKey}" placeholder="Nhập Gemini API Key..." style="
+                                width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                                border-radius: 12px; color: white; outline: none; box-sizing: border-box;
+                            ">
+                            <div style="margin-top: 6px; font-size: 11px; color: #94a3b8;">
+                                Lấy key tại <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: #8b5cf6;">Google AI Studio</a>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 0;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">Mô hình (Model)</label>
+                            <select id="geminiModel" style="
+                                width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
+                                border-radius: 12px; color: white; outline: none; box-sizing: border-box; cursor: pointer;
+                            ">
+                                ${modelOptions}
+                            </select>
                         </div>
                     </div>
 
                     <div style="margin-bottom: 32px;">
-                        <label style="display: block; margin-bottom: 8px; font-size: 14px; color: #cbd5e1;">Mô hình (Model)</label>
-                        <select id="geminiModel" style="
-                            width: 100%; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1);
-                            border-radius: 12px; color: white; outline: none; box-sizing: border-box; cursor: pointer;
-                        ">
-                            ${modelOptions}
-                        </select>
+                        <h3 style="font-size: 16px; margin: 0 0 16px; color: white;">⚙️ Cài đặt chung</h3>
+                        <label style="display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none;">
+                            <input type="checkbox" id="autoStopAtEnd" ${scraperSettings.autoStopAtEnd ? 'checked' : ''} style="width: 18px; height: 18px; cursor: pointer;">
+                            <span style="color: #e2e8f0; font-size: 14px;">Tự động dừng khi gặp nút "Kết thúc"</span>
+                        </label>
                     </div>
 
                     <div style="display: flex; gap: 12px;">
@@ -3941,15 +4107,17 @@ Bạn là **EXPERT ANALYST AI PRO** - Trợ lý AI cấp cao với khả năng:
                     apiKey: document.getElementById('geminiApiKey').value.trim(),
                     model: document.getElementById('geminiModel').value
                 };
+                const newScraperSettings = {
+                    autoStopAtEnd: document.getElementById('autoStopAtEnd').checked
+                };
+
                 if (!newConfig.apiKey) {
                     showToast('Vui lòng nhập API Key!', 'warning');
                     return;
                 }
                 saveGeminiConfig(newConfig);
+                saveScraperSettings(newScraperSettings);
                 overlay.remove();
-                // Trigger the send action again? Or just resolve true so the caller knows
-                // For now, let's just save. The user can click "Send" again.
-                // Or better, we handle the flow in the caller.
                 resolve(true);
             };
         });

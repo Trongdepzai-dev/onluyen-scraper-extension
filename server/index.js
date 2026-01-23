@@ -1,13 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer'); // Thư viện upload file
+const multer = require('multer');
 
 const app = express();
-const PORT = 3000;
-const ADMIN_PASS = '08102011';
+const PORT = process.env.PORT || 3000;
+const ADMIN_PASS = process.env.ADMIN_PASSWORD || 'admin123';
 
 // Middleware
 app.use(cors());
@@ -18,15 +19,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const downloadDir = path.join(__dirname, 'public', 'downloads');
-        // Tạo thư mục nếu chưa tồn tại
         if (!fs.existsSync(downloadDir)) {
             fs.mkdirSync(downloadDir, { recursive: true });
         }
         cb(null, downloadDir);
     },
     filename: function (req, file, cb) {
-        // Giữ nguyên tên file gốc hoặc thêm timestamp để tránh trùng
-        cb(null, file.originalname);
+        cb(null, Date.now() + '-' + file.originalname);
     }
 });
 const upload = multer({ storage: storage });
@@ -40,6 +39,13 @@ if (!fs.existsSync(UPDATE_FILE)) {
     const defaultConfig = {
         version: "1.0.0",
         message: "Cập nhật mới",
+        announcement: {
+            enabled: false,
+            title: "Thông báo hệ thống",
+            content: "Chào mừng bạn đến với OnLuyen Scraper!",
+            type: "info" // info, warning, success
+        },
+        maintenance: false,
         platforms: {
             chrome: { url: "", force_update: false },
             edge: { url: "", force_update: false }
@@ -52,7 +58,7 @@ if (!fs.existsSync(UPDATE_FILE)) {
 // API PUBLIC (Extension gọi vào đây)
 // ==========================================
 
-// Lấy thông tin cập nhật
+// Lấy thông tin cập nhật & thông báo
 app.get('/update_info.json', (req, res) => {
     res.sendFile(UPDATE_FILE);
 });
@@ -84,7 +90,6 @@ app.post('/api/feedback', (req, res) => {
 // API ADMIN (Cần Password)
 // ==========================================
 
-// Middleware kiểm tra quyền Admin
 const adminAuth = (req, res, next) => {
     const password = req.query.password || req.headers['x-admin-password'] || req.body.password;
     if (password !== ADMIN_PASS) {
@@ -93,7 +98,6 @@ const adminAuth = (req, res, next) => {
     next();
 };
 
-// 1. Lấy danh sách Feedback
 app.get('/api/admin/feedbacks', adminAuth, (req, res) => {
     fs.readFile(FEEDBACK_FILE, 'utf8', (err, data) => {
         try {
@@ -104,29 +108,37 @@ app.get('/api/admin/feedbacks', adminAuth, (req, res) => {
     });
 });
 
-// 2. Lấy cấu hình Update hiện tại
+// Xóa feedback
+app.delete('/api/admin/feedbacks/:id', adminAuth, (req, res) => {
+    const id = parseInt(req.params.id);
+    fs.readFile(FEEDBACK_FILE, 'utf8', (err, data) => {
+        try {
+            let list = JSON.parse(data);
+            list = list.filter(f => f.id !== id);
+            fs.writeFile(FEEDBACK_FILE, JSON.stringify(list, null, 2), () => {
+                res.json({ success: true });
+            });
+        } catch (e) { res.status(500).json({ success: false }); }
+    });
+});
+
 app.get('/api/admin/config', adminAuth, (req, res) => {
     fs.readFile(UPDATE_FILE, 'utf8', (err, data) => {
         try { res.json(JSON.parse(data)); } catch (e) { res.json({}); }
     });
 });
 
-// 3. Lưu cấu hình Update mới
 app.post('/api/admin/config', adminAuth, (req, res) => {
     const newConfig = req.body.config;
     if (!newConfig) return res.status(400).json({ success: false });
 
-    // Giữ nguyên cấu trúc cũ nếu thiếu
     fs.writeFile(UPDATE_FILE, JSON.stringify(newConfig, null, 2), (err) => {
         if (err) return res.status(500).json({ success: false });
         res.json({ success: true });
     });
 });
 
-// 4. Upload file cập nhật (.zip)
 app.post('/api/admin/upload', upload.single('file'), (req, res) => {
-    // Check password thủ công vì multer chạy trước middleware body parser đôi khi
-    // Ở đây ta check đơn giản hoặc bỏ qua nếu chạy local, nhưng để an toàn nên check pass từ header
     const password = req.headers['x-admin-password'];
     if (password !== ADMIN_PASS) {
         return res.status(401).json({ success: false, error: 'Unauthorized' });
@@ -134,7 +146,6 @@ app.post('/api/admin/upload', upload.single('file'), (req, res) => {
 
     if (!req.file) return res.status(400).json({ success: false, error: 'No file uploaded' });
 
-    // Trả về đường dẫn public của file
     const fileUrl = `${req.protocol}://${req.get('host')}/downloads/${req.file.filename}`;
     res.json({ success: true, url: fileUrl });
 });
