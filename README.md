@@ -58,6 +58,18 @@
   </tr>
 </table>
 
+<!-- Copy-paste in your Readme.md file -->
+
+<a href="https://next.ossinsight.io/widgets/official/compose-contributors?repo_id=1123864130&limit=200" target="_blank" style="display: block" align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://next.ossinsight.io/widgets/official/compose-contributors/thumbnail.png?repo_id=1123864130&limit=200&image_size=auto&color_scheme=dark" width="655" height="auto">
+    <img alt="Contributors of Trongdepzai-dev/onluyen-scraper-extension" src="https://next.ossinsight.io/widgets/official/compose-contributors/thumbnail.png?repo_id=1123864130&limit=200&image_size=auto&color_scheme=light" width="655" height="auto">
+  </picture>
+</a>
+
+<!-- Made with [OSS Insight](https://ossinsight.io/) -->
+
+
 > 💖 **Tri ân sâu sắc** tới tất cả các contributor! Xem danh sách đầy đủ tại [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 </div>
@@ -408,3 +420,4 @@ Dự án được phân phối dưới **MIT License**
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=100&section=footer"/>
 
 </div>
+
