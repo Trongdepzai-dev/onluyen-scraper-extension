@@ -1415,175 +1415,257 @@ if (window.hasRunScraper) {
       return new Promise((resolve) => {
         const overlay = document.createElement('div');
         overlay.id = 'modeSelectorOverlay';
-        overlay.className = 'ol-overlay'; // Use Theme Class for background
+        overlay.className = 'ol-overlay';
         
-        // Init Theme from storage
         const currentTheme = localStorage.getItem('ol_theme') || 'light';
         if (currentTheme === 'dark') overlay.classList.add('scraper-dark');
 
+        // Smart Context Detection
+        const url = window.location.href.toLowerCase();
+        const isExamUrl = url.includes('exam') || url.includes('test') || url.includes('kiem-tra');
+        const isHomeworkUrl = url.includes('homework') || url.includes('assignment') || url.includes('bai-tap');
+
         Object.assign(overlay.style, {
           position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-          // background & backdrop-filter handled by .ol-overlay class
           zIndex: '99999', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: "'Inter', sans-serif",
-          animation: 'scraper-fade-in 0.3s ease'
+          fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+          animation: 'scraper-fade-in 0.5s cubic-bezier(0.22, 1, 0.36, 1)',
+          perspective: '1500px',
+          overflow: 'hidden',
+          padding: '16px'
         });
 
         overlay.innerHTML = `
-          <div class="ol-bg ol-border" style="
-            border-radius: 32px; padding: 48px; max-width: 700px; width: 90%;
-            box-shadow: var(--scraper-shadow-xl); position: relative;
+          <!-- Compact Mesh Background -->
+          <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.5; pointer-events: none;">
+            <div style="position: absolute; top: -15%; left: -5%; width: 60%; height: 60%; background: radial-gradient(circle, var(--ol-brand-alpha) 0%, transparent 70%); animation: mesh-float 20s infinite alternate;"></div>
+            <div style="position: absolute; bottom: -15%; right: -5%; width: 60%; height: 60%; background: radial-gradient(circle, var(--ol-success-alpha) 0%, transparent 70%); animation: mesh-float 25s infinite alternate-reverse;"></div>
+          </div>
+
+          <div class="ol-bg ol-border scraper-modal-container" style="
+            border-radius: 40px; padding: 48px 40px; max-width: 680px; width: 100%;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(255,255,255,0.1); 
+            position: relative;
             border-width: 1px; border-style: solid;
+            animation: scraper-modal-ultra-enter 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(25px);
+            display: flex; flex-direction: column; align-items: center;
           ">
-            <!-- Theme Toggle -->
-            <button id="menuThemeBtn" class="ol-text-sub ol-btn-hover" style="
+            <!-- Compact Theme Toggle -->
+            <button id="menuThemeBtn" class="ol-surface ol-border ol-text-sub ol-btn-hover" style="
               position: absolute; top: 24px; right: 24px;
-              background: transparent; border: none; cursor: pointer;
-              width: 36px; height: 36px; border-radius: 8px;
+              background: transparent; border-width: 1px; border-style: solid; cursor: pointer;
+              width: 44px; height: 44px; border-radius: 14px;
               display: flex; align-items: center; justify-content: center;
-              transition: all 0.2s;
+              transition: all 0.3s ease;
             ">
-              ${currentTheme === 'dark' ? getIcon('sun', 'scraper-icon-md') : getIcon('moon', 'scraper-icon-md')}
+              ${currentTheme === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
             </button>
 
-            <!-- Header -->
-            <div style="text-align: center; margin-bottom: 40px;">
-              <div class="ol-brand-bg ol-brand-text" style="
-                margin: 0 auto 20px auto; 
-                width: 72px; height: 72px;
-                border-radius: 24px; display: flex; align-items: center; justify-content: center;
+            <!-- Scaled Header Section -->
+            <div style="text-align: center; margin-bottom: 40px; width: 100%;">
+              <div class="ol-brand-bg ol-brand-text rocket-container" style="
+                margin: 0 auto 24px auto; 
+                width: 90px; height: 90px;
+                border-radius: 28px; display: flex; align-items: center; justify-content: center;
+                box-shadow: 0 15px 30px -8px var(--ol-brand-alpha), inset 0 0 0 1px rgba(255,255,255,0.2);
+                animation: scraper-float 4s infinite ease-in-out;
+                border: 1px solid var(--ol-brand);
               ">
-                ${getIcon('rocket', 'scraper-icon-lg')}
+                <div style="transform: scale(1.5); filter: drop-shadow(0 0 8px rgba(255,255,255,0.4));">
+                    ${getIcon('rocket', 'scraper-icon-xl')}
+                </div>
               </div>
-              <h1 class="ol-text" style="
-                font-size: 32px; font-weight: 800; margin: 0 0 12px 0; letter-spacing: -0.02em;
+              <h1 class="ol-text main-title" style="
+                font-size: 32px; font-weight: 900; margin: 0 0 12px 0; letter-spacing: -0.04em;
+                background: linear-gradient(135deg, var(--ol-text) 0%, var(--ol-brand) 100%);
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
               ">Auto Scraper v${chrome.runtime.getManifest().version}</h1>
-              <p class="ol-text-sub" style="font-size: 16px; margin: 0;">
+              <p class="ol-text-sub" style="font-size: 16px; font-weight: 600; margin: 0; opacity: 0.85;">
                 Công cụ hỗ trợ học tập thông minh
               </p>
-              <a href="https://github.com/Trongdepzai-dev/" target="_blank" class="ol-text-sub" style="
-                display: inline-block; margin-top: 12px;
-                font-size: 13px; text-decoration: none; transition: color 0.2s; font-weight: 500;
-              ">
-                Made by B.Trọng
-              </a>
             </div>
             
-            <!-- Mode Buttons -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px;">
+            <!-- Compact Mode Grid -->
+            <div class="mode-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; width: 100%;">
               
               <!-- Homework Mode -->
-              <div id="homeworkModeBtn" class="scraper-mode-select-btn ol-surface ol-border" style="
-                border-width: 2px; border-style: solid;
-                border-radius: 24px; padding: 32px 24px; text-align: center;
-                transition: all 0.2s ease; cursor: pointer;
+              <div id="homeworkModeBtn" class="scraper-mode-card ol-surface ol-border ${isHomeworkUrl ? 'recommended' : ''}" style="
+                border-width: 1px; border-style: solid;
+                border-radius: 28px; padding: 32px 24px; text-align: left;
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
+                position: relative; overflow: hidden;
               ">
+                ${isHomeworkUrl ? '<div class="recommended-badge" style="top: -8px; right: 16px; padding: 4px 12px; font-size: 9px;">KHUYÊN DÙNG</div>' : ''}
                 <div class="ol-success-bg ol-success-text" style="
-                  margin: 0 auto 20px auto;
-                  width: 64px; height: 64px;
-                  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+                  width: 52px; height: 52px;
+                  border-radius: 16px; display: flex; align-items: center; justify-content: center;
+                  margin-bottom: 20px; border: 1px solid var(--ol-success);
                 ">
-                  ${getIcon('book', 'scraper-icon-lg')}
+                  ${getIcon('book', 'scraper-icon-md')}
                 </div>
-                <div class="ol-text" style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">
-                  BÀI TẬP
+                <h2 class="ol-text" style="font-size: 20px; font-weight: 900; margin: 0 0 6px 0;">BÀI TẬP</h2>
+                <p class="ol-success-text" style="font-size: 11px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.1em; text-transform: uppercase;">HOMEWORK</p>
+                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.5; margin-bottom: 24px; opacity: 0.8;">
+                  Tương tác từng bước. Phù hợp luyện tập kiến thức.
                 </div>
-                <div class="ol-success-text" style="font-size: 13px; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.05em;">
-                  HOMEWORK MODE
-                </div>
-                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                  Click qua từng câu<br>
-                  Có nút "Trả lời", "Bỏ qua"
-                </div>
-                <div class="ol-btn-hover ol-text-sub" style="
-                  background: var(--ol-border); /* Badge bg */
-                  padding: 8px 16px; border-radius: 9999px;
-                  display: inline-block; font-size: 12px; font-weight: 600;
-                ">
-                  ${getIcon('check', 'scraper-icon-xs')} OnLuyen.vn
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <kbd class="ol-border" style="background: var(--ol-bg); padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 900; color: var(--ol-text-sub); border-width: 1px; border-style: solid;">1</kbd>
+                    <span class="ol-text-sub" style="font-size: 12px; font-weight: 700;">Phím tắt</span>
                 </div>
               </div>
               
               <!-- Exam Mode -->
-              <div id="examModeBtn" class="scraper-mode-select-btn ol-surface ol-border" style="
-                border-width: 2px; border-style: solid;
-                border-radius: 24px; padding: 32px 24px; text-align: center;
-                transition: all 0.2s ease; cursor: pointer;
+              <div id="examModeBtn" class="scraper-mode-card ol-surface ol-border ${isExamUrl ? 'recommended' : ''}" style="
+                border-width: 1px; border-style: solid;
+                border-radius: 28px; padding: 32px 24px; text-align: left;
+                transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
+                position: relative; overflow: hidden;
               ">
+                ${isExamUrl ? '<div class="recommended-badge" style="top: -8px; right: 16px; padding: 4px 12px; font-size: 9px;">KHUYÊN DÙNG</div>' : ''}
                 <div class="ol-brand-bg ol-brand-text" style="
-                  margin: 0 auto 20px auto;
-                  width: 64px; height: 64px;
-                  border-radius: 20px; display: flex; align-items: center; justify-content: center;
+                  width: 52px; height: 52px;
+                  border-radius: 16px; display: flex; align-items: center; justify-content: center;
+                  margin-bottom: 20px; border: 1px solid var(--ol-brand);
                 ">
-                  ${getIcon('fileText', 'scraper-icon-lg')}
+                  ${getIcon('fileText', 'scraper-icon-md')}
                 </div>
-                <div class="ol-text" style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">
-                  BÀI THI
+                <h2 class="ol-text" style="font-size: 20px; font-weight: 900; margin: 0 0 6px 0;">BÀI THI</h2>
+                <p class="ol-brand-text" style="font-size: 11px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.1em; text-transform: uppercase;">EXAM MODE</p>
+                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.5; margin-bottom: 24px; opacity: 0.8;">
+                  Quét nhanh tự động. Dành cho các kỳ thi quan trọng.
                 </div>
-                <div class="ol-brand-text" style="font-size: 13px; font-weight: 600; margin-bottom: 16px; letter-spacing: 0.05em;">
-                  EXAM MODE
-                </div>
-                <div class="ol-text-sub" style="font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                  Tất cả câu trên 1 trang<br>
-                  Không cần click
-                </div>
-                <div class="ol-btn-hover ol-text-sub" style="
-                  background: var(--ol-border); /* Badge bg */
-                  padding: 8px 16px; border-radius: 9999px;
-                  display: inline-block; font-size: 12px; font-weight: 600;
-                ">
-                  ${getIcon('check', 'scraper-icon-xs')} Bài kiểm tra
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <kbd class="ol-border" style="background: var(--ol-bg); padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 900; color: var(--ol-text-sub); border-width: 1px; border-style: solid;">2</kbd>
+                    <span class="ol-text-sub" style="font-size: 12px; font-weight: 700;">Phím tắt</span>
                 </div>
               </div>
             </div>
             
-            <!-- Footer Actions -->
-            <div style="text-align: center; display: flex; flex-direction: column; gap: 16px; align-items: center;">
-              <button id="checkUpdateBtn" class="ol-text-sub ol-btn-hover" style="
-                background: transparent;
-                border: 1px solid var(--ol-border);
-                padding: 10px 20px;
-                border-radius: 12px;
-                font-size: 13px;
-                cursor: pointer;
-                display: flex; align-items: center; gap: 8px;
-                transition: all 0.2s;
-                font-weight: 500;
-              ">
-                ${getIcon('refreshCw', 'scraper-icon-xs')} Kiểm tra cập nhật
-              </button>
+            <!-- Compact Footer Section -->
+            <div class="modal-footer" style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--ol-border); padding-top: 32px; width: 100%;">
+              <div style="display: flex; align-items: center; gap: 20px;">
+                  <button id="checkUpdateBtn" class="ol-text-sub ol-btn-hover ol-border" style="
+                    background: transparent; border-width: 1px; border-style: solid; cursor: pointer;
+                    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+                    padding: 8px 16px; border-radius: 14px; transition: all 0.2s;
+                  ">
+                    ${getIcon('refreshCw', 'scraper-icon-xs')} Cập nhật
+                  </button>
+                  <button id="shortcutHelpBtn" class="ol-text-sub ol-btn-hover ol-border" style="
+                    background: transparent; border-width: 1px; border-style: solid; cursor: pointer;
+                    display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700;
+                    padding: 8px 16px; border-radius: 14px; transition: all 0.2s;
+                  ">
+                    ${getIcon('info', 'scraper-icon-xs')} Trợ giúp
+                  </button>
+              </div>
               
-              <button id="cancelModeBtn" class="ol-text-sub" style="
-                background: transparent; border: none;
-                font-size: 13px; cursor: pointer;
-                transition: color 0.2s;
-              " onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='inherit'">
-                Hủy bỏ
+              <button id="cancelModeBtn" class="ol-text-sub ol-border" style="
+                background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); 
+                font-size: 14px; font-weight: 800; cursor: pointer;
+                padding: 8px 24px; border-radius: 14px; transition: all 0.2s;
+                color: #ef4444;
+              " onmouseover="this.style.background='rgba(239, 68, 68, 0.15)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.05)'">
+                Đóng (Esc)
               </button>
             </div>
           </div>
+
+          <style>
+            @keyframes mesh-float {
+              0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+              100% { transform: translate(5%, 10%) rotate(10deg) scale(1.05); }
+            }
+            @keyframes scraper-modal-ultra-enter {
+              0% { opacity: 0; transform: scale(0.8) translateY(60px) rotateX(-15deg); filter: blur(15px); }
+              100% { opacity: 1; transform: scale(1) translateY(0) rotateX(0); filter: blur(0); }
+            }
+            @keyframes scraper-float {
+              0%, 100% { transform: translateY(0) rotate(-3deg); }
+              50% { transform: translateY(-8px) rotate(3deg); }
+            }
+            @keyframes scraper-pulse-ultra {
+              0% { box-shadow: 0 0 0 0 var(--pulse-color); }
+              70% { box-shadow: 0 0 0 15px transparent; }
+              100% { box-shadow: 0 0 0 0 transparent; }
+            }
+            
+            .scraper-mode-card:hover {
+              transform: translateY(-8px) !important;
+              border-color: var(--ol-brand) !important;
+              box-shadow: 0 20px 40px -15px rgba(0,0,0,0.2) !important;
+              background: var(--ol-surface-hover) !important;
+            }
+            .scraper-mode-card#homeworkModeBtn:hover {
+              border-color: var(--ol-success) !important;
+              box-shadow: 0 20px 40px -15px var(--ol-success-alpha) !important;
+            }
+            .scraper-mode-card#examModeBtn:hover {
+              border-color: var(--ol-brand) !important;
+              box-shadow: 0 20px 40px -15px var(--ol-brand-alpha) !important;
+            }
+            .scraper-mode-card.recommended {
+              --pulse-color: var(--ol-brand-alpha);
+              animation: scraper-pulse-ultra 2.5s infinite ease-in-out;
+              border-width: 2px !important;
+            }
+            .scraper-mode-card#homeworkModeBtn.recommended { --pulse-color: var(--ol-success-alpha); }
+
+            @media (max-width: 700px) {
+              .scraper-modal-container { padding: 32px 24px !important; }
+              .main-title { font-size: 24px !important; }
+              .mode-cards-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+              .rocket-container { width: 70px !important; height: 70px !important; }
+              .modal-footer { flex-direction: column !important; gap: 16px !important; }
+              .modal-footer div { width: 100%; justify-content: center; }
+              #cancelModeBtn { width: 100%; }
+            }
+          </style>
         `;
 
         document.body.appendChild(overlay);
+
+        // Keyboard Shortcuts
+        const handleKeyDown = (e) => {
+          if (e.key === '1') {
+            document.getElementById('homeworkModeBtn').click();
+          } else if (e.key === '2') {
+            document.getElementById('examModeBtn').click();
+          } else if (e.key === 'Escape') {
+            document.getElementById('cancelModeBtn').click();
+          }
+        };
+        window.addEventListener('keydown', handleKeyDown);
 
         // Theme Toggle Handler
         document.getElementById('menuThemeBtn').onclick = () => {
             const isDark = overlay.classList.toggle('scraper-dark');
             localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
             document.getElementById('menuThemeBtn').innerHTML = isDark 
-                ? getIcon('sun', 'scraper-icon-md') 
-                : getIcon('moon', 'scraper-icon-md');
+                ? getIcon('sun', 'scraper-icon-sm') 
+                : getIcon('moon', 'scraper-icon-sm');
         };
 
-        // Event handlers
+        // Event handlers with cleanup
+        const cleanup = () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+
         document.getElementById('homeworkModeBtn').onclick = () => {
-          overlay.remove();
-          resolve('homework');
+          cleanup();
+          overlay.style.opacity = '0';
+          overlay.style.transform = 'scale(1.05) translateY(-10px)';
+          overlay.style.transition = 'all 0.4s ease';
+          setTimeout(() => { overlay.remove(); resolve('homework'); }, 400);
         };
 
         document.getElementById('examModeBtn').onclick = () => {
-          overlay.remove();
-          resolve('exam');
+          cleanup();
+          overlay.style.opacity = '0';
+          overlay.style.transform = 'scale(1.05) translateY(-10px)';
+          overlay.style.transition = 'all 0.4s ease';
+          setTimeout(() => { overlay.remove(); resolve('exam'); }, 400);
         };
 
         document.getElementById('checkUpdateBtn').onclick = (e) => {
@@ -1592,27 +1674,15 @@ if (window.hasRunScraper) {
         };
 
         document.getElementById('cancelModeBtn').onclick = () => {
-          overlay.remove();
-          resolve(null);
+          cleanup();
+          overlay.style.opacity = '0';
+          overlay.style.transition = 'all 0.3s ease';
+          setTimeout(() => { overlay.remove(); resolve(null); }, 300);
         };
 
-        // Hover effects - Use CSS Variables
-        const btns = overlay.querySelectorAll('.scraper-mode-select-btn');
-        btns.forEach(btn => {
-          btn.onmouseenter = () => {
-            btn.style.transform = 'translateY(-4px)';
-            btn.style.boxShadow = 'var(--scraper-shadow-lg)';
-            // Use semantic variables for border
-            btn.style.borderColor = btn.id === 'homeworkModeBtn' 
-              ? 'var(--ol-success)' 
-              : 'var(--ol-brand)';
-          };
-          btn.onmouseleave = () => {
-            btn.style.transform = 'translateY(0)';
-            btn.style.boxShadow = 'none';
-            btn.style.borderColor = ''; // Revert to CSS class border
-          };
-        });
+        document.getElementById('shortcutHelpBtn').onclick = () => {
+          showToast('Phím tắt: [1] Bài tập, [2] Bài thi, [Esc] Đóng', 'info');
+        };
       });
     }
 
