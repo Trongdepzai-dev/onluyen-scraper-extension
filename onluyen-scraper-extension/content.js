@@ -188,6 +188,12 @@ if (window.hasRunScraper) {
         
         --ol-success: #059669;     /* Emerald 600 */
         --ol-success-bg: #ecfdf5;  /* Emerald 50 */
+
+        --ol-warning: #d97706;     /* Amber 600 */
+        --ol-warning-bg: #fffbeb;  /* Amber 50 */
+
+        --ol-danger: #e11d48;      /* Rose 600 */
+        --ol-danger-bg: #fff1f2;   /* Rose 50 */
         
         --ol-hover: #f3f4f6;
         --ol-shadow: rgba(0, 0, 0, 0.1);
@@ -208,6 +214,12 @@ if (window.hasRunScraper) {
         
         --ol-success: #34d399;     /* Emerald 400 */
         --ol-success-bg: #064e3b;  /* Emerald 900 */
+
+        --ol-warning: #fbbf24;     /* Amber 400 */
+        --ol-warning-bg: #78350f;  /* Amber 900 */
+
+        --ol-danger: #fb7185;      /* Rose 400 */
+        --ol-danger-bg: #881337;   /* Rose 900 */
         
         --ol-hover: #334151;
         --ol-shadow: rgba(0, 0, 0, 0.5);
@@ -226,12 +238,54 @@ if (window.hasRunScraper) {
       /* Semantic Colors (Text & Icon) */
       .ol-brand-text { color: var(--ol-brand) !important; transition: all 0.3s; }
       .ol-success-text { color: var(--ol-success) !important; transition: all 0.3s; }
+      .ol-warning-text { color: var(--ol-warning) !important; transition: all 0.3s; }
+      .ol-danger-text { color: var(--ol-danger) !important; transition: all 0.3s; }
       
       /* Semantic Backgrounds */
       .ol-brand-bg { background-color: var(--ol-brand-bg) !important; transition: all 0.3s; }
       .ol-success-bg { background-color: var(--ol-success-bg) !important; transition: all 0.3s; }
+      .ol-warning-bg { background-color: var(--ol-warning-bg) !important; transition: all 0.3s; }
+      .ol-danger-bg { background-color: var(--ol-danger-bg) !important; transition: all 0.3s; }
       
       .ol-btn-hover:hover { background-color: var(--ol-hover) !important; }
+
+      /* Components */
+      .ol-card {
+        background-color: var(--ol-surface);
+        border: 1px solid var(--ol-border);
+        border-radius: 16px;
+        padding: 20px;
+        transition: all 0.3s ease;
+      }
+      .ol-card:hover {
+        border-color: var(--ol-brand);
+        box-shadow: 0 10px 25px -5px var(--ol-shadow);
+      }
+
+      .ol-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .ol-input {
+        background-color: var(--ol-surface);
+        border: 1.5px solid var(--ol-border);
+        border-radius: 12px;
+        padding: 10px 16px;
+        color: var(--ol-text);
+        outline: none;
+        transition: all 0.2s;
+      }
+      .ol-input:focus {
+        border-color: var(--ol-brand);
+        box-shadow: 0 0 0 4px var(--ol-brand-bg);
+      }
       
       /* View Transitions Support */
       ::view-transition-old(root),
@@ -241,7 +295,7 @@ if (window.hasRunScraper) {
       }
 
       /* SVG Fill Fix - Force currentColor inheritance with transition */
-      .ol-brand-text svg, .ol-success-text svg, button svg { 
+      .ol-brand-text svg, .ol-success-text svg, .ol-warning-text svg, .ol-danger-text svg, button svg { 
         stroke: currentColor !important; 
         transition: stroke 0.3s ease;
       }
@@ -260,6 +314,7 @@ if (window.hasRunScraper) {
     let allResults = "";
     let allResultsAI = "";
     let allImages = [];
+    let allQuestions = []; // NEW: Store individual question objects
     let stopRequested = false;
     let lastID = "";
     let questionCount = 0;
@@ -339,6 +394,12 @@ if (window.hasRunScraper) {
     function saveScraperSettings(settings) {
         localStorage.setItem('scraper_settings', JSON.stringify(settings));
     }
+
+    // State for Gemini Chat
+    let chatHistory = [];
+    let imageMode = 'all'; // 'all', 'none', 'custom'
+    let selectedImageIndices = new Set();
+    let isImageMenuOpen = false;
 
     async function callGeminiAPI(messages, apiKey, modelId) {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${apiKey}`;
@@ -2474,6 +2535,16 @@ if (window.hasRunScraper) {
     // 📝 INTELLIGENT TEXT EXTRACTION
     // ============================================================ 
 
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function extractIntelligentText(element, includeImages = true) {
       if (!element) return { text: '', images: [] };
 
@@ -3001,6 +3072,56 @@ if (window.hasRunScraper) {
       textAI += `\n`;
       
       return { text: textNormal, textAI, id: cauId, images: questionImages };
+    }
+
+    function formatSingleQuestionAI(q, displayNum) {
+      const typeNames = {
+        'multiple-choice': 'TRẮC NGHIỆM',
+        'true-false': 'ĐÚNG/SAI',
+        'fill-blank': 'ĐIỀN KHUYẾT',
+        'unknown': 'CHƯA XÁC ĐỊNH'
+      };
+
+      const systemPrompt = getEffectivePrompt();
+      const type = q.type || 'unknown';
+      let out = `${systemPrompt}\n\n`;
+      out += `━━━ Phân tích Câu ${displayNum} [${typeNames[type]}] ━━━\n\n`;
+
+      if (currentMode === 'homework') {
+          // Homework mode usually has a pre-formatted q.textAI, but let's be safe
+          if (q.textAI) return q.textAI;
+          // Fallback if textAI is missing
+          if (q.text) out += q.text.replace(/╔═+╗|║|╚═+╝|═+|-+/g, '').trim();
+      } else {
+          // Exam mode structure
+          if (q.title) out += `📋 Yêu cầu: ${q.title}\n`;
+          if (q.content) out += `📝 Đề bài: ${q.content}\n`;
+          if (q.answerPrompt) out += `✏️ ${q.answerPrompt}\n`;
+          out += `\n`;
+
+          switch(type) {
+            case 'multiple-choice':
+              Object.entries(q.data.answers).sort().forEach(([k, v]) => {
+                out += `${k}. ${v}\n`;
+              });
+              break;
+            case 'true-false':
+              q.data.items.forEach(item => {
+                out += `${item.label} ${item.statement}\n`;
+              });
+              break;
+            case 'fill-blank':
+              out += `[${q.data.blanks.length} ô trống cần điền]\n`;
+              break;
+          }
+      }
+
+      // Add Footer requirement
+      out += `\n${'═'.repeat(40)}\n`;
+      out += `📌 YÊU CẦU: Hãy giải đáp câu hỏi trên một cách chính xác nhất.\n`;
+      out += `1. Chọn đáp án đúng.\n2. Giải thích ngắn gọn.\n3. Độ tin cậy (%).`;
+
+      return out;
     }
 
     // ============================================================ 
@@ -3640,6 +3761,7 @@ if (window.hasRunScraper) {
 
       allResults = formatExamResultsNormal(questions);
       allResultsAI = formatExamResultsAI(questions);
+      allQuestions = questions; // Store for dashboard
 
       window._examQuestions = questions;
 
@@ -3712,6 +3834,7 @@ if (window.hasRunScraper) {
 
             allResults += q.text;
             allResultsAI += q.textAI;
+            allQuestions.push(q); // Store for dashboard
             q.images.forEach(img => allImages.push({ ...img, question: q.id }));
             lastID = q.id;
             questionCount++;
@@ -3985,29 +4108,31 @@ if (window.hasRunScraper) {
     }
 
     function showGeminiResponseModal(initialContent, promptData) {
-        let initialUserMsg;
+        const config = getGeminiConfig();
         
-        // Handle different prompt formats
-        if (typeof promptData === 'object' && promptData.role === 'user') {
-            initialUserMsg = promptData;
-        } else if (Array.isArray(promptData)) {
-            initialUserMsg = { role: 'user', parts: promptData };
-        } else {
-            initialUserMsg = { role: 'user', parts: [{ text: promptData }] };
+        // Populate chatHistory if empty
+        if (chatHistory.length === 0) {
+            let initialUserMsg;
+            if (typeof promptData === 'object' && promptData.role === 'user') {
+                initialUserMsg = promptData;
+            } else if (Array.isArray(promptData)) {
+                initialUserMsg = { role: 'user', parts: promptData };
+            } else {
+                initialUserMsg = { role: 'user', parts: [{ text: promptData }] };
+            }
+
+            chatHistory = [
+                initialUserMsg,
+                { role: 'model', parts: [{ text: initialContent }] }
+            ];
+            
+            // Set initial selected images based on promptData if it was an object
+            if (typeof promptData === 'object' && promptData.parts) {
+                 // Logic to sync selectedImageIndices if needed
+            } else {
+                 selectedImageIndices = new Set(allImages.map((_, i) => i));
+            }
         }
-
-        let chatHistory = [
-            initialUserMsg,
-            { role: 'model', parts: [{ text: initialContent }] }
-        ];
-        
-        // Extract text for initial display if parts contain images
-        const promptText = initialUserMsg.parts.find(p => p.text)?.text || "Image prompt...";
-
-        // Image handling state
-        let imageMode = 'all'; // 'all', 'none', 'custom'
-        let selectedImageIndices = new Set(allImages.map((_, i) => i));
-        let isImageMenuOpen = false;
 
         const overlay = document.createElement('div');
         overlay.className = 'ol-overlay';
@@ -4015,7 +4140,6 @@ if (window.hasRunScraper) {
 
         Object.assign(overlay.style, {
             position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
-            // background handled by .ol-overlay class
             zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
             opacity: '0', transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
@@ -4023,59 +4147,61 @@ if (window.hasRunScraper) {
 
 
 
-            // Enhanced Markdown formatter
-            const formatMessage = (text) => {
-                let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                
-                // Better Headers - Themed
-                safeText = safeText.replace(/^# (.*$)/gm, '<h1 class="ol-text" style="font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid var(--ol-brand); padding-bottom: 8px;">$1</h1>');
-                safeText = safeText.replace(/^## (.*$)/gm, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
-                safeText = safeText.replace(/^### (.*$)/gm, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
-
-                // Horizontal Rule
-                safeText = safeText.replace(/^---$/gm, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
-                safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: var(--ol-brand); opacity: 0.3; margin: 20px 0;">');
-
-                // Smart Badge: Confidence Score detection
-            safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
-                const s = parseInt(score);
-                let colorVar = '--ol-text-sub';
-                let icon = 'alertTriangle';
-                if (s >= 85) { colorVar = '--ol-success'; icon = 'check'; }
-                else if (s >= 70) { colorVar = '--ol-brand'; icon = 'info'; }
-                
-                return `<div style="display: inline-flex; align-items: center; gap: 8px; background: var(${colorVar}); color: white; padding: 6px 12px; border-radius: 10px; font-weight: 700; font-size: 13px; margin: 10px 0;">
-                    ${getIcon(icon, 'scraper-icon-xs')} ĐỘ TIN CẬY: ${s}%
-                </div>`;
-            });
-
-            // Smart Badge: Subject/Category detection
-            safeText = safeText.replace(/(?:🎯|📚)?\s*(LOẠI CÂU HỎI|LĨNH VỰC|⚡ ĐỘ KHÓ):\s*([^\n]+)/gi, (match, label, value) => {
-                return `<div class="ol-surface ol-border ol-text-sub" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 8px; border-width: 1px; border-style: solid; font-size: 11px; font-weight: 600; text-transform: uppercase; margin: 4px 2px;">
-                    <span class="ol-brand-text">${label}:</span> ${value}
-                </div>`;
-            });
-
-            // Code blocks - Darker in Dark Mode, Surface in Light Mode
-            safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
-                return `<div class="ol-surface ol-border" style="border-radius: 12px; margin: 16px 0; overflow: hidden; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">
-                    <div class="ol-bg ol-border" style="padding: 8px 16px; border-bottom-width: 1px; border-bottom-style: solid; display: flex; justify-content: space-between; align-items: center;">
-                        <span class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
-                        <div style="display: flex; gap: 4px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f;"></div></div>
-                    </div>
-                    <pre class="ol-text" style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; background: transparent;">${code.trim()}</pre>
-                </div>`;
-            });
-
-            safeText = safeText.replace(/`([^`]+)`/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">$1</code>');
-            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong class="ol-text" style="font-weight: 700;">$1</strong>');
+                        // Enhanced Markdown formatter
+                        const formatMessage = (text) => {
+                            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                            
+                            // Better Headers - Themed
+                            safeText = safeText.replace(/^# (.*$)/gm, '<h1 class="ol-text" style="font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid var(--ol-brand); padding-bottom: 8px;">$1</h1>');
+                            safeText = safeText.replace(/^## (.*$)/gm, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
+                            safeText = safeText.replace(/^### (.*$)/gm, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
             
-            // Lists
-            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span class="ol-brand-text">•</span><span class="ol-text">$1</span></div>');
-
-            return safeText.replace(/\n/g, '<br>');
-        };
-
+                            // Horizontal Rule
+                            safeText = safeText.replace(/^---$/gm, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
+                            safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: var(--ol-brand); opacity: 0.3; margin: 20px 0;">');
+            
+                            // Smart Badge: Confidence Score detection
+                            safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
+                                const s = parseInt(score);
+                                let colorVar = '--ol-text-sub';
+                                let icon = 'alertTriangle';
+                                if (s >= 85) { colorVar = '--ol-success'; icon = 'check'; }
+                                else if (s >= 70) { colorVar = '--ol-brand'; icon = 'info'; }
+                                
+                                return `<div style="display: inline-flex; align-items: center; gap: 8px; background: var(${colorVar}); color: white; padding: 6px 12px; border-radius: 10px; font-weight: 700; font-size: 13px; margin: 10px 0;">
+                                    ${getIcon(icon, 'scraper-icon-xs')} ĐỘ TIN CẬY: ${s}%
+                                </div>`;
+                            });
+            
+                            // Question Analysis Highlight
+                            safeText = safeText.replace(/^Câu (\d+):/gm, '<div class="ol-brand-bg ol-brand-text" style="padding: 4px 12px; border-radius: 8px; display: inline-block; font-weight: 800; margin-top: 16px;">Câu $1:</div>');
+            
+                            // Table support (Simple)
+                            safeText = safeText.replace(/\|(.+)\|/g, (match, row) => {
+                                const cells = row.split('|').map(c => `<td class="ol-border" style="padding: 8px 12px; border-width: 1px; border-style: solid;">${c.trim()}</td>`).join('');
+                                return `<tr class="ol-surface">${cells}</tr>`;
+                            });
+                            safeText = safeText.replace(/((?:<tr.*<\/tr>\s*)+)/g, '<table class="ol-border" style="border-collapse: collapse; width: 100%; margin: 16px 0; border-width: 1px; border-style: solid; border-radius: 12px; overflow: hidden;">$1</table>');
+            
+                            // Code blocks - Darker in Dark Mode, Surface in Light Mode
+                            safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
+                                return `<div class="ol-surface ol-border" style="border-radius: 12px; margin: 16px 0; overflow: hidden; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">
+                                    <div class="ol-bg ol-border" style="padding: 8px 16px; border-bottom-width: 1px; border-bottom-style: solid; display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
+                                        <div style="display: flex; gap: 4px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f;"></div></div>
+                                    </div>
+                                    <pre class="ol-text" style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; background: transparent;">${code.trim()}</pre>
+                                </div>`;
+                            });
+            
+                            safeText = safeText.replace(/`([^`]+)`/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">$1</code>');
+                            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong class="ol-text" style="font-weight: 700;">$1</strong>');
+                            
+                            // Lists
+                            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span class="ol-brand-text">•</span><span class="ol-text">$1</span></div>');
+            
+                            return safeText.replace(/\n/g, '<br>');
+                        };
         const appendMessage = (role, text, isLoading = false) => {
             const contentArea = document.getElementById('geminiContentArea');
             if (!contentArea) return;
@@ -4428,6 +4554,12 @@ if (window.hasRunScraper) {
         setTimeout(() => overlay.style.opacity = '1', 50);
         document.body.appendChild(overlay);
 
+        // Render existing chat history
+        chatHistory.forEach(msg => {
+            const text = msg.parts.find(p => p.text)?.text || "";
+            if (text) appendMessage(msg.role, text);
+        });
+
         // Image Mode Events
         if (allImages.length > 0) {
             const btn = document.getElementById('imageModeBtn');
@@ -4466,9 +4598,6 @@ if (window.hasRunScraper) {
 
             renderImagePreviews();
         }
-
-        appendMessage('user', promptText);
-        appendMessage('model', initialContent);
 
         const handleSend = async () => {
             const input = document.getElementById('geminiChatInput');
@@ -4559,6 +4688,17 @@ if (window.hasRunScraper) {
                 appendMessage('model', response);
             } catch (e) {
                 appendMessage('model', `Lỗi: ${e.message}`);
+            }
+        };
+
+        document.getElementById('clearChatBtn').onclick = () => {
+            if (confirm('Bạn có chắc chắn muốn xóa lịch sử trò chuyện không?')) {
+                chatHistory = [];
+                document.getElementById('geminiContentArea').innerHTML = `
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <span class="ol-bg ol-border ol-text-sub" style="padding: 6px 16px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; border-width: 1px; border-style: solid;">Lịch sử đã xóa</span>
+                    </div>
+                `;
             }
         };
 
@@ -4663,7 +4803,7 @@ if (window.hasRunScraper) {
     }
 
     // ============================================================ 
-    // 🎨 RESULT DISPLAY UI
+    // 🎨 RESULT DISPLAY UI - MODULAR DASHBOARD v2.0
     // ============================================================ 
 
     function showResultsUI() {
@@ -4682,450 +4822,252 @@ if (window.hasRunScraper) {
         right: '0',
         bottom: '0',
         zIndex: '9999',
-        overflowY: 'auto',
-        fontFamily: "'Inter', -apple-system, sans-serif"
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: "'Inter', -apple-system, sans-serif",
+        animation: 'scraper-fade-in 0.4s ease'
       });
 
       const modeLabel = currentMode === 'homework' ? 'BÀI TẬP' : 'BÀI THI';
       const modeIcon = currentMode === 'homework' ? getIcon('book', 'scraper-icon-md') : getIcon('fileText', 'scraper-icon-md');
 
-      resultContainer.innerHTML = `
-        <div style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
-          
-          <!-- Hero Header -->
-          <div class="ol-brand-bg ol-border" style="
-            border-width: 1px; border-style: solid;
-            border-radius: 32px;
-            padding: 48px;
-            text-align: center;
-            margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
-          ">
-            <button id="resultThemeBtn" class="ol-surface ol-border ol-text" style="
-              position: absolute;
-              top: 24px;
-              right: 24px;
-              width: 36px; height: 36px;
-              border-radius: 10px;
-              border-width: 1px; border-style: solid;
-              display: flex; align-items: center; justify-content: center;
-              cursor: pointer;
-              z-index: 10;
-              background: var(--ol-surface);
-              transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            " onmouseover="this.style.transform='scale(1.1) rotate(15deg)'" onmouseout="this.style.transform='scale(1) rotate(0deg)'" title="Đổi giao diện Sáng/Tối">
-                ${localStorage.getItem('ol_theme') === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
-            </button>
+      // Helper: Render Question Card
+      const renderQuestionCard = (q, index) => {
+        const isExam = currentMode === 'exam';
+        const qNum = isExam ? q.number : (index + 1);
+        const qId = isExam ? `q-exam-${qNum}` : `q-hw-${q.id}`;
+        
+        let typeBadge = '';
+        if (isExam) {
+            const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng/Sai', 'fill-blank': 'Điền khuyết' };
+            typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 10px;">${typeNames[q.type] || q.type}</span>`;
+        }
 
-            <div style="position: relative; z-index: 1;">
-              <div class="ol-brand-text" style="margin-bottom: 20px;">${getIcon('rocket', 'scraper-icon-lg')}</div>
-              <h1 class="ol-text" style="
-                font-size: 36px;
-                font-weight: 800;
-                margin: 0 0 12px 0;
-              ">Scrape Hoàn Thành!</h1>
-              <p class="ol-text-sub" style="font-size: 16px; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                <span class="ol-brand-text" style="display:flex; align-items:center;">${modeIcon}</span> Chế độ: ${modeLabel}
-              </p>
-              <div class="ol-surface ol-text-sub ol-border" style="
-                display: inline-flex;
-                align-items: center;
-                gap: 8px;
-                padding: 8px 16px;
-                border-radius: 20px;
-                margin-top: 16px;
-                font-size: 14px;
-                border-width: 1px; border-style: solid;
-              ">
-                ${getIcon('clock', 'scraper-icon-sm')}
-                <span>Thời gian: ${minsTotal}m ${secsTotal}s</span>
+        return `
+          <div class="ol-card q-card" id="${qId}" style="margin-bottom: 20px; scroll-margin-top: 100px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--ol-border); padding-bottom: 12px;">
+              <div style="display: flex; align-items: center;">
+                <span class="ol-brand-bg ol-brand-text" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">${qNum}</span>
+                <span class="ol-text" style="margin-left: 12px; font-weight: 700; font-size: 16px;">Câu hỏi ${isExam && q.score ? `(${q.score}đ)` : ''}</span>
+                ${typeBadge}
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <button class="ask-ai-btn ol-brand-text ol-btn-hover" data-index="${index}" title="Hỏi Gemini về câu này" style="background:var(--ol-brand-bg); border:none; cursor:pointer; padding:6px 10px; border-radius:8px; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 12px;">
+                  ${getIcon('sparkles', 'scraper-icon-xs')} AI
+                </button>
+                <button class="copy-q-btn ol-text-sub ol-btn-hover" data-index="${index}" style="background:transparent; border:none; cursor:pointer; padding:6px; border-radius:8px;">${getIcon('copy', 'scraper-icon-sm')}</button>
               </div>
             </div>
-          </div>
-          
-          <!-- Stats Cards -->
-          <div style="
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 32px;
-          ">
-            <div class="ol-surface ol-border" style="
-              border-width: 1px; border-style: solid;
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div class="ol-success-text" style="margin-bottom: 8px; display:flex; justify-content:center;">${getIcon('clipboard', 'scraper-icon-md')}</div>
-              <div class="ol-success-text" style="font-size: 42px; font-weight: 800;">${questionCount}</div>
-              <div class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em;">CÂU HỎI</div>
-            </div>
             
-            <div class="ol-surface ol-border" style="
-              border-width: 1px; border-style: solid;
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div class="ol-brand-text" style="margin-bottom: 8px; display:flex; justify-content:center;">${getIcon('image', 'scraper-icon-md')}</div>
-              <div class="ol-brand-text" style="font-size: 42px; font-weight: 800;">${allImages.length}</div>
-              <div class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em;">HÌNH ẢNH</div>
+            <div class="ol-text" style="font-size: 15px; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">
+              ${isExam ? 
+                (q.title ? `<div style="font-weight: 600; color: var(--ol-brand); margin-bottom: 8px;">${escapeHTML(q.title)}</div>` : '') + escapeHTML(q.content) : 
+                escapeHTML(q.text.replace(/╔═+╗|║|╚═+╝|═+|-+/g, '').trim())}
             </div>
-            
-            <div class="scraper-stat-card" style="
-              background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(139, 92, 246, 0.05));
-              border: 1px solid rgba(139, 92, 246, 0.3);
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div style="color: #8b5cf6; margin-bottom: 8px;">${getIcon('fileText', 'scraper-icon-md')}</div>
-              <div style="font-size: 42px; font-weight: 800; color: #8b5cf6;">${allResults.length}</div>
-              <div style="color: #8b5cf6; opacity: 0.8; font-size: 13px; font-weight: 600; margin-top: 4px;">KÝ TỰ</div>
-            </div>
-            
-            <div class="ol-surface ol-border" style="
-              border-width: 1px; border-style: solid;
-              border-radius: 20px;
-              padding: 24px;
-              text-align: center;
-            ">
-              <div id="currentModeDisplay" class="ol-brand-text" style="display: flex; align-items: center; justify-content: center; height: 50px;">
-                ${isAIMode ? getIcon('bot', 'scraper-icon-lg') : getIcon('fileText', 'scraper-icon-lg')}
+
+            ${isExam && q.type === 'multiple-choice' ? `
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+                ${Object.entries(q.data.answers).map(([k, v]) => `
+                  <div class="ol-surface ol-border" style="padding: 10px 14px; border-radius: 10px; font-size: 14px; display: flex; gap: 8px; overflow-wrap: break-word; word-break: break-word;">
+                    <span style="font-weight: 800; color: var(--ol-brand);">${escapeHTML(k)}.</span>
+                    <span class="ol-text">${escapeHTML(v)}</span>
+                  </div>
+                `).join('')}
               </div>
-              <div class="ol-text-sub" style="font-size: 13px; font-weight: 600; margin-top: 4px; text-transform: uppercase;">
-                ${isAIMode ? 'CHẾ ĐỘ AI' : 'CHẾ ĐỘ THƯỜNG'}
-              </div>
-            </div>
-          </div>
-          
-          <!-- Action Buttons -->
-          <div style="
-            display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-          ">
-            <button id="copyAllBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: var(--ol-success);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              ${getIcon('copy')}
-              <span>Copy Toàn Bộ</span>
-            </button>
-            
-            <button id="copyImgBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: var(--ol-brand);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              ${getIcon('image')}
-              <span>Copy Link Ảnh</span>
-            </button>
-            
-            <button id="toggleModeResultBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: #8b5cf6; /* Keep violet for contrast or use var if added */
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              ${isAIMode ? getIcon('fileText') : getIcon('bot')}
-              <span>${isAIMode ? 'Chế độ Thường' : 'Chế độ AI'}</span>
-            </button>
-            
-            <button id="downloadBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: var(--ol-success);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              ${getIcon('download')}
-              <span>Tải File</span>
-            </button>
-            
-            ${allImages.length > 0 ? `
-            <label class="ol-brand-bg ol-border ol-text" style="
-                display: flex; align-items: center; gap: 8px; cursor: pointer;
-                padding: 0 16px; border-radius: 16px;
-                border-width: 1px; border-style: solid;
-                flex: 0 0 auto; transition: all 0.2s; user-select: none;
-            ">
-                <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: var(--ol-brand); cursor: pointer;">
-                <span style="font-size: 14px; font-weight: 600;">Gửi kèm ảnh</span>
-            </label>
             ` : ''}
 
-            <button id="sendGeminiBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: var(--ol-brand);
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              position: relative;
-              overflow: hidden;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              <div style="
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-                animation: scraper-shimmer 2s infinite;
-              "></div>
-              ${getIcon('sparkles')}
-              <span>Gửi Gemini</span>
-            </button>
-            
-            <button id="closeResultBtn" class="scraper-btn" style="
-              flex: 1;
-              min-width: 150px;
-              padding: 18px 24px;
-              background: #6b7280;
-              color: white;
-              border: none;
-              border-radius: 16px;
-              font-size: 15px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 10px;
-              cursor: pointer;
-              transition: all 0.2s;
-            " onmouseover="this.style.opacity='0.9';this.style.transform='translateY(-2px)'" onmouseout="this.style.opacity='1';this.style.transform='translateY(0)'">
-              ${getIcon('x')}
-              <span>Đóng</span>
-            </button>
-          </div>
-          
-          <!-- Images Gallery -->
-          ${allImages.length > 0 ? `
-            <div class="ol-surface ol-border" style="
-              border-width: 1px; border-style: solid;
-              border-radius: 24px;
-              padding: 24px;
-              margin-bottom: 32px;
-            ">
-            <div style="
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 20px;
-            ">
-              <h3 class="ol-text" style="margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-                ${getIcon('image')} Thư viện Hình ảnh
-              </h3>
-              <div style="display: flex; gap: 10px; align-items: center;">
-                <span class="ol-text-sub" style="font-size: 12px;">Click để phóng to</span>
-                <span class="ol-brand-bg ol-brand-text" style="
-                  padding: 6px 14px;
-                  border-radius: 20px;
-                  font-size: 13px;
-                  font-weight: 600;
-                ">${allImages.length} ảnh</span>
-              </div>
-            </div>
-
-            <div class="scraper-image-grid scraper-scrollbar" style="max-height: 320px; overflow-y: auto; padding-right: 8px;">
-              ${allImages.slice(0, 100).map((img, i) => {
-                const optionLabelPart = img.optionLabel ? ' • ' + img.optionLabel : '';
-                const html = `<div class="scraper-image-card ol-border" 
-                     data-img-index="${i}" 
-                     style="
-                       background: var(--ol-bg); 
-                       border-width: 1px; border-style: solid; 
-                       position: relative; 
-                     ">
-                  <img src="${img.fullUrl || img.url}" 
-                       loading="lazy"
-                       decoding="async"
-                       style="
-                         width: 100%; 
-                         height: 90px; 
-                         object-fit: cover; 
-                         display: block; 
-                       " 
-                       onerror='this.style.display="none"; this.nextElementSibling.style.display="flex";'>
-                  <div style="
-                    display: none; 
-                    padding: 30px; 
-                    text-align: center; 
-                    color: #6b7280; 
-                    height: 90px; 
-                    align-items: center; 
-                    justify-content: center; 
-                  ">${getIcon('image')}</div>
-                  <div style="
-                    padding: 10px; 
-                    background: rgba(0,0,0,0.3); 
-                  ">
-                    <div style="color: white; font-size: 12px; font-weight: 600;">
-                      Câu ${img.question}${optionLabelPart}
-                    </div>
-                    <div style="color: #9ca3af; font-size: 10px; margin-top: 2px;">
-                      ${img.isBase64 ? '📊 Base64' : '🔗 URL'} • Click để xem
-                    </div>
+            ${isExam && q.type === 'true-false' ? `
+              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+                ${q.data.items.map(item => `
+                  <div class="ol-surface ol-border" style="padding: 10px 14px; border-radius: 10px; font-size: 14px; display: flex; gap: 8px; overflow-wrap: break-word; word-break: break-word;">
+                    <span style="font-weight: 800; color: var(--ol-brand); min-width: 24px;">${escapeHTML(item.label)}</span>
+                    <span class="ol-text">${escapeHTML(item.statement)}</span>
                   </div>
-                </div>`;
-                return html;
-              }).join('')}
+                `).join('')}
+              </div>
+            ` : ''}
+
+            ${q.images && q.images.length > 0 ? `
+              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--ol-border);">
+                ${q.images.map((img, i) => `
+                  <div class="ol-border" style="width: 80px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer;" onclick="createImageLightbox(allImages, allImages.findIndex(ai => ai.fullUrl === '${img.fullUrl}'))">
+                    <img src="${img.fullUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+        `;
+      };
+
+      resultContainer.innerHTML = `
+        <style>
+          .ol-btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--ol-shadow); opacity: 0.9; }
+          .ol-btn-hover:active { transform: translateY(0); }
+          .nav-q-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+          .nav-q-btn:hover { background: var(--ol-brand-bg); color: var(--ol-brand-text); border-color: var(--ol-brand); transform: scale(1.05); }
+          .q-card { transition: all 0.3s ease; border: 1px solid var(--ol-border); }
+          .q-card:hover { border-color: var(--ol-brand); box-shadow: 0 10px 30px -10px var(--ol-shadow); }
+          .floating-ai-btn {
+            position: absolute; bottom: 40px; right: 40px; width: 64px; height: 64px;
+            border-radius: 20px; background: linear-gradient(135deg, #6366f1, #d946ef);
+            color: white; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 15px 35px -5px rgba(99, 102, 241, 0.5);
+            z-index: 1000; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          }
+          .floating-ai-btn:hover { transform: scale(1.1) rotate(5deg); box-shadow: 0 20px 45px -5px rgba(99, 102, 241, 0.6); }
+          .floating-ai-btn:active { transform: scale(0.95); }
+        </style>
+        <!-- Navbar -->
+        <div class="ol-bg ol-border" style="padding: 16px 32px; border-bottom-width: 1px; border-bottom-style: solid; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div class="ol-brand-bg ol-brand-text" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+              ${getIcon('rocket', 'scraper-icon-md')}
+            </div>
+            <div>
+              <h2 class="ol-text" style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.5px;">Dashboard Kết Quả</h2>
+              <div style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                <span class="ol-badge ol-brand-bg ol-brand-text" style="font-size: 9px; padding: 2px 8px;">${modeLabel}</span>
+                <span class="ol-text-sub" style="font-size: 12px; font-family: monospace;">${minsTotal}m ${secsTotal}s</span>
+              </div>
             </div>
           </div>
-          ` : ''}
           
-          <!-- Content Display -->
-          <div class="ol-surface ol-border" style="
-            border-width: 1px; border-style: solid;
-            border-radius: 24px;
-            overflow: hidden;
-            box-shadow: 0 25px 80px rgba(0,0,0,0.1);
-          ">
-            <div class="ol-surface" style="
-              padding: 20px 28px;
-              border-bottom: 1px solid var(--ol-border);
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              background: var(--ol-bg);
-            ">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                ${getIcon('fileText', 'scraper-icon-md')}
-                <span class="ol-text" style="font-weight: 700; font-size: 16px;">Nội dung thu thập</span>
+          <div style="display: flex; align-items: center; gap: 12px; flex: 1; max-width: 400px; margin: 0 40px;">
+            <div style="position: relative; width: 100%;">
+              <div style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ol-text-sub);">
+                ${getIcon('search', 'scraper-icon-xs')}
               </div>
-              <div style="display: flex; gap: 6px;">
-                <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 50%;"></div>
-                <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 50%;"></div>
-                <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%;"></div>
+              <input type="text" id="dashboardSearch" class="ol-input" placeholder="Tìm kiếm câu hỏi..." style="width: 100%; padding-left: 40px;">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button id="resultThemeBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 12px; border-width: 1px; border-style: solid; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                ${localStorage.getItem('ol_theme') === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
+            </button>
+            <button id="closeResultBtn" class="ol-danger-bg ol-danger-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                ${getIcon('x', 'scraper-icon-sm')}
+            </button>
+          </div>
+        </div>
+
+        <div style="display: flex; flex: 1; overflow: hidden;">
+          <!-- Sidebar -->
+          <div class="ol-surface ol-border" style="width: 280px; border-right-width: 1px; border-right-style: solid; display: flex; flex-direction: column;">
+            <div style="padding: 24px; border-bottom: 1px solid var(--ol-border);">
+              <h3 class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Thống kê nhanh</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 14px; text-align: center; border-width: 1px; border-style: solid;">
+                  <div class="ol-brand-text" style="font-size: 20px; font-weight: 800;">${questionCount}</div>
+                  <div class="ol-text-sub" style="font-size: 10px; font-weight: 600;">CÂU HỎI</div>
+                </div>
+                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 14px; text-align: center; border-width: 1px; border-style: solid;">
+                  <div class="ol-success-text" style="font-size: 20px; font-weight: 800;">${allImages.length}</div>
+                  <div class="ol-text-sub" style="font-size: 10px; font-weight: 600;">HÌNH ẢNH</div>
+                </div>
               </div>
             </div>
             
-            <pre id="resultContent" class="scraper-scrollbar ol-text" style="
-              font-family: 'JetBrains Mono', 'Fira Code', monospace;
-              font-size: 13px;
-              line-height: 1.7;
-              padding: 28px;
-              margin: 0;
-              max-height: 60vh;
-              overflow-y: auto;
-              white-space: pre-wrap;
-              word-wrap: break-word;
-            "></pre>
-          </div>
-          
-          <!-- Footer -->
-          <div style="
-            text-align: center;
-            padding: 32px;
-            color: var(--ol-text-sub);
-            font-size: 13px;
-          ">
-            <!-- Open Source Section -->
-            <div style="
-                background: rgba(99, 102, 241, 0.05);
-                border: 1px dashed rgba(99, 102, 241, 0.3);
-                border-radius: 20px;
-                padding: 24px;
-                margin-bottom: 24px;
-                animation: scraper-slide-up 0.6s ease;
-            ">
-                <div style="color: #a5b4fc; margin-bottom: 12px;">${getIcon('github', 'scraper-icon-lg')}</div>
-                <h4 style="color: var(--ol-text); margin: 0 0 8px 0; font-size: 16px; font-weight: 700;">Dự án Nguồn Mở (Open Source)</h4>
-                <p style="color: var(--ol-text-sub); font-size: 13px; line-height: 1.6; margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto;">
-                    Extension này hoàn toàn miễn phí và mã nguồn mở. Chúng mình rất trân trọng mọi sự đóng góp, ý tưởng hoặc báo lỗi từ cộng đồng qua Pull Requests!
-                </p>
-                <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" style="
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 8px;
-                    background: #24292f;
-                    color: white;
-                    padding: 10px 20px;
-                    border-radius: 12px;
-                    text-decoration: none;
-                    font-weight: 600;
-                    font-size: 14px;
-                    transition: all 0.3s;
-                    border: 1px solid rgba(255,255,255,0.1);
-                " onmouseover="this.style.background='#333';this.style.transform='translateY(-2px)'" onmouseout="this.style.background='#24292f';this.style.transform='translateY(0)'">
-                    ${getIcon('github', 'scraper-icon-sm')} Đóng góp trên GitHub
-                </a>
+            <div style="flex: 1; overflow-y: auto; padding: 20px;" class="scraper-scrollbar" id="questionNavList">
+              <h3 class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Danh sách câu</h3>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+                ${allQuestions.map((q, i) => {
+                    const id = currentMode === 'exam' ? q.number : q.id;
+                    const targetId = currentMode === 'exam' ? `q-exam-${q.number}` : `q-hw-${q.id}`;
+                    return `<button class="nav-q-btn ol-bg ol-border ol-text ol-btn-hover" data-target="${targetId}" style="height: 44px; border-radius: 10px; border-width: 1px; border-style: solid; font-weight: 700; font-size: 13px; cursor: pointer;">${currentMode === 'exam' ? q.number : (i + 1)}</button>`;
+                }).join('')}
+              </div>
             </div>
 
-            <div style="margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
-              ${getIcon('rocket')} Auto Scraper v${chrome.runtime.getManifest().version} • ${new Date().toLocaleString('vi-VN')}
+            <div style="padding: 20px; border-top: 1px solid var(--ol-border); display: flex; flex-direction: column; gap: 8px;">
+              <button id="copyAllBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ${getIcon('copy', 'scraper-icon-xs')} Copy Dữ Liệu Gốc
+              </button>
+              <button id="copyAIBtn" class="ol-btn-primary ol-brand-bg ol-brand-text" style="width: 100%; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ${getIcon('sparkles', 'scraper-icon-xs')} Copy Kết Quả Cho AI
+              </button>
+              <button id="downloadBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                ${getIcon('download', 'scraper-icon-xs')} Tải File (.txt)
+              </button>
             </div>
-            <div style="display: flex; gap: 8px; justify-content: center;">
-              <span style="
-                background: rgba(99, 102, 241, 0.2);
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 11px;
-                color: #818cf8;
-              ">MathJax OCR</span>
-              <span style="
-                background: rgba(16, 185, 129, 0.2);
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 11px;
-                color: #10b981;
-              ">Image Extract</span>
-              <span style="
-                background: rgba(236, 72, 153, 0.2);
-                padding: 4px 12px;
-                border-radius: 12px;
-                font-size: 11px;
-                color: #ec4899;
-              ">AI Ready</span>
+          </div>
+
+          <!-- Main Content -->
+          <div style="flex: 1; overflow-y: auto; padding: 40px; background: var(--ol-bg);" class="scraper-scrollbar" id="dashboardContent">
+            
+            <!-- Welcome/Summary Section -->
+            <div class="ol-brand-bg" style="border-radius: 24px; padding: 32px; margin-bottom: 40px; border: 1px solid var(--ol-brand-bg); position: relative; overflow: hidden;">
+              <div style="position: relative; z-index: 1;">
+                <h1 class="ol-brand-text" style="font-size: 28px; font-weight: 800; margin: 0 0 12px 0;">Thu thập hoàn tất! 🎉</h1>
+                <p class="ol-text" style="font-size: 15px; margin: 0; opacity: 0.8; max-width: 600px;">
+                  Dữ liệu từ <b>${questionCount} câu hỏi</b> đã được trích xuất thành công. Bạn có thể xem chi tiết bên dưới hoặc gửi cho Gemini AI để nhận giải đáp ngay lập tức.
+                </p>
+                <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
+                  <button id="sendGeminiBtn" class="ol-brand-bg ol-brand-text" style="border: 2px solid var(--ol-brand); padding: 12px 24px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                    ${getIcon('sparkles', 'scraper-icon-md')} GỬI CHO GEMINI AI
+                  </button>
+                  ${chatHistory.length > 0 ? `
+                  <button id="reopenChatBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    ${getIcon('refreshCw', 'scraper-icon-sm')} MỞ LẠI CHAT
+                  </button>
+                  ` : ''}
+                  <button id="viewAIPromptBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    ${getIcon('eye', 'scraper-icon-sm')} XEM NỘI DUNG AI
+                  </button>
+                  <label class="ol-surface ol-border" style="display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 14px; border-width: 1px; border-style: solid; cursor: pointer; user-select: none;">
+                    <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: var(--ol-brand);">
+                    <span class="ol-text" style="font-size: 13px; font-weight: 600;">Gửi kèm ảnh</span>
+                  </label>
+                </div>
+              </div>
+              <div style="position: absolute; right: -20px; top: -20px; opacity: 0.1; transform: rotate(-15deg);">
+                ${getIcon('brain', 'scraper-icon-xl')}
+              </div>
+            </div>
+
+            <!-- Question Cards Container -->
+            <div id="questionsContainer">
+              ${allQuestions.map((q, i) => renderQuestionCard(q, i)).join('')}
+            </div>
+
+            <!-- Gallery Section -->
+            ${allImages.length > 0 ? `
+              <div style="margin-top: 60px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                  <h2 class="ol-text" style="font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 12px;">
+                    ${getIcon('image', 'scraper-icon-md')} Thư viện Hình ảnh
+                  </h2>
+                  <span class="ol-badge ol-brand-bg ol-brand-text">${allImages.length} ảnh</span>
+                </div>
+                <div class="scraper-image-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px;">
+                  ${allImages.map((img, i) => `
+                    <div class="ol-card scraper-image-card" data-img-index="${i}" style="padding: 8px; cursor: pointer;">
+                      <div style="height: 100px; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
+                        <img src="${img.fullUrl}" style="width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                      <div class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-align: center;">CÂU ${img.question}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+
+            <!-- Footer -->
+            <div style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--ol-border); text-align: center; color: var(--ol-text-sub);">
+              <div style="margin-bottom: 12px;">
+                <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                  ${getIcon('github', 'scraper-icon-xs')} Open Source on GitHub
+                </a>
+              </div>
+              <div style="font-size: 12px; opacity: 0.6;">
+                Auto Scraper v${chrome.runtime.getManifest().version} • ${new Date().toLocaleDateString('vi-VN')}
+              </div>
+            </div>
+
+            <!-- Floating Action Button -->
+            <div id="floatingAI" class="floating-ai-btn" title="Hỏi Gemini nhanh">
+              ${getIcon('brain', 'scraper-icon-md')}
             </div>
           </div>
         </div>
@@ -5133,163 +5075,138 @@ if (window.hasRunScraper) {
 
       document.body.appendChild(resultContainer);
 
-      // Button handlers
-      const resultContent = document.getElementById('resultContent');
-      const currentModeDisplay = document.getElementById('currentModeDisplay');
+      // --- LOGIC: Search ---
+      const searchInput = document.getElementById('dashboardSearch');
+      const questionsContainer = document.getElementById('questionsContainer');
+      const qCards = questionsContainer.querySelectorAll('.q-card');
 
-      // Set content safely using textContent to prevent HTML injection
-      resultContent.textContent = isAIMode ? allResultsAI : allResults;
+      searchInput.oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        qCards.forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = text.includes(val) ? 'block' : 'none';
+        });
+      };
 
-      // ===== IMAGE LIGHTBOX EVENTS =====
-      const imageCards = resultContainer.querySelectorAll('.scraper-image-card[data-img-index]');
-      imageCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const index = parseInt(card.dataset.imgIndex);
-          if (!isNaN(index) && allImages[index]) {
-            createImageLightbox(allImages, index);
+      // --- LOGIC: Sidebar Nav ---
+      document.querySelectorAll('.nav-q-btn').forEach(btn => {
+        btn.onclick = () => {
+          const targetId = btn.dataset.target;
+          const targetEl = document.getElementById(targetId);
+          if (targetEl) {
+            targetEl.scrollIntoView({ behavior: 'smooth' });
+            // Highlight target
+            targetEl.style.borderColor = 'var(--ol-brand)';
+            targetEl.style.boxShadow = '0 0 0 4px var(--ol-brand-bg)';
+            setTimeout(() => {
+              targetEl.style.borderColor = '';
+              targetEl.style.boxShadow = '';
+            }, 2000);
           }
-        });
+        };
       });
 
-      // Hover effect for image cards
-      imageCards.forEach(card => {
-        card.addEventListener('mouseenter', () => {
-          card.style.transform = 'scale(1.05)';
-          card.style.zIndex = '10';
-          card.style.boxShadow = '0 10px 40px rgba(99, 102, 241, 0.3)';
-        });
-        card.addEventListener('mouseleave', () => {
-          card.style.transform = '';
-          card.style.zIndex = '';
-          card.style.boxShadow = '';
-        });
-      });
-
-      document.getElementById('copyAllBtn').onclick = async () => {
-        const btn = document.getElementById('copyAllBtn');
-        try {
-          await navigator.clipboard.writeText(isAIMode ? allResultsAI : allResults);
-          btn.innerHTML = `${getIcon('check')}<span>Đã Copy!</span>`;
-          btn.style.background = 'linear-gradient(135deg, #059669, #047857)';
-          setTimeout(() => {
-            btn.innerHTML = `${getIcon('copy')}<span>Copy Toàn Bộ</span>`;
-            btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-          }, 2000);
-        } catch (err) {
-          btn.innerHTML = `${getIcon('x')}<span>Lỗi!</span>`;
-          setTimeout(() => {
-            btn.innerHTML = `${getIcon('copy')}<span>Copy Toàn Bộ</span>`;
-          }, 2000);
-        }
-      };
-
-      document.getElementById('copyImgBtn').onclick = async () => {
-        const btn = document.getElementById('copyImgBtn');
-        try {
-          const imageLinks = allImages.map((img, i) => {
-            if (img.isBase64) return `${i + 1}. [Base64 - Câu ${img.question}]`;
-            return `${i + 1}. ${img.fullUrl || img.url}`;
-          }).join('\n');
-          await navigator.clipboard.writeText(imageLinks || 'Không có ảnh nào');
-          btn.innerHTML = `${getIcon('check')}<span>Đã Copy!</span>`;
-          setTimeout(() => {
-            btn.innerHTML = `${getIcon('image')}<span>Copy Link Ảnh</span>`;
-          }, 2000);
-        } catch (err) {
-          btn.innerHTML = `${getIcon('x')}<span>Lỗi!</span>`;
-          setTimeout(() => {
-            btn.innerHTML = `${getIcon('image')}<span>Copy Link Ảnh</span>`;
-          }, 2000);
-        }
-      };
-
-      // Theme Toggle Logic with Animation
-      document.getElementById('resultThemeBtn').onclick = (e) => {
-          const toggleTheme = () => {
-              const isDark = resultContainer.classList.toggle('scraper-dark');
-              localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
-              document.getElementById('resultThemeBtn').innerHTML = isDark 
-                  ? getIcon('sun', 'scraper-icon-sm') 
-                  : getIcon('moon', 'scraper-icon-sm');
-          };
-
-          if (!document.startViewTransition) {
-              toggleTheme();
+      // --- LOGIC: Ask AI Single Question ---
+      document.querySelectorAll('.ask-ai-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const config = getGeminiConfig();
+          if (!config.apiKey) {
+              showGeminiSettingsModal();
               return;
           }
 
-          const x = e.clientX;
-          const y = e.clientY;
-          const endRadius = Math.hypot(
-              Math.max(x, window.innerWidth - x),
-              Math.max(y, window.innerHeight - y)
-          );
+          const idx = parseInt(btn.dataset.index);
+          const q = allQuestions[idx];
+          const displayNum = currentMode === 'exam' ? q.number : (idx + 1);
+          const promptText = formatSingleQuestionAI(q, displayNum);
+          
+          // Optimization: If there are images for this question, we should include them
+          let promptData = promptText;
+          if (q.images && q.images.length > 0) {
+              const imageParts = [];
+              for (const img of q.images) {
+                  const data = await getImageData(img);
+                  if (data) imageParts.push(data);
+              }
+              if (imageParts.length > 0) {
+                  promptData = { role: 'user', parts: [{ text: promptText }, ...imageParts] };
+              }
+          }
 
-          const transition = document.startViewTransition(() => {
-              toggleTheme();
-          });
+          // Open Gemini modal with this specific prompt
+          // We clear chatHistory to focus only on this question
+          chatHistory = []; 
+          const response = await callGeminiAPI(typeof promptData === 'object' ? [promptData] : promptData, config.apiKey, config.model);
+          showGeminiResponseModal(response, promptData);
+        };
+      });
 
-          transition.ready.then(() => {
-              const clipPath = [
-                  `circle(0px at ${x}px ${y}px)`,
-                  `circle(${endRadius}px at ${x}px ${y}px)`,
-              ];
-              document.documentElement.animate(
-                  {
-                      clipPath: resultContainer.classList.contains('scraper-dark')
-                          ? clipPath
-                          : [...clipPath].reverse(),
-                  },
-                  {
-                      duration: 400,
-                      easing: 'ease-in-out',
-                      pseudoElement: resultContainer.classList.contains('scraper-dark')
-                          ? '::view-transition-new(root)'
-                          : '::view-transition-old(root)',
-                  }
-              );
-          });
+      // --- LOGIC: Copy Single Question ---
+      document.querySelectorAll('.copy-q-btn').forEach(btn => {
+        btn.onclick = async () => {
+          const idx = parseInt(btn.dataset.index);
+          const q = allQuestions[idx];
+          const text = currentMode === 'exam' ? `Câu ${q.number}: ${q.content}` : q.text;
+          try {
+            await navigator.clipboard.writeText(text);
+            btn.innerHTML = getIcon('check', 'scraper-icon-sm');
+            btn.style.color = 'var(--ol-success)';
+            setTimeout(() => {
+              btn.innerHTML = getIcon('copy', 'scraper-icon-sm');
+              btn.style.color = '';
+            }, 2000);
+          } catch(e) {}
+        };
+      });
+
+      // --- LOGIC: General Buttons ---
+      document.getElementById('copyAllBtn').onclick = async () => {
+        const btn = document.getElementById('copyAllBtn');
+        try {
+          await navigator.clipboard.writeText(allResults);
+          const original = btn.innerHTML;
+          btn.innerHTML = `${getIcon('check', 'scraper-icon-xs')}<span>Đã Copy Gốc!</span>`;
+          btn.style.borderColor = 'var(--ol-success)';
+          setTimeout(() => {
+            btn.innerHTML = original;
+            btn.style.borderColor = '';
+          }, 2000);
+        } catch (err) {}
       };
 
-      document.getElementById('toggleModeResultBtn').onclick = () => {
-        const btn = document.getElementById('toggleModeResultBtn');
-        isAIMode = !isAIMode;
-        resultContent.textContent = isAIMode ? allResultsAI : allResults;
-        currentModeDisplay.innerHTML = isAIMode ? getIcon('bot', 'scraper-icon-lg') : getIcon('fileText', 'scraper-icon-lg');
-        currentModeDisplay.parentElement.querySelector('div:last-child').textContent = 
-          isAIMode ? 'CHẾ ĐỘ AI' : 'CHẾ ĐỘ THƯỜNG';
-        btn.innerHTML = isAIMode 
-          ? `${getIcon('fileText')}<span>Chế độ Thường</span>`
-          : `${getIcon('bot')}<span>Chế độ AI</span>`;
+      document.getElementById('copyAIBtn').onclick = async () => {
+        const btn = document.getElementById('copyAIBtn');
+        try {
+          await navigator.clipboard.writeText(allResultsAI);
+          const original = btn.innerHTML;
+          btn.innerHTML = `${getIcon('check', 'scraper-icon-xs')}<span>Đã Copy Cho AI!</span>`;
+          setTimeout(() => btn.innerHTML = original, 2000);
+        } catch (err) {}
       };
 
       document.getElementById('downloadBtn').onclick = () => {
-        const content = isAIMode ? allResultsAI : allResults;
+        const content = allResults;
         const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `questions_${currentMode}_${new Date().toISOString().slice(0,10)}_${questionCount}cau.txt`;
+        a.download = `onluyen_scrape_${new Date().toISOString().slice(0,10)}.txt`;
         a.click();
         URL.revokeObjectURL(url);
-        
-        const btn = document.getElementById('downloadBtn');
-        btn.innerHTML = `${getIcon('check')}<span>Đã Tải!</span>`;
-        setTimeout(() => {
-          btn.innerHTML = `${getIcon('download')}<span>Tải File</span>`;
-        }, 2000);
       };
 
-                  // Event listeners for image gallery
-                  resultContainer.querySelectorAll('.scraper-image-card[data-img-index]').forEach(card => {
-                      card.onclick = () => {
-                          const idx = card.getAttribute('data-img-index');
-                          if (allImages[idx]) showLightbox(allImages[idx].fullUrl);
-                      };
-                  });
-      
-                  document.getElementById('sendGeminiBtn').onclick = async () => {        const config = getGeminiConfig();
+      if (document.getElementById('reopenChatBtn')) {
+          document.getElementById('reopenChatBtn').onclick = () => {
+              showGeminiResponseModal();
+          };
+      }
+
+      document.getElementById('viewAIPromptBtn').onclick = () => {
+          showAIPromptModal(allResultsAI);
+      };
+
+      document.getElementById('sendGeminiBtn').onclick = async () => {
+        const config = getGeminiConfig();
         if (!config.apiKey) {
             showGeminiSettingsModal();
             return;
@@ -5297,10 +5214,9 @@ if (window.hasRunScraper) {
 
         const btn = document.getElementById('sendGeminiBtn');
         const originalContent = btn.innerHTML;
-        const cb = document.getElementById('sendWithImagesCb');
-        const sendImages = cb ? cb.checked : false;
+        const sendImages = document.getElementById('sendWithImagesCb')?.checked;
 
-        btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')}<span>${sendImages ? 'Xử lý ảnh...' : 'Đang gửi...'}</span>`;
+        btn.innerHTML = `${getIcon('loader', 'scraper-icon-spin')}<span>Đang gửi...</span>`;
         btn.disabled = true;
 
         try {
@@ -5313,44 +5229,95 @@ if (window.hasRunScraper) {
                      const data = await getImageData(img);
                      if (data) imageParts.push(data);
                  }
-                 
                  if (imageParts.length > 0) {
-                     finalPrompt = {
-                         role: 'user',
-                         parts: [
-                             { text: textContent },
-                             ...imageParts
-                         ]
-                     };
+                     finalPrompt = { role: 'user', parts: [{ text: textContent }, ...imageParts] };
                  }
             }
 
-            // Prepare for API
-            let apiPayload;
-            if (typeof finalPrompt === 'object') {
-                apiPayload = [finalPrompt];
-            } else {
-                apiPayload = finalPrompt;
-            }
-
-            const response = await callGeminiAPI(apiPayload, config.apiKey, config.model);
+            const response = await callGeminiAPI(typeof finalPrompt === 'object' ? [finalPrompt] : finalPrompt, config.apiKey, config.model);
             showGeminiResponseModal(response, finalPrompt);
         } catch (error) {
             showToast('Lỗi Gemini: ' + error.message, 'error');
-            // If API key is invalid, maybe show settings again?
-            if (error.message.includes('400') || error.message.includes('API key')) {
-                 showGeminiSettingsModal();
-            }
         } finally {
             btn.innerHTML = originalContent;
             btn.disabled = false;
         }
       };
 
+      document.getElementById('resultThemeBtn').onclick = () => {
+          const isDark = resultContainer.classList.toggle('scraper-dark');
+          localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
+          document.getElementById('resultThemeBtn').innerHTML = isDark ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm');
+      };
+
       document.getElementById('closeResultBtn').onclick = () => {
         resultContainer.remove();
         window.hasRunScraper = false;
       };
+
+      document.getElementById('floatingAI').onclick = () => {
+          if (chatHistory.length > 0) {
+              showGeminiResponseModal();
+          } else {
+              document.getElementById('sendGeminiBtn').click();
+          }
+      };
+
+      // Image Gallery Lightbox
+      resultContainer.querySelectorAll('.scraper-image-card').forEach(card => {
+        card.onclick = () => {
+          const index = parseInt(card.dataset.imgIndex);
+          createImageLightbox(allImages, index);
+        };
+      });
+    }
+
+
+    function showAIPromptModal(content) {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(2, 6, 23, 0.85)', backdropFilter: 'blur(10px)',
+            zIndex: '100003', display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: "'Inter', sans-serif", animation: 'scraper-fade-in 0.3s ease'
+        });
+
+        overlay.innerHTML = `
+            <div style="background: var(--ol-bg); border: 1px solid var(--ol-border); border-radius: 24px; width: 800px; max-width: 90vw; height: 80vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+                <div style="padding: 24px; border-bottom: 1px solid var(--ol-border); display: flex; justify-content: space-between; align-items: center;">
+                    <h2 class="ol-text" style="margin: 0; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 12px;">
+                        ${getIcon('eye', 'scraper-icon-md')} Xem nội dung gửi cho AI
+                    </h2>
+                    <button id="closeAIPromptBtn" class="ol-surface ol-text" style="background: transparent; border: none; cursor: pointer; padding: 8px;">
+                        ${getIcon('x', 'scraper-icon-sm')}
+                    </button>
+                </div>
+                <div style="flex: 1; padding: 32px; overflow-y: auto;" class="scraper-scrollbar">
+                    <pre class="ol-text" style="white-space: pre-wrap; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; margin: 0; opacity: 0.9;">${escapeHTML(content)}</pre>
+                </div>
+                <div style="padding: 20px; border-top: 1px solid var(--ol-border); display: flex; justify-content: flex-end; gap: 12px; background: var(--ol-surface);">
+                    <button id="copyAIPromptModalBtn" class="ol-brand-bg ol-brand-text" style="border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        ${getIcon('copy', 'scraper-icon-xs')} Copy nội dung
+                    </button>
+                    <button id="closeAIPromptBtn2" class="ol-surface ol-border ol-text" style="border-width: 1px; border-style: solid; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer;">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        const close = () => overlay.remove();
+        document.getElementById('closeAIPromptBtn').onclick = close;
+        document.getElementById('closeAIPromptBtn2').onclick = close;
+        document.getElementById('copyAIPromptModalBtn').onclick = async () => {
+            await navigator.clipboard.writeText(content);
+            const btn = document.getElementById('copyAIPromptModalBtn');
+            const original = btn.innerHTML;
+            btn.innerHTML = `${getIcon('check', 'scraper-icon-xs')} Đã Copy!`;
+            setTimeout(() => btn.innerHTML = original, 2000);
+        };
     }
 
     function showFeedbackModal() {
