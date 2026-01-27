@@ -1,104 +1,92 @@
 // Kiểm tra xem script đã chạy chưa
 if (window.hasRunScraper) {
-  // Nếu đã chạy, chỉ thông báo nhẹ nhàng rồi thoát
-  const existingToast = document.querySelector('.scraper-toast-already-running');
-  if (!existingToast) {
+  // Mini version of showToast for early execution
+  const showEarlyToast = (msg, type = 'info') => {
+    const accent = type === 'success' ? '#10b981' : (type === 'error' ? '#ef4444' : '#3b82f6');
     const toast = document.createElement('div');
-    toast.className = 'scraper-toast scraper-toast-already-running';
     Object.assign(toast.style, {
-      position: 'fixed', bottom: '20px', left: '20px', zIndex: '2147483647',
-      background: '#ffffff', color: '#1f2937',
-      padding: '12px 16px', borderRadius: '10px', 
-      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-      fontFamily: "'Inter', sans-serif", fontWeight: '500', 
-      border: '1px solid #f3f4f6', borderLeft: '4px solid #6366f1',
-      animation: 'scraper-slide-up 0.4s ease', backdropFilter: 'blur(8px)'
+      position: 'fixed', bottom: '32px', left: '32px', zIndex: '2147483647',
+      background: 'rgba(255, 255, 255, 0.75)', color: '#1f2937',
+      padding: '16px 22px', borderRadius: '20px', 
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+      fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontWeight: '600', fontSize: '15px',
+      border: `1px solid ${accent}50`, backdropFilter: 'blur(20px)',
+      display: 'flex', alignItems: 'center', gap: '16px',
+      animation: 'scraper-toast-enter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+      transition: 'all 0.3s ease'
     });
     toast.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-        <span style="color: #6366f1; display: flex; align-items: center;">
-          <svg class="scraper-icon scraper-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg> 
-        </span>
-        <span>Scraper đang hoạt động!</span>
-      </div>
-      <button class="scraper-toast-close" style="
+      <style>@keyframes scraper-toast-enter { 0% { opacity: 0; transform: scale(0.8) translateY(20px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }</style>
+      <span style="color: #fff; background: ${accent}; padding: 8px; border-radius: 12px; display: flex; box-shadow: 0 4px 12px ${accent}40;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+      </span>
+      <span style="flex: 1;">${msg}</span>
+      <button class="early-toast-close" style="
         background: transparent; border: none; color: #9ca3af; 
-        cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 4px;
-        border-radius: 6px; transition: all 0.2s;
-      " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
+        cursor: pointer; padding: 6px; display: flex; align-items: center;
+        border-radius: 10px; transition: all 0.2s;
+      " onmouseover="this.style.color='#4b5563';this.style.background='rgba(0,0,0,0.05)'" 
         onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
-        <svg class="scraper-icon scraper-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 1em; height: 1em;"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     `;
     
-    // Add click handler
-    setTimeout(() => { // Delay slightly to ensure element is in DOM (though appendChild is synchronous, good practice)
-       const closeBtn = toast.querySelector('.scraper-toast-close');
-       if (closeBtn) {
-         closeBtn.onclick = () => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateY(20px)';
-            setTimeout(() => toast.remove(), 400);
-         };
-       }
-    }, 0);
+    const closeBtn = toast.querySelector('.early-toast-close');
+    const dismiss = () => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'scale(0.9) translateY(10px)';
+      setTimeout(() => toast.remove(), 300);
+    };
+    closeBtn.onclick = dismiss;
 
     document.body.appendChild(toast);
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      toast.style.transform = 'translateY(20px)';
-      toast.style.transition = 'all 0.4s ease';
-      setTimeout(() => toast.remove(), 400);
-    }, 3000);
+    setTimeout(dismiss, 4000);
+  };
+
+  const existingToast = document.querySelector('.scraper-toast-already-running');
+  if (!existingToast) {
+    showEarlyToast('Scraper đang hoạt động!', 'success');
   }
 } else if (!window.location.hostname.endsWith('onluyen.vn')) {
-  // Kiểm tra domain: Nếu không phải onluyen.vn thì cảnh báo và thoát
+  const accent = '#ef4444';
   const toast = document.createElement('div');
   Object.assign(toast.style, {
-    position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', zIndex: '2147483647',
-    background: '#ffffff', color: '#1f2937',
-    padding: '12px 16px', borderRadius: '10px', 
-    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-    fontFamily: "'Inter', sans-serif", fontWeight: '500', fontSize: '15px',
-    display: 'flex', alignItems: 'center', gap: '12px', 
-    border: '1px solid #f3f4f6', borderLeft: '4px solid #ef4444',
-    backdropFilter: 'blur(8px)'
+    position: 'fixed', top: '32px', left: '50%', transform: 'translateX(-50%)', zIndex: '2147483647',
+    background: 'rgba(255, 255, 255, 0.75)', color: '#1f2937',
+    padding: '16px 24px', borderRadius: '20px', 
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
+    fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", fontWeight: '600', fontSize: '16px',
+    border: `1px solid ${accent}50`, backdropFilter: 'blur(20px)',
+    display: 'flex', alignItems: 'center', gap: '16px',
+    animation: 'scraper-toast-enter-top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    transition: 'all 0.3s ease'
   });
   toast.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-      <span style="color: #ef4444; display: flex; align-items: center;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      </span>
-      <span>Trang web không hỗ trợ! Tiện ích chỉ chạy trên OnLuyen.vn</span>
-    </div>
-    <button class="scraper-toast-close" style="
+    <style>@keyframes scraper-toast-enter-top { 0% { opacity: 0; transform: translate(-50%, -20px) scale(0.8); } 100% { opacity: 1; transform: translate(-50%, 0) scale(1); } }</style>
+    <span style="color: #fff; background: ${accent}; padding: 8px; border-radius: 12px; display: flex; box-shadow: 0 4px 12px ${accent}40;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </span>
+    <span style="flex: 1;">Trang web không hỗ trợ! Tiện ích chỉ chạy trên OnLuyen.vn</span>
+    <button class="early-toast-close" style="
       background: transparent; border: none; color: #9ca3af; 
-      cursor: pointer; padding: 4px; display: flex; align-items: center; margin-left: 8px;
-      border-radius: 6px; transition: all 0.2s;
-    " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
+      cursor: pointer; padding: 6px; display: flex; align-items: center;
+      border-radius: 10px; transition: all 0.2s;
+    " onmouseover="this.style.color='#4b5563';this.style.background='rgba(0,0,0,0.05)'" 
       onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   `;
   
-  // Add click handler
-  setTimeout(() => {
-     const closeBtn = toast.querySelector('.scraper-toast-close');
-     if (closeBtn) {
-       closeBtn.onclick = () => {
-          toast.style.opacity = '0';
-          toast.style.transition = 'opacity 0.5s ease';
-          setTimeout(() => toast.remove(), 500);
-       };
-     }
-  }, 0);
+  const closeBtn = toast.querySelector('.early-toast-close');
+  const dismiss = () => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translate(-50%, -10px) scale(0.9)';
+    setTimeout(() => toast.remove(), 300);
+  };
+  closeBtn.onclick = dismiss;
 
   document.body.appendChild(toast);
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    toast.style.transition = 'opacity 0.5s ease';
-    setTimeout(() => toast.remove(), 500);
-  }, 4000);
+  setTimeout(dismiss, 5000);
 } else {
   window.hasRunScraper = true;
 
@@ -789,67 +777,95 @@ if (window.hasRunScraper) {
     document.body.appendChild(toastContainer);
 
     function showToast(message, type = 'info', duration = 3000) {
-      if (toastContainer.children.length >= 3) {
+      if (toastContainer.children.length >= 4) {
         toastContainer.children[0].remove();
       }
 
       const icons = {
-        success: getIcon('check', 'scraper-icon-md'),
-        error: getIcon('x', 'scraper-icon-md'),
-        warning: getIcon('alertTriangle', 'scraper-icon-md'),
-        info: getIcon('info', 'scraper-icon-md')
+        success: getIcon('check', 'scraper-icon-sm'),
+        error: getIcon('x', 'scraper-icon-sm'),
+        warning: getIcon('alertTriangle', 'scraper-icon-sm'),
+        info: getIcon('info', 'scraper-icon-sm')
       };
 
       const typeColors = {
-        success: '#10b981', // Emerald 500
-        error: '#ef4444',   // Red 500
-        warning: '#f59e0b', // Amber 500
-        info: '#3b82f6'     // Blue 500
+        success: '#10b981', 
+        error: '#ef4444',   
+        warning: '#f59e0b', 
+        info: '#3b82f6'     
       };
       
       const toast = document.createElement('div');
-      toast.className = 'scraper-toast';
+      toast.className = 'scraper-toast ol-bg ol-border';
+      if (localStorage.getItem('ol_theme') === 'dark') toast.classList.add('scraper-dark');
       
       const accentColor = typeColors[type] || typeColors.info;
 
       Object.assign(toast.style, {
-        background: '#ffffff',
-        color: '#1f2937', 
-        padding: '14px 18px',
-        borderRadius: '12px',
-        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+        position: 'relative',
+        background: 'rgba(255, 255, 255, 0.7)',
+        color: 'var(--ol-text)', 
+        padding: '12px 16px',
+        borderRadius: '16px',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: '14px',
-        fontWeight: '500',
-        maxWidth: '360px',
-        border: '1px solid #f3f4f6',
-        borderLeft: `4px solid ${accentColor}`,
-        backdropFilter: 'blur(8px)'
+        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif",
+        fontSize: '13px',
+        fontWeight: '600',
+        minWidth: '280px',
+        maxWidth: '400px',
+        border: `1px solid ${accentColor}40`,
+        backdropFilter: 'blur(16px)',
+        overflow: 'hidden',
+        animation: 'scraper-toast-enter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       });
       
       toast.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
-          <span style="color: ${accentColor}; display: flex; align-items: center; background: ${accentColor}15; padding: 6px; border-radius: 8px;">${icons[type]}</span>
-          <span style="line-height: 1.5;">${message}</span>
+        <style>
+          @keyframes scraper-toast-enter {
+            0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+          }
+          @keyframes scraper-progress {
+            0% { width: 100%; }
+            100% { width: 0%; }
+          }
+        </style>
+        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+          <span style="
+            color: #fff; 
+            display: flex; 
+            align-items: center; 
+            background: ${accentColor}; 
+            padding: 6px; 
+            border-radius: 10px;
+            box-shadow: 0 4px 10px ${accentColor}40;
+          ">${icons[type]}</span>
+          <span style="line-height: 1.4;">${message}</span>
         </div>
         <button class="scraper-toast-close" style="
-          background: transparent; border: none; color: #9ca3af; 
-          cursor: pointer; padding: 6px; display: flex; align-items: center; margin-left: 4px;
-          border-radius: 8px; transition: all 0.2s;
-        " onmouseover="this.style.color='#4b5563';this.style.background='#f3f4f6'" 
-          onmouseout="this.style.color='#9ca3af';this.style.background='transparent'">
-          ${getIcon('x', 'scraper-icon-sm')}
+          background: transparent; border: none; color: var(--ol-text-sub); 
+          cursor: pointer; padding: 4px; display: flex; align-items: center;
+          border-radius: 8px; transition: all 0.2s; opacity: 0.6;
+        " onmouseover="this.style.opacity='1';this.style.background='var(--ol-surface-hover)'" 
+          onmouseout="this.style.opacity='0.6';this.style.background='transparent'">
+          ${getIcon('x', 'scraper-icon-xs')}
         </button>
+        <div style="
+          position: absolute; bottom: 0; left: 0; height: 3px; 
+          background: ${accentColor}; width: 100%; opacity: 0.4;
+          animation: scraper-progress ${duration}ms linear forwards;
+        "></div>
       `;
       
       const closeBtn = toast.querySelector('.scraper-toast-close');
       if (closeBtn) {
         closeBtn.onclick = () => {
           toast.style.opacity = '0';
-          toast.style.transform = 'translateX(-20px)';
+          toast.style.transform = 'scale(0.9) translateY(-10px)';
           setTimeout(() => toast.remove(), 300);
         };
       }
@@ -857,10 +873,11 @@ if (window.hasRunScraper) {
       toastContainer.appendChild(toast);
       
       setTimeout(() => {
-        toast.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        toast.style.transform = 'translateX(-20px)';
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
+        if (toast.parentNode) {
+          toast.style.opacity = '0';
+          toast.style.transform = 'scale(0.9) translateY(-10px)';
+          setTimeout(() => toast.remove(), 300);
+        }
       }, duration);
     }
 
