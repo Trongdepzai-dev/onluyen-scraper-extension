@@ -25,9 +25,14 @@ async function runScraper(tab) {
 
   // Tiêm content script với error handling
   try {
+    await chrome.scripting.insertCSS({
+      target: { tabId: tab.id, allFrames: false },
+      files: ["lib/katex.min.css"]
+    });
+
     await chrome.scripting.executeScript({
       target: { tabId: tab.id, allFrames: false },
-      files: ["content.js"]
+      files: ["lib/marked.min.js", "lib/katex.min.js", "lib/auto-render.min.js", "content.js"]
     });
   } catch (error) {
   }

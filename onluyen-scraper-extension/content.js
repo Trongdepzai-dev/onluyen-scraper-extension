@@ -237,28 +237,47 @@ if (window.hasRunScraper) {
       
       .ol-btn-hover:hover { background-color: var(--ol-hover) !important; }
 
+      /* Theme Transition Overlay */
+      .ol-theme-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 10000;
+        pointer-events: none;
+        clip-path: circle(0% at var(--clip-x, 50%) var(--clip-y, 50%));
+        transition: clip-path 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        background: var(--ol-bg);
+      }
+      .ol-theme-overlay.active {
+        clip-path: circle(150% at var(--clip-x, 50%) var(--clip-y, 50%));
+      }
+
       /* Components */
       .ol-card {
         background-color: var(--ol-surface);
         border: 1px solid var(--ol-border);
-        border-radius: 16px;
-        padding: 20px;
-        transition: all 0.3s ease;
+        border-radius: 20px;
+        padding: 24px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
       .ol-card:hover {
         border-color: var(--ol-brand);
-        box-shadow: 0 10px 25px -5px var(--ol-shadow);
+        box-shadow: 0 12px 30px -10px var(--ol-shadow);
+      }
       }
 
       .ol-badge {
         display: inline-flex;
         align-items: center;
         padding: 4px 12px;
-        border-radius: 9999px;
+        border-radius: 8px;
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        box-shadow: 0 2px 4px var(--ol-shadow);
       }
 
       .ol-input {
@@ -286,6 +305,34 @@ if (window.hasRunScraper) {
       .ol-brand-text svg, .ol-success-text svg, .ol-warning-text svg, .ol-danger-text svg, button svg { 
         stroke: currentColor !important; 
         transition: stroke 0.3s ease;
+      }
+
+      /* Table Styles */
+      .ol-table-wrapper {
+        margin: 20px 0;
+        max-width: 100%;
+      }
+      .ol-table-wrapper table {
+        border-spacing: 0;
+        border-collapse: separate;
+        border: 1px solid var(--ol-border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .ol-table-wrapper th, .ol-table-wrapper td {
+        border: 1px solid var(--ol-border);
+      }
+      .ol-table-wrapper tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+      .ol-table-wrapper tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+      .ol-table-wrapper thead tr:first-child th:first-child { border-top-left-radius: 12px; }
+      .ol-table-wrapper thead tr:first-child th:last-child { border-top-right-radius: 12px; }
+
+      .q-content-area {
+        white-space: pre-wrap;
+      }
+      /* Ensure tables inside q-content-area don't inherit pre-wrap which causes extra lines */
+      .q-content-area .ol-table-wrapper {
+        white-space: normal;
       }
     `;
 
@@ -2732,13 +2779,21 @@ if (window.hasRunScraper) {
 
       let text = cloned.textContent || cloned.innerText || '';
       
-      // Clean text nhưng BẢO VỆ placeholder
-      text = text.replace(/\s+/g, ' ').trim();
+      // Clean text nhưng BẢO VỆ structure
+      // Xử lý xuống dòng: Thay thế nhiều xuống dòng liên tiếp bằng 2 xuống dòng
+      text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
       
-      // Khôi phục Newline và xóa marker
+      // Khôi phục Newline từ Table và xóa marker
       text = text.replace(/___TABLE_NEWLINE___/g, '\n');
-      text = text.replace(/___START_TABLE___/g, '\n'); // Thêm dòng trống trước bảng
-      text = text.replace(/___END_TABLE___/g, '\n');   // Thêm dòng trống sau bảng
+      text = text.replace(/___START_TABLE___/g, '\n\n'); 
+      text = text.replace(/___END_TABLE___/g, '\n\n');   
+
+      // Xử lý khoảng trắng trên từng dòng
+      text = text.split('\n').map(line => line.replace(/[^\S\r\n]+/g, ' ').trim()).join('\n');
+      
+      // Loại bỏ hơn 2 dòng trống liên tiếp
+      text = text.replace(/\n{3,}/g, '\n\n');
+
       text = text.replace(/\s*([=+\-*^()])\s*/g, ' $1 ');
       text = text.replace(/\s*([.,:;!?])\s*/g, '$1 ');
 
@@ -2746,14 +2801,18 @@ if (window.hasRunScraper) {
     }
 
     function createSeparator(type = "normal") {
-      const separators = {
-        normal: "═══════════════════════════════════════════════════════════════",
-        start: "╔═══════════════════════════════════════════════════════════════╗",
-        end: "╚═══════════════════════════════════════════════════════════════╝",
-        thin: "───────────────────────────────────────────────────────────────",
-        section: "▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬"
-      };
-      return separators[type] || separators.normal;
+      if (type === "start" || type === "end") return "";
+      if (type === "thin")  return "─".repeat(40);
+      return "─".repeat(40);
+    }
+
+    function formatBoxLine(prefix, text) {
+      if (!text) return '';
+      const lines = String(text).split('\n');
+      return lines.map((line, i) => {
+        const p = i === 0 ? (prefix ? prefix + ' ' : '') : ' '.repeat(prefix ? prefix.length + 1 : 0);
+        return `${p}${line}\n`;
+      }).join('');
     }
 
     // ============================================================ 
@@ -3034,22 +3093,22 @@ if (window.hasRunScraper) {
         
         questionImages = [...ctx.images, ...q.images];
         
-        let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ ✏️ ${cauText} • TỰ LUẬN\n`;
-        textNormal += `${createSeparator("thin")}\n`;
-        if (ctx.text) textNormal += `║ 📋 Đề bài: ${ctx.text}\n`;
-        if (q.text) textNormal += `║ ❓ Câu hỏi: ${q.text}\n`;
+        let textNormal = createSeparator("start");
+        if (textNormal) textNormal += "\n";
+        textNormal += formatBoxLine('', ctx.text);
+        textNormal += formatBoxLine('', q.text);
         if (questionImages.length > 0) {
-          textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
+          textNormal += `Ảnh: ${questionImages.length} hình\n`;
         }
-        textNormal += `${createSeparator("end")}\n`;
+        const endSep = createSeparator("end");
+        if (endSep) textNormal += endSep + "\n";
         
-        let textAI = `\n━━━ ${cauText} [TỰ LUẬN] ━━━\n`;
-        if (ctx.text) textAI += `📋 ${ctx.text}\n`;
-        if (q.text) textAI += `❓ ${q.text}\n`;
+        let textAI = `\n━━━ ${cauText} ━━━\n`;
+        if (ctx.text) textAI += `${ctx.text}\n`;
+        if (q.text) textAI += `${q.text}\n`;
         textAI += `\n`;
         
-        return { text: textNormal, textAI, id: cauId, images: questionImages };
+        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
       }
       
       // ===== 2. ĐÚNG/SAI =====
@@ -3066,19 +3125,18 @@ if (window.hasRunScraper) {
         // FIX: Only select the container to avoid duplication
         const childWrappers = document.querySelectorAll('.child-content');
         
-        let textNormal = `\n${createSeparator("start")}\n`;
-        textNormal += `║ ✅ ${cauText} • ĐÚNG/SAI\n`;
+        let textNormal = createSeparator("start");
+        if (textNormal) textNormal += "\n";
+        textNormal += formatBoxLine('', ts.text);
+        textNormal += formatBoxLine('', qn.text);
         textNormal += `${createSeparator("thin")}\n`;
-        if (ts.text) textNormal += `║ 📋 ${ts.text}\n`;
-        if (qn.text) textNormal += `║ ❓ Câu hỏi: ${qn.text}\n`;
-        textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ ⚪ Các ý:\n`;
         
-        let textAI = `\n━━━ ${cauText} [ĐÚNG/SAI] ━━━\n`;
+        let textAI = `\n━━━ ${cauText} ━━━\n`;
         if (ts.text) textAI += `${ts.text}\n`;
         if (qn.text) textAI += `${qn.text}\n\n`;
         else textAI += `\n`;
         
+        textNormal += `Lựa chọn:\n`;
         const opts = ['a)', 'b)', 'c)', 'd)'];
         childWrappers.forEach((wrapper, i) => {
           // Try to find the content element (.fadein) directly to get clean text
@@ -3097,16 +3155,17 @@ if (window.hasRunScraper) {
             // Clean up any potential leading labels like "a)" if they persist
             let cleanText = c.text.replace(/^[a-d]\)\s*/i, '').trim();
             
-            textNormal += `║    ${opts[i] || (i+1)+')'} ${cleanText}\n`;
+            textNormal += formatBoxLine(`${opts[i] || (i+1)+')'}`, cleanText);
             textAI += `${opts[i] || (i+1)+')'} ${cleanText}\n`;
           }
           questionImages = [...questionImages, ...c.images];
         });
         
-        textNormal += `${createSeparator("end")}\n`;
+        const endSep = createSeparator("end");
+        if (endSep) textNormal += endSep + "\n";
         textAI += `\n`;
         
-        return { text: textNormal, textAI, id: cauId, images: questionImages };
+        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
       }
       
       // ===== 3. TRẮC NGHIỆM =====
@@ -3121,19 +3180,18 @@ if (window.hasRunScraper) {
       
       questionImages = [...qn.images, ...db.images];
       
-      let textNormal = `\n${createSeparator("start")}\n`;
-      textNormal += `║ 🎯 ${cauText} • TRẮC NGHIỆM\n`;
-      textNormal += `${createSeparator("thin")}\n`;
-      if (db.text) textNormal += `║ 📋 Đề bài: ${db.text}\n`;
-      if (qn.text) textNormal += `║ ❓ Câu hỏi: ${qn.text}\n`;
+      let textNormal = createSeparator("start");
+      if (textNormal) textNormal += "\n";
+      textNormal += formatBoxLine('', db.text);
+      textNormal += formatBoxLine('', qn.text);
       
-      let textAI = `\n━━━ ${cauText} [TRẮC NGHIỆM] ━━━\n`;
-      if (db.text) textAI += `📋 ${db.text}\n`;
-      if (qn.text) textAI += `❓ ${qn.text}\n\n`;
+      let textAI = `\n━━━ ${cauText} ━━━\n`;
+      if (db.text) textAI += `${db.text}\n`;
+      if (qn.text) textAI += `${qn.text}\n\n`;
       
       if (options.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ ⚪ Lựa chọn:\n`;
+        textNormal += `Lựa chọn:\n`;
         
         options.forEach(opt => {
           const label = opt.querySelector('.question-option-label');
@@ -3143,7 +3201,8 @@ if (window.hasRunScraper) {
           const ct = content ? extractIntelligentText(content) : { text: '', images: [] };
           
           if (ct.text) {
-            textNormal += `║    ${lb} ${ct.text}\n`;
+            textNormal += formatBoxLine(`${lb}`, ct.text);
+            textNormal += `${createSeparator("thin")}\n`;
             textAI += `${lb} ${ct.text}\n`;
           }
           questionImages = [...questionImages, ...ct.images];
@@ -3152,13 +3211,14 @@ if (window.hasRunScraper) {
       
       if (questionImages.length > 0) {
         textNormal += `${createSeparator("thin")}\n`;
-        textNormal += `║ 🖼️ Ảnh: ${questionImages.length} hình\n`;
+        textNormal += `Ảnh: ${questionImages.length} hình\n`;
       }
       
-      textNormal += `${createSeparator("end")}\n`;
+      const endSep = createSeparator("end");
+      if (endSep) textNormal += endSep + "\n";
       textAI += `\n`;
       
-      return { text: textNormal, textAI, id: cauId, images: questionImages };
+      return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
     }
 
     function formatSingleQuestionAI(q, displayNum) {
@@ -3178,7 +3238,7 @@ if (window.hasRunScraper) {
           // Homework mode usually has a pre-formatted q.textAI, but let's be safe
           if (q.textAI) return q.textAI;
           // Fallback if textAI is missing
-          if (q.text) out += q.text.replace(/╔═+╗|║|╚═+╝|═+|-+/g, '').trim();
+          if (q.text) out += q.text;
       } else {
           // Exam mode structure
           if (q.title) out += `📋 Yêu cầu: ${q.title}\n`;
@@ -3607,12 +3667,10 @@ if (window.hasRunScraper) {
 
       questions.forEach(q => {
         out.push(createSeparator("start"));
-        out.push(`║ 📌 CÂU ${q.number} ${q.score ? `(${q.score} điểm)` : ''}`);
-        out.push(createSeparator("thin"));
 
-        if (q.title) out.push(`║ 📋 Yêu cầu: ${q.title}`);
-        if (q.content) out.push(`║ ✏️ Đề bài: ${q.content}`);
-        if (q.answerPrompt) out.push(`║ ✏️ Điền: ${q.answerPrompt}`);
+        if (q.title) out.push(formatBoxLine('', q.title).trimEnd());
+        if (q.content) out.push(formatBoxLine('', q.content).trimEnd());
+        if (q.answerPrompt) out.push(formatBoxLine('', q.answerPrompt).trimEnd());
 
         const typeNames = {
           'multiple-choice': 'Trắc nghiệm',
@@ -3620,38 +3678,33 @@ if (window.hasRunScraper) {
           'fill-blank': 'Điền khuyết',
           'unknown': 'Không xác định'
         };
-        out.push(`║ 🏷️ Loại: ${typeNames[q.type] || q.type}`);
         out.push('');
 
         switch(q.type) {
           case 'multiple-choice':
-            out.push(`║ 📊 CÁC ĐÁP ÁN:`);
             Object.entries(q.data.answers).sort().forEach(([k, v]) => {
-              out.push(`║    ${k}. ${v}`);
+              out.push(formatBoxLine(`${k}.`, v).trimEnd());
             });
             break;
 
           case 'true-false':
-            out.push(`║ 📊 CÁC MỆNH ĐỀ:`);
             q.data.items.forEach(item => {
-              out.push(`║    ${item.label} ${item.statement}`);
+              out.push(formatBoxLine(`${item.label}`, item.statement).trimEnd());
             });
             break;
 
           case 'fill-blank':
-            out.push(`║ 📊 Số ô trống: ${q.data.blanks.length}`);
             break;
         }
 
         // ===== THÊM PHẦN HIỂN THỊ ẢNH =====
         if (q.images && q.images.length > 0) {
           out.push(createSeparator("thin"));
-          out.push(`║ 🖼️ HÌNH ẢNH (${q.images.length}):`);
           q.images.forEach((img, idx) => {
             if (img.isBase64) {
-              out.push(`║    [${idx + 1}] 📊 Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`[${idx + 1}] Base64 Image${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             } else {
-              out.push(`║    [${idx + 1}] 🔗 ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
+              out.push(`[${idx + 1}] ${img.url}${img.optionLabel ? ` (${img.optionLabel})` : ''}`);
             }
           });
         }
@@ -3660,7 +3713,7 @@ if (window.hasRunScraper) {
         out.push('');
       });
 
-      return out.join('\n');
+      return out.join('\n').replace(/\n\n+/g, '\n\n'); // Clean up excessive newlines
     }
 
     function formatExamResultsAI(questions) {
@@ -3683,11 +3736,11 @@ if (window.hasRunScraper) {
           'unknown': 'CHƯA XÁC ĐỊNH'
         };
 
-        out.push(`━━━ Câu ${q.number} [${typeNames[q.type]}] ${q.score ? `(${q.score})` : ''} ━━━`);
+        out.push(`━━━ Câu ${q.number} ━━━`);
 
-        if (q.title) out.push(`📋 ${q.title}`);
-        if (q.content) out.push(`📝 ${q.content}`);
-        if (q.answerPrompt) out.push(`✏️ ${q.answerPrompt}`);
+        if (q.title) out.push(`${q.title}`);
+        if (q.content) out.push(`${q.content}`);
+        if (q.answerPrompt) out.push(`${q.answerPrompt}`);
         out.push('');
 
         switch(q.type) {
@@ -4236,18 +4289,15 @@ if (window.hasRunScraper) {
 
                         // Enhanced Markdown formatter
                         const formatMessage = (text) => {
-                            let safeText = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                            
-                            // Better Headers - Themed
-                            safeText = safeText.replace(/^# (.*$)/gm, '<h1 class="ol-text" style="font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid var(--ol-brand); padding-bottom: 8px;">$1</h1>');
-                            safeText = safeText.replace(/^## (.*$)/gm, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">$1</h2>');
-                            safeText = safeText.replace(/^### (.*$)/gm, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">$1</h3>');
-            
-                            // Horizontal Rule
-                            safeText = safeText.replace(/^---$/gm, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
-                            safeText = safeText.replace(/^={3,}$/gm, '<hr style="border: 0; height: 1px; background: var(--ol-brand); opacity: 0.3; margin: 20px 0;">');
-            
-                            // Smart Badge: Confidence Score detection
+                            // 1. Protect LaTeX math
+                            const mathBlocks = [];
+                            let safeText = text.replace(/(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\\)\$[\s\S]*?(?<!\\)\$)/g, (match) => {
+                                mathBlocks.push(match);
+                                return `__MATH_BLOCK_${mathBlocks.length - 1}__`;
+                            });
+
+                            // 2. Custom Extensions
+                            // Smart Badge
                             safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
                                 const s = parseInt(score);
                                 let colorVar = '--ol-text-sub';
@@ -4259,35 +4309,34 @@ if (window.hasRunScraper) {
                                     ${getIcon(icon, 'scraper-icon-xs')} ĐỘ TIN CẬY: ${s}%
                                 </div>`;
                             });
-            
+
                             // Question Analysis Highlight
                             safeText = safeText.replace(/^Câu (\d+):/gm, '<div class="ol-brand-bg ol-brand-text" style="padding: 4px 12px; border-radius: 8px; display: inline-block; font-weight: 800; margin-top: 16px;">Câu $1:</div>');
-            
-                            // Table support (Simple)
-                            safeText = safeText.replace(/\|(.+)\|/g, (match, row) => {
-                                const cells = row.split('|').map(c => `<td class="ol-border" style="padding: 8px 12px; border-width: 1px; border-style: solid;">${c.trim()}</td>`).join('');
-                                return `<tr class="ol-surface">${cells}</tr>`;
+
+                            // 3. Marked Parse
+                            if (typeof marked !== 'undefined') {
+                                safeText = marked.parse(safeText);
+                            } else {
+                                safeText = safeText.replace(/\n/g, '<br>');
+                            }
+
+                            // 4. Restore LaTeX
+                            safeText = safeText.replace(/__MATH_BLOCK_(\d+)__/g, (match, index) => {
+                                return mathBlocks[parseInt(index)];
                             });
-                            safeText = safeText.replace(/((?:<tr.*<\/tr>\s*)+)/g, '<table class="ol-border" style="border-collapse: collapse; width: 100%; margin: 16px 0; border-width: 1px; border-style: solid; border-radius: 12px; overflow: hidden;">$1</table>');
-            
-                            // Code blocks - Darker in Dark Mode, Surface in Light Mode
-                            safeText = safeText.replace(/```(\w*)([\s\S]*?)```/g, (match, lang, code) => {
-                                return `<div class="ol-surface ol-border" style="border-radius: 12px; margin: 16px 0; overflow: hidden; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">
-                                    <div class="ol-bg ol-border" style="padding: 8px 16px; border-bottom-width: 1px; border-bottom-style: solid; display: flex; justify-content: space-between; align-items: center;">
-                                        <span class="ol-text-sub" style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">${lang || 'code'}</span>
-                                        <div style="display: flex; gap: 4px;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #ff5f56;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #ffbd2e;"></div><div style="width: 8px; height: 8px; border-radius: 50%; background: #27c93f;"></div></div>
-                                    </div>
-                                    <pre class="ol-text" style="padding: 16px; margin: 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; background: transparent;">${code.trim()}</pre>
-                                </div>`;
-                            });
-            
-                            safeText = safeText.replace(/`([^`]+)`/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">$1</code>');
-                            safeText = safeText.replace(/\*\*([^*]+)\*\*/g, '<strong class="ol-text" style="font-weight: 700;">$1</strong>');
-                            
-                            // Lists
-                            safeText = safeText.replace(/^\s*[-*•]\s*(.+)$/gm, '<div style="display: flex; gap: 10px; margin-bottom: 4px;"><span class="ol-brand-text">•</span><span class="ol-text">$1</span></div>');
-            
-                            return safeText.replace(/\n/g, '<br>');
+
+                            // 5. Styles
+                            safeText = safeText.replace(/<h1>/g, '<h1 class="ol-text" style="font-size: 24px; font-weight: 800; margin: 24px 0 16px; border-bottom: 2px solid var(--ol-brand); padding-bottom: 8px;">');
+                            safeText = safeText.replace(/<h2>/g, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">');
+                            safeText = safeText.replace(/<h3>/g, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">');
+                            safeText = safeText.replace(/<hr>/g, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
+                            safeText = safeText.replace(/<table>/g, '<table class="ol-border" style="border-collapse: collapse; width: 100%; margin: 16px 0; border-width: 1px; border-style: solid; border-radius: 12px; overflow: hidden;">');
+                            safeText = safeText.replace(/<th>/g, '<th class="ol-bg ol-border" style="padding: 12px; text-align: left; border-bottom: 1px solid var(--ol-border); font-weight: 700;">');
+                            safeText = safeText.replace(/<td>/g, '<td class="ol-border" style="padding: 8px 12px; border-width: 1px; border-style: solid;">');
+                            safeText = safeText.replace(/<pre>/g, '<pre class="ol-text ol-surface ol-border" style="padding: 16px; margin: 16px 0; overflow-x: auto; font-family: \'JetBrains Mono\', monospace; font-size: 13px; line-height: 1.5; border-radius: 12px; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">');
+                            safeText = safeText.replace(/<code>/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">');
+
+                            return safeText;
                         };
         const appendMessage = (role, text, isLoading = false) => {
             const contentArea = document.getElementById('geminiContentArea');
@@ -4365,6 +4414,20 @@ if (window.hasRunScraper) {
                 const contentSpan = document.createElement('div');
                 contentSpan.className = 'chat-msg-content';
                 contentSpan.innerHTML = isUser ? text : formatMessage(text);
+                
+                // Render Math
+                if (typeof renderMathInElement !== 'undefined') {
+                    renderMathInElement(contentSpan, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false},
+                            {left: '\\(', right: '\\)', display: false},
+                            {left: '\\[', right: '\\]', display: true}
+                        ],
+                        throwOnError: false
+                    });
+                }
+
                 msgDiv.appendChild(contentSpan);
 
                 const time = document.createElement('div');
@@ -4893,6 +4956,75 @@ if (window.hasRunScraper) {
     // 🎨 RESULT DISPLAY UI - MODULAR DASHBOARD v2.0
     // ============================================================ 
 
+    const parseMarkdownTable = (text) => {
+      if (!text || !text.includes('|')) return text;
+      
+      const lines = text.split('\n');
+      let result = [];
+      let tableBuffer = [];
+      let inTable = false;
+
+      const renderHTMLTable = (tableLines) => {
+        if (tableLines.length < 2) return tableLines.join('\n');
+        
+        // Find separator line |---| or |:---| etc
+        let sepIdx = tableLines.findIndex(l => l.trim().match(/^[|\s-:]+$/) && l.includes('-'));
+        let headerRows = [];
+        let bodyRows = [];
+        
+        if (sepIdx !== -1) {
+          headerRows = tableLines.slice(0, sepIdx);
+          bodyRows = tableLines.slice(sepIdx + 1);
+        } else {
+          bodyRows = tableLines;
+        }
+
+        const parseRow = (row) => {
+          let cells = row.split('|').map(c => c.trim());
+          if (row.trim().startsWith('|')) cells.shift();
+          if (row.trim().endsWith('|')) cells.pop();
+          return cells;
+        };
+
+        const htmlHeader = headerRows.map(row => `<tr>${parseRow(row).map(c => `<th style="border: 1px solid var(--ol-border); padding: 10px 14px; background: var(--ol-surface); text-align: left; font-weight: 700; color: var(--ol-brand);">${c}</th>`).join('')}</tr>`).join('');
+        const htmlBody = bodyRows.map(row => {
+          const cells = parseRow(row);
+          if (cells.length === 0 || (cells.length === 1 && !cells[0])) return '';
+          return `<tr>${cells.map(c => `<td style="border: 1px solid var(--ol-border); padding: 10px 14px;">${c}</td>`).join('')}</tr>`;
+        }).join('');
+
+        return `<div class="ol-table-wrapper" style="overflow-x: auto; margin: 20px 0; border-radius: 14px; border: 1px solid var(--ol-border); box-shadow: 0 4px 12px var(--ol-shadow);">
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: var(--ol-bg); color: var(--ol-text);">
+            ${htmlHeader ? `<thead style="border-bottom: 2px solid var(--ol-border);">${htmlHeader}</thead>` : ''}
+            <tbody>${htmlBody}</tbody>
+          </table>
+        </div>`;
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const isTable = line.trim().includes('|');
+
+        if (isTable) {
+          inTable = true;
+          tableBuffer.push(line);
+        } else {
+          if (inTable) {
+            result.push(renderHTMLTable(tableBuffer));
+            tableBuffer = [];
+            inTable = false;
+          }
+          result.push(line);
+        }
+      }
+      
+      if (inTable) {
+        result.push(renderHTMLTable(tableBuffer));
+      }
+
+      return result.join('\n');
+    };
+
     function showResultsUI() {
       const elapsedTotal = Math.floor((Date.now() - startTime) / 1000);
       const minsTotal = Math.floor(elapsedTotal / 60);
@@ -4901,6 +5033,10 @@ if (window.hasRunScraper) {
       const resultContainer = document.createElement('div');
       resultContainer.className = 'ol-bg';
       if (localStorage.getItem('ol_theme') === 'dark') resultContainer.classList.add('scraper-dark');
+
+      const themeOverlay = document.createElement('div');
+      themeOverlay.className = 'ol-theme-overlay';
+      resultContainer.appendChild(themeOverlay);
 
       Object.assign(resultContainer.style, {
         position: 'fixed',
@@ -4925,59 +5061,116 @@ if (window.hasRunScraper) {
         const qId = isExam ? `q-exam-${qNum}` : `q-hw-${q.id}`;
         
         let typeBadge = '';
-        if (isExam) {
-            const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng/Sai', 'fill-blank': 'Điền khuyết' };
-            typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 10px;">${typeNames[q.type] || q.type}</span>`;
+        const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng/Sai', 'fill-blank': 'Điền khuyết' };
+        const displayType = typeNames[q.type] || (isExam ? q.type : 'Bài tập');
+        typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 10px; font-size: 10px;">${displayType}</span>`;
+
+        let rawText = q.text || '';
+        let questionContent = '';
+        let parsedChoices = [];
+
+        if (!isExam) {
+            // Clean ASCII artifacts but preserve table pipes
+            // Improved regex to handle various separators
+            rawText = rawText.replace(/╔═+╗|║|╚═+╝|═+|─{4,}|-{4,}|───────────────────────────────/g, '').trim();
+            
+            // Try to extract choices if present in text
+            if (rawText.includes('Lựa chọn:')) {
+                const parts = rawText.split('Lựa chọn:');
+                questionContent = parts[0].trim();
+                const choicesPart = parts[1];
+                const lines = choicesPart.split('\n');
+                lines.forEach(line => {
+                    // Match A. Content, A) Content, or just A Content
+                    const match = line.trim().match(/^([A-D]|[a-d])[\s.)]+(.*)/);
+                    if (match) {
+                        parsedChoices.push({ 
+                          key: match[1].toUpperCase(), 
+                          text: match[2].replace(/\*+/g, '').trim() 
+                        });
+                    }
+                });
+            } else {
+                questionContent = rawText;
+            }
         }
 
+        const renderFormattedContent = (text) => {
+          if (!text) return '';
+          let escaped = escapeHTML(text);
+          // Only apply parseMarkdownTable if it looks like a table
+          if (escaped.includes('|')) {
+            return parseMarkdownTable(escaped);
+          }
+          return escaped;
+        };
+
         return `
-          <div class="ol-card q-card" id="${qId}" style="margin-bottom: 20px; scroll-margin-top: 100px;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; border-bottom: 1px solid var(--ol-border); padding-bottom: 12px;">
+          <div class="ol-card q-card" id="${qId}" style="margin-bottom: 24px; scroll-margin-top: 100px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--ol-border);">
               <div style="display: flex; align-items: center;">
-                <span class="ol-brand-bg ol-brand-text" style="width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;">${qNum}</span>
-                <span class="ol-text" style="margin-left: 12px; font-weight: 700; font-size: 16px;">Câu hỏi ${isExam && q.score ? `(${q.score}đ)` : ''}</span>
-                ${typeBadge}
+                <div class="ol-brand-bg ol-brand-text" style="width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; box-shadow: 0 4px 12px var(--ol-shadow);">
+                  ${qNum}
+                </div>
+                <div style="margin-left: 16px;">
+                  <div class="ol-text" style="font-weight: 700; font-size: 16px; display: flex; align-items: center; letter-spacing: -0.01em;">
+                    Câu hỏi ${isExam && q.score ? `<span style="color: var(--ol-text-sub); font-weight: 500; font-size: 13px; margin-left: 8px;">(${q.score}đ)</span>` : ''}
+                    ${typeBadge}
+                  </div>
+                </div>
               </div>
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <button class="ask-ai-btn ol-brand-text ol-btn-hover" data-index="${index}" title="Hỏi Gemini về câu này" style="background:var(--ol-brand-bg); border:none; cursor:pointer; padding:6px 10px; border-radius:8px; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <button class="ask-ai-btn ol-brand-bg ol-brand-text ol-btn-hover" data-index="${index}" title="Hỏi Gemini về câu này" style="border:none; cursor:pointer; padding:8px 16px; border-radius:12px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;">
                   ${getIcon('sparkles', 'scraper-icon-xs')} AI
                 </button>
-                <button class="copy-q-btn ol-text-sub ol-btn-hover" data-index="${index}" style="background:transparent; border:none; cursor:pointer; padding:6px; border-radius:8px;">${getIcon('copy', 'scraper-icon-sm')}</button>
+                <button class="copy-q-btn ol-surface ol-border ol-text-sub ol-btn-hover" data-index="${index}" style="background:transparent; border-width: 1px; border-style: solid; cursor:pointer; padding:8px; border-radius:12px;">${getIcon('copy', 'scraper-icon-sm')}</button>
               </div>
             </div>
             
-            <div class="ol-text" style="font-size: 15px; line-height: 1.6; margin-bottom: 16px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">
+            <div class="ol-text q-content-area" style="font-size: 16px; line-height: 1.7; margin-bottom: 24px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">
               ${isExam ? 
-                (q.title ? `<div style="font-weight: 600; color: var(--ol-brand); margin-bottom: 8px;">${escapeHTML(q.title)}</div>` : '') + escapeHTML(q.content) : 
-                escapeHTML(q.text.replace(/╔═+╗|║|╚═+╝|═+|-+/g, '').trim())}
+                (q.title ? `<div style="font-weight: 800; color: var(--ol-brand); margin-bottom: 12px; font-size: 18px; letter-spacing: -0.01em;">${escapeHTML(q.title)}</div>` : '') + 
+                `<div style="opacity: 0.95;">${renderFormattedContent(q.content)}</div>` : 
+                renderFormattedContent(questionContent)}
             </div>
 
             ${isExam && q.type === 'multiple-choice' ? `
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px;">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
                 ${Object.entries(q.data.answers).map(([k, v]) => `
-                  <div class="ol-surface ol-border" style="padding: 10px 14px; border-radius: 10px; font-size: 14px; display: flex; gap: 8px; overflow-wrap: break-word; word-break: break-word;">
-                    <span style="font-weight: 800; color: var(--ol-brand);">${escapeHTML(k)}.</span>
-                    <span class="ol-text">${escapeHTML(v)}</span>
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 14px 18px; border-radius: 14px; font-size: 14.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(k)}</span>
+                    <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(v)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            ${!isExam && parsedChoices.length > 0 ? `
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
+                ${parsedChoices.map(choice => `
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 14px 18px; border-radius: 14px; font-size: 14.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(choice.key)}</span>
+                    <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(choice.text)}</span>
                   </div>
                 `).join('')}
               </div>
             ` : ''}
 
             ${isExam && q.type === 'true-false' ? `
-              <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px;">
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
                 ${q.data.items.map(item => `
-                  <div class="ol-surface ol-border" style="padding: 10px 14px; border-radius: 10px; font-size: 14px; display: flex; gap: 8px; overflow-wrap: break-word; word-break: break-word;">
-                    <span style="font-weight: 800; color: var(--ol-brand); min-width: 24px;">${escapeHTML(item.label)}</span>
-                    <span class="ol-text">${escapeHTML(item.statement)}</span>
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 12px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; align-items: center;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); min-width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">${escapeHTML(item.label)}</span>
+                    <span class="ol-text" style="font-weight: 500;">${escapeHTML(item.statement)}</span>
                   </div>
                 `).join('')}
               </div>
             ` : ''}
 
             ${q.images && q.images.length > 0 ? `
-              <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--ol-border);">
+              <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--ol-border);">
                 ${q.images.map((img, i) => `
-                  <div class="ol-border" style="width: 80px; height: 60px; border-radius: 8px; overflow: hidden; cursor: pointer;" onclick="createImageLightbox(allImages, allImages.findIndex(ai => ai.fullUrl === '${img.fullUrl}'))">
+                  <div class="ol-border ol-btn-hover" style="width: 100px; height: 75px; border-radius: 12px; overflow: hidden; cursor: pointer; border-width: 1px; border-style: solid;" onclick="createImageLightbox(allImages, allImages.findIndex(ai => ai.fullUrl === '${img.fullUrl}'))">
                     <img src="${img.fullUrl}" style="width: 100%; height: 100%; object-fit: cover;">
                   </div>
                 `).join('')}
@@ -4991,8 +5184,9 @@ if (window.hasRunScraper) {
         <style>
           .ol-btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 12px var(--ol-shadow); opacity: 0.9; }
           .ol-btn-hover:active { transform: translateY(0); }
-          .nav-q-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
-          .nav-q-btn:hover { background: var(--ol-brand-bg); color: var(--ol-brand-text); border-color: var(--ol-brand); transform: scale(1.05); }
+          .nav-q-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border: 1.5px solid var(--ol-border) !important; }
+          .nav-q-btn:hover { background: var(--ol-brand-bg) !important; color: var(--ol-brand) !important; border-color: var(--ol-brand) !important; transform: translateY(-2px); box-shadow: 0 4px 12px var(--ol-shadow); }
+          .nav-q-btn.active { background: var(--ol-brand) !important; color: white !important; border-color: var(--ol-brand) !important; }
           .q-card { transition: all 0.3s ease; border: 1px solid var(--ol-border); }
           .q-card:hover { border-color: var(--ol-brand); box-shadow: 0 10px 30px -10px var(--ol-shadow); }
           .floating-ai-btn {
@@ -5331,10 +5525,29 @@ if (window.hasRunScraper) {
         }
       };
 
-      document.getElementById('resultThemeBtn').onclick = () => {
-          const isDark = resultContainer.classList.toggle('scraper-dark');
-          localStorage.setItem('ol_theme', isDark ? 'dark' : 'light');
-          document.getElementById('resultThemeBtn').innerHTML = isDark ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm');
+      document.getElementById('resultThemeBtn').onclick = (e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = rect.left + rect.width / 2;
+          const y = rect.top + rect.height / 2;
+          
+          const isNextDark = !resultContainer.classList.contains('scraper-dark');
+          const nextBg = isNextDark ? '#0f172a' : '#ffffff';
+          
+          themeOverlay.style.setProperty('--clip-x', `${x}px`);
+          themeOverlay.style.setProperty('--clip-y', `${y}px`);
+          themeOverlay.style.background = nextBg;
+          
+          themeOverlay.classList.add('active');
+          
+          setTimeout(() => {
+              resultContainer.classList.toggle('scraper-dark');
+              localStorage.setItem('ol_theme', isNextDark ? 'dark' : 'light');
+              document.getElementById('resultThemeBtn').innerHTML = isNextDark ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm');
+          }, 400); // Toggle theme halfway through animation
+
+          themeOverlay.ontransitionend = () => {
+              themeOverlay.classList.remove('active');
+          };
       };
 
       document.getElementById('closeResultBtn').onclick = () => {
