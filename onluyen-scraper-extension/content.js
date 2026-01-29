@@ -157,7 +157,8 @@ if (window.hasRunScraper) {
       link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
       messageSquare: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
       sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
-      moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>'
+      moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+      celebrationLine: '<svg viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15C20 5 35 25 50 15C65 5 80 25 95 15" /></svg>'
     };
 
     // CSS Variables for Theming - ENHANCED
@@ -258,7 +259,7 @@ if (window.hasRunScraper) {
       .ol-card {
         background-color: var(--ol-surface);
         border: 1px solid var(--ol-border);
-        border-radius: 20px;
+        border-radius: 24px;
         padding: 24px;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
@@ -272,19 +273,71 @@ if (window.hasRunScraper) {
         display: inline-flex;
         align-items: center;
         padding: 4px 12px;
-        border-radius: 8px;
-        font-size: 11px;
+        border-radius: 99px;
+        font-size: 9px;
         font-weight: 800;
         text-transform: uppercase;
+        letter-spacing: 0.1em;
+        box-shadow: 0 2px 6px var(--ol-shadow);
+        border: 1px solid var(--ol-border);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .ol-badge:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--ol-shadow);
+        border-color: var(--ol-brand);
+      }
+
+      .recommended-badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: var(--ol-brand);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 99px;
+        font-size: 9px;
+        font-weight: 800;
         letter-spacing: 0.05em;
-        box-shadow: 0 2px 4px var(--ol-shadow);
+        box-shadow: 0 4px 12px var(--ol-brand-bg);
+        z-index: 10;
+        border: 1px solid rgba(255,255,255,0.2);
+      }
+
+      .ol-footer-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background: var(--ol-surface);
+        color: var(--ol-text-sub);
+        border: 1px solid var(--ol-border);
+        border-radius: 99px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 5px var(--ol-shadow);
+      }
+      .ol-footer-link:hover {
+        background: var(--ol-surface-hover);
+        border-color: var(--ol-brand);
+        color: var(--ol-brand);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px -6px var(--ol-brand-bg);
+      }
+      .ol-footer-link svg {
+        transition: transform 0.2s ease;
+      }
+      .ol-footer-link:hover svg {
+        transform: scale(1.1);
       }
 
       .ol-input {
         background-color: var(--ol-surface);
         border: 1.5px solid var(--ol-border);
-        border-radius: 12px;
-        padding: 10px 16px;
+        border-radius: 99px;
+        padding: 10px 20px;
         color: var(--ol-text);
         outline: none;
         transition: all 0.2s;
@@ -1560,16 +1613,17 @@ if (window.hasRunScraper) {
                 transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
                 position: relative; overflow: hidden;
               ">
-                ${isHomeworkUrl ? '<div class="recommended-badge" style="top: -8px; right: 16px; padding: 4px 12px; font-size: 9px;">KHUYÊN DÙNG</div>' : ''}
+                ${isHomeworkUrl ? '<div class="recommended-badge">KHUYÊN DÙNG</div>' : ''}
                 <div class="ol-success-bg ol-success-text" style="
                   width: 52px; height: 52px;
                   border-radius: 16px; display: flex; align-items: center; justify-content: center;
-                  margin-bottom: 20px; border: 1px solid var(--ol-success);
+                  margin-bottom: 20px; border: 1.5px solid var(--ol-success);
+                  box-shadow: 0 8px 16px -4px var(--ol-success-bg);
                 ">
                   ${getIcon('book', 'scraper-icon-md')}
                 </div>
-                <h2 class="ol-text" style="font-size: 20px; font-weight: 900; margin: 0 0 6px 0;">BÀI TẬP</h2>
-                <p class="ol-success-text" style="font-size: 11px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.1em; text-transform: uppercase;">HOMEWORK</p>
+                <h2 class="ol-text" style="font-size: 19px; font-weight: 900; margin: 0 0 4px 0; letter-spacing: -0.02em;">BÀI TẬP</h2>
+                <p class="ol-success-text" style="font-size: 9px; font-weight: 800; margin: 0 0 16px 0; opacity: 0.8; letter-spacing: 0.1em; text-transform: uppercase;">HOMEWORK</p>
                 <div class="ol-text-sub" style="font-size: 14px; line-height: 1.5; margin-bottom: 24px; opacity: 0.8;">
                   Tương tác từng bước. Phù hợp luyện tập kiến thức.
                 </div>
@@ -1586,16 +1640,17 @@ if (window.hasRunScraper) {
                 transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer;
                 position: relative; overflow: hidden;
               ">
-                ${isExamUrl ? '<div class="recommended-badge" style="top: -8px; right: 16px; padding: 4px 12px; font-size: 9px;">KHUYÊN DÙNG</div>' : ''}
+                ${isExamUrl ? '<div class="recommended-badge">KHUYÊN DÙNG</div>' : ''}
                 <div class="ol-brand-bg ol-brand-text" style="
                   width: 52px; height: 52px;
                   border-radius: 16px; display: flex; align-items: center; justify-content: center;
-                  margin-bottom: 20px; border: 1px solid var(--ol-brand);
+                  margin-bottom: 20px; border: 1.5px solid var(--ol-brand);
+                  box-shadow: 0 8px 16px -4px var(--ol-brand-bg);
                 ">
                   ${getIcon('fileText', 'scraper-icon-md')}
                 </div>
-                <h2 class="ol-text" style="font-size: 20px; font-weight: 900; margin: 0 0 6px 0;">BÀI THI</h2>
-                <p class="ol-brand-text" style="font-size: 11px; font-weight: 800; margin: 0 0 16px 0; letter-spacing: 0.1em; text-transform: uppercase;">EXAM MODE</p>
+                <h2 class="ol-text" style="font-size: 19px; font-weight: 900; margin: 0 0 4px 0; letter-spacing: -0.02em;">BÀI THI</h2>
+                <p class="ol-brand-text" style="font-size: 9px; font-weight: 800; margin: 0 0 16px 0; opacity: 0.8; letter-spacing: 0.1em; text-transform: uppercase;">EXAM MODE</p>
                 <div class="ol-text-sub" style="font-size: 14px; line-height: 1.5; margin-bottom: 24px; opacity: 0.8;">
                   Quét nhanh tự động. Dành cho các kỳ thi quan trọng.
                 </div>
@@ -1693,11 +1748,14 @@ if (window.hasRunScraper) {
         // Keyboard Shortcuts
         const handleKeyDown = (e) => {
           if (e.key === '1') {
-            document.getElementById('homeworkModeBtn').click();
+            const btn = document.getElementById('homeworkModeBtn');
+            if (btn) btn.click();
           } else if (e.key === '2') {
-            document.getElementById('examModeBtn').click();
+            const btn = document.getElementById('examModeBtn');
+            if (btn) btn.click();
           } else if (e.key === 'Escape') {
-            document.getElementById('cancelModeBtn').click();
+            const btn = document.getElementById('cancelModeBtn');
+            if (btn) btn.click();
           }
         };
         window.addEventListener('keydown', handleKeyDown);
@@ -5063,7 +5121,7 @@ if (window.hasRunScraper) {
         let typeBadge = '';
         const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng/Sai', 'fill-blank': 'Điền khuyết' };
         const displayType = typeNames[q.type] || (isExam ? q.type : 'Bài tập');
-        typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 10px; font-size: 10px;">${displayType}</span>`;
+        typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 12px; border: 1px solid var(--ol-brand);">${displayType}</span>`;
 
         let rawText = q.text || '';
         let questionContent = '';
@@ -5109,36 +5167,34 @@ if (window.hasRunScraper) {
           <div class="ol-card q-card" id="${qId}" style="margin-bottom: 24px; scroll-margin-top: 100px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--ol-border);">
               <div style="display: flex; align-items: center;">
-                <div class="ol-brand-bg ol-brand-text" style="width: 38px; height: 38px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; box-shadow: 0 4px 12px var(--ol-shadow);">
+                <div class="ol-brand-bg ol-brand-text" style="width: 36px; height: 36px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; box-shadow: 0 4px 12px var(--ol-shadow);">
                   ${qNum}
                 </div>
                 <div style="margin-left: 16px;">
-                  <div class="ol-text" style="font-weight: 700; font-size: 16px; display: flex; align-items: center; letter-spacing: -0.01em;">
-                    Câu hỏi ${isExam && q.score ? `<span style="color: var(--ol-text-sub); font-weight: 500; font-size: 13px; margin-left: 8px;">(${q.score}đ)</span>` : ''}
+                  <div class="ol-text" style="font-weight: 700; font-size: 15px; display: flex; align-items: center; letter-spacing: -0.01em;">
+                    Câu hỏi ${isExam && q.score ? `<span style="color: var(--ol-text-sub); font-weight: 500; font-size: 12px; margin-left: 8px;">(${q.score}đ)</span>` : ''}
                     ${typeBadge}
                   </div>
                 </div>
               </div>
               <div style="display: flex; align-items: center; gap: 10px;">
-                <button class="ask-ai-btn ol-brand-bg ol-brand-text ol-btn-hover" data-index="${index}" title="Hỏi Gemini về câu này" style="border:none; cursor:pointer; padding:8px 16px; border-radius:12px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 13px;">
+                <button class="ask-ai-btn ol-brand-bg ol-brand-text ol-btn-hover" data-index="${index}" title="Hỏi Gemini về câu này" style="border:none; cursor:pointer; padding:6px 14px; border-radius:99px; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 12px;">
                   ${getIcon('sparkles', 'scraper-icon-xs')} AI
                 </button>
-                <button class="copy-q-btn ol-surface ol-border ol-text-sub ol-btn-hover" data-index="${index}" style="background:transparent; border-width: 1px; border-style: solid; cursor:pointer; padding:8px; border-radius:12px;">${getIcon('copy', 'scraper-icon-sm')}</button>
+                <button class="copy-q-btn ol-surface ol-border ol-text-sub ol-btn-hover" data-index="${index}" style="background:transparent; border-width: 1px; border-style: solid; cursor:pointer; padding:8px; border-radius:99px;">${getIcon('copy', 'scraper-icon-sm')}</button>
               </div>
             </div>
             
-            <div class="ol-text q-content-area" style="font-size: 16px; line-height: 1.7; margin-bottom: 24px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">
-              ${isExam ? 
+            <div class="ol-text q-content-area" style="font-size: 16px; line-height: 1.7; margin-bottom: 24px; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word;">${isExam ? 
                 (q.title ? `<div style="font-weight: 800; color: var(--ol-brand); margin-bottom: 12px; font-size: 18px; letter-spacing: -0.01em;">${escapeHTML(q.title)}</div>` : '') + 
                 `<div style="opacity: 0.95;">${renderFormattedContent(q.content)}</div>` : 
-                renderFormattedContent(questionContent)}
-            </div>
+                renderFormattedContent(questionContent)}</div>
 
             ${isExam && q.type === 'multiple-choice' ? `
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
                 ${Object.entries(q.data.answers).map(([k, v]) => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 14px 18px; border-radius: 14px; font-size: 14.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(k)}</span>
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(k)}</span>
                     <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(v)}</span>
                   </div>
                 `).join('')}
@@ -5148,8 +5204,8 @@ if (window.hasRunScraper) {
             ${!isExam && parsedChoices.length > 0 ? `
               <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
                 ${parsedChoices.map(choice => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 14px 18px; border-radius: 14px; font-size: 14.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(choice.key)}</span>
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(choice.key)}</span>
                     <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(choice.text)}</span>
                   </div>
                 `).join('')}
@@ -5159,8 +5215,8 @@ if (window.hasRunScraper) {
             ${isExam && q.type === 'true-false' ? `
               <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
                 ${q.data.items.map(item => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 12px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; align-items: center;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); min-width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px;">${escapeHTML(item.label)}</span>
+                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 10px 14px; border-radius: 16px; font-size: 13.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; align-items: center;">
+                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); min-width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 11px;">${escapeHTML(item.label)}</span>
                     <span class="ol-text" style="font-weight: 500;">${escapeHTML(item.statement)}</span>
                   </div>
                 `).join('')}
@@ -5170,7 +5226,7 @@ if (window.hasRunScraper) {
             ${q.images && q.images.length > 0 ? `
               <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--ol-border);">
                 ${q.images.map((img, i) => `
-                  <div class="ol-border ol-btn-hover" style="width: 100px; height: 75px; border-radius: 12px; overflow: hidden; cursor: pointer; border-width: 1px; border-style: solid;" onclick="createImageLightbox(allImages, allImages.findIndex(ai => ai.fullUrl === '${img.fullUrl}'))">
+                  <div class="ol-border ol-btn-hover" style="width: 100px; height: 75px; border-radius: 16px; overflow: hidden; cursor: pointer; border-width: 1px; border-style: solid;" onclick="createImageLightbox(allImages, allImages.findIndex(ai => ai.fullUrl === '${img.fullUrl}'))">
                     <img src="${img.fullUrl}" style="width: 100%; height: 100%; object-fit: cover;">
                   </div>
                 `).join('')}
@@ -5224,10 +5280,10 @@ if (window.hasRunScraper) {
           </div>
 
           <div style="display: flex; gap: 10px;">
-            <button id="resultThemeBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 12px; border-width: 1px; border-style: solid; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <button id="resultThemeBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 16px; border-width: 1px; border-style: solid; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                 ${localStorage.getItem('ol_theme') === 'dark' ? getIcon('sun', 'scraper-icon-sm') : getIcon('moon', 'scraper-icon-sm')}
             </button>
-            <button id="closeResultBtn" class="ol-danger-bg ol-danger-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <button id="closeResultBtn" class="ol-danger-bg ol-danger-text ol-btn-hover" style="width: 40px; height: 40px; border-radius: 16px; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer;">
                 ${getIcon('x', 'scraper-icon-sm')}
             </button>
           </div>
@@ -5239,11 +5295,11 @@ if (window.hasRunScraper) {
             <div style="padding: 24px; border-bottom: 1px solid var(--ol-border);">
               <h3 class="ol-text-sub" style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;">Thống kê nhanh</h3>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 14px; text-align: center; border-width: 1px; border-style: solid;">
+                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 18px; text-align: center; border-width: 1px; border-style: solid;">
                   <div class="ol-brand-text" style="font-size: 20px; font-weight: 800;">${questionCount}</div>
                   <div class="ol-text-sub" style="font-size: 10px; font-weight: 600;">CÂU HỎI</div>
                 </div>
-                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 14px; text-align: center; border-width: 1px; border-style: solid;">
+                <div class="ol-bg ol-border" style="padding: 12px; border-radius: 18px; text-align: center; border-width: 1px; border-style: solid;">
                   <div class="ol-success-text" style="font-size: 20px; font-weight: 800;">${allImages.length}</div>
                   <div class="ol-text-sub" style="font-size: 10px; font-weight: 600;">HÌNH ẢNH</div>
                 </div>
@@ -5256,19 +5312,19 @@ if (window.hasRunScraper) {
                 ${allQuestions.map((q, i) => {
                     const id = currentMode === 'exam' ? q.number : q.id;
                     const targetId = currentMode === 'exam' ? `q-exam-${q.number}` : `q-hw-${q.id}`;
-                    return `<button class="nav-q-btn ol-bg ol-border ol-text ol-btn-hover" data-target="${targetId}" style="height: 44px; border-radius: 10px; border-width: 1px; border-style: solid; font-weight: 700; font-size: 13px; cursor: pointer;">${currentMode === 'exam' ? q.number : (i + 1)}</button>`;
+                    return `<button class="nav-q-btn ol-bg ol-border ol-text ol-btn-hover" data-target="${targetId}" style="height: 44px; border-radius: 14px; border-width: 1px; border-style: solid; font-weight: 700; font-size: 13px; cursor: pointer;">${currentMode === 'exam' ? q.number : (i + 1)}</button>`;
                 }).join('')}
               </div>
             </div>
 
             <div style="padding: 20px; border-top: 1px solid var(--ol-border); display: flex; flex-direction: column; gap: 8px;">
-              <button id="copyAllBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <button id="copyAllBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 16px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 ${getIcon('copy', 'scraper-icon-xs')} Copy Dữ Liệu Gốc
               </button>
-              <button id="copyAIBtn" class="ol-btn-primary ol-brand-bg ol-brand-text" style="width: 100%; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <button id="copyAIBtn" class="ol-btn-primary ol-brand-bg ol-brand-text" style="width: 100%; border: none; padding: 12px; border-radius: 16px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 ${getIcon('sparkles', 'scraper-icon-xs')} Copy Kết Quả Cho AI
               </button>
-              <button id="downloadBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              <button id="downloadBtn" class="ol-surface ol-border ol-text ol-btn-hover" style="width: 100%; border-width: 1px; border-style: solid; padding: 12px; border-radius: 16px; font-weight: 700; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
                 ${getIcon('download', 'scraper-icon-xs')} Tải File (.txt)
               </button>
             </div>
@@ -5280,23 +5336,28 @@ if (window.hasRunScraper) {
             <!-- Welcome/Summary Section -->
             <div class="ol-brand-bg" style="border-radius: 24px; padding: 32px; margin-bottom: 40px; border: 1px solid var(--ol-brand-bg); position: relative; overflow: hidden;">
               <div style="position: relative; z-index: 1;">
-                <h1 class="ol-brand-text" style="font-size: 28px; font-weight: 800; margin: 0 0 12px 0;">Thu thập hoàn tất! 🎉</h1>
+                <h1 class="ol-brand-text" style="font-size: 32px; font-weight: 800; margin: 0 0 8px 0; display: flex; align-items: center; gap: 16px;">
+                  Thu thập ${modeLabel} hoàn tất!
+                  <span style="display: inline-flex; width: 80px; height: 24px; color: var(--ol-brand); opacity: 0.8; filter: drop-shadow(0 2px 4px var(--ol-shadow));">
+                    ${ICONS['celebrationLine']}
+                  </span>
+                </h1>
                 <p class="ol-text" style="font-size: 15px; margin: 0; opacity: 0.8; max-width: 600px;">
                   Dữ liệu từ <b>${questionCount} câu hỏi</b> đã được trích xuất thành công. Bạn có thể xem chi tiết bên dưới hoặc gửi cho Gemini AI để nhận giải đáp ngay lập tức.
                 </p>
                 <div style="display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap;">
-                  <button id="sendGeminiBtn" class="ol-brand-bg ol-brand-text" style="border: 2px solid var(--ol-brand); padding: 12px 24px; border-radius: 14px; font-weight: 800; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                  <button id="sendGeminiBtn" class="ol-brand-bg ol-brand-text" style="border: 2px solid var(--ol-brand); padding: 12px 24px; border-radius: 18px; font-weight: 800; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
                     ${getIcon('sparkles', 'scraper-icon-md')} GỬI CHO GEMINI AI
                   </button>
                   ${chatHistory.length > 0 ? `
-                  <button id="reopenChatBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <button id="reopenChatBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
                     ${getIcon('refreshCw', 'scraper-icon-sm')} MỞ LẠI CHAT
                   </button>
                   ` : ''}
-                  <button id="viewAIPromptBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                  <button id="viewAIPromptBtn" class="ol-surface ol-border ol-text" style="border: 1px solid var(--ol-border); padding: 12px 24px; border-radius: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; cursor: pointer;">
                     ${getIcon('eye', 'scraper-icon-sm')} XEM NỘI DUNG AI
                   </button>
-                  <label class="ol-surface ol-border" style="display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 14px; border-width: 1px; border-style: solid; cursor: pointer; user-select: none;">
+                  <label class="ol-surface ol-border" style="display: flex; align-items: center; gap: 8px; padding: 0 16px; border-radius: 18px; border-width: 1px; border-style: solid; cursor: pointer; user-select: none;">
                     <input type="checkbox" id="sendWithImagesCb" checked style="width: 18px; height: 18px; accent-color: var(--ol-brand);">
                     <span class="ol-text" style="font-size: 13px; font-weight: 600;">Gửi kèm ảnh</span>
                   </label>
@@ -5337,7 +5398,7 @@ if (window.hasRunScraper) {
             <!-- Footer -->
             <div style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--ol-border); text-align: center; color: var(--ol-text-sub);">
               <div style="margin-bottom: 12px;">
-                <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" style="color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; font-weight: 600;">
+                <a href="https://github.com/Trongdepzai-dev/onluyen-scraper-extension" target="_blank" class="ol-footer-link">
                   ${getIcon('github', 'scraper-icon-xs')} Open Source on GitHub
                 </a>
               </div>
@@ -5559,7 +5620,8 @@ if (window.hasRunScraper) {
           if (chatHistory.length > 0) {
               showGeminiResponseModal();
           } else {
-              document.getElementById('sendGeminiBtn').click();
+              const btn = document.getElementById('sendGeminiBtn');
+              if (btn) btn.click();
           }
       };
 
