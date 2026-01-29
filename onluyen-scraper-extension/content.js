@@ -158,7 +158,9 @@ if (window.hasRunScraper) {
       messageSquare: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
       sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
       moon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
-      celebrationLine: '<svg viewBox="0 0 100 20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15C20 5 35 25 50 15C65 5 80 25 95 15" /></svg>'
+      get celebrationLine() {
+        return ['💋', '😁', '❤'][Math.floor(Math.random() * 3)];
+      }
     };
 
     // CSS Variables for Theming - ENHANCED
@@ -5336,9 +5338,9 @@ if (window.hasRunScraper) {
             <!-- Welcome/Summary Section -->
             <div class="ol-brand-bg" style="border-radius: 24px; padding: 32px; margin-bottom: 40px; border: 1px solid var(--ol-brand-bg); position: relative; overflow: hidden;">
               <div style="position: relative; z-index: 1;">
-                <h1 class="ol-brand-text" style="font-size: 32px; font-weight: 800; margin: 0 0 8px 0; display: flex; align-items: center; gap: 16px;">
+                <h1 class="ol-brand-text" style="font-size: 32px; font-weight: 800; margin: 0 0 8px 0; display: flex; align-items: center; gap: 12px;">
                   Thu thập ${modeLabel} hoàn tất!
-                  <span style="display: inline-flex; width: 80px; height: 24px; color: var(--ol-brand); opacity: 0.8; filter: drop-shadow(0 2px 4px var(--ol-shadow));">
+                  <span style="display: inline-flex; width: auto; font-size: 28px; filter: drop-shadow(0 2px 8px var(--ol-shadow)); transform: translateY(2px);">
                     ${ICONS['celebrationLine']}
                   </span>
                 </h1>
@@ -5654,8 +5656,8 @@ if (window.hasRunScraper) {
                         ${getIcon('x', 'scraper-icon-sm')}
                     </button>
                 </div>
-                <div style="flex: 1; padding: 32px; overflow-y: auto;" class="scraper-scrollbar">
-                    <pre class="ol-text" style="white-space: pre-wrap; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; margin: 0; opacity: 0.9;">${escapeHTML(content)}</pre>
+                <div style="flex: 1; padding: 32px; overflow-y: auto; min-height: 0;" class="scraper-scrollbar">
+                    <pre class="ol-text" style="white-space: pre-wrap; word-break: break-word; font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 13px; line-height: 1.7; margin: 0; opacity: 0.9;">${escapeHTML(content)}</pre>
                 </div>
                 <div style="padding: 20px; border-top: 1px solid var(--ol-border); display: flex; justify-content: flex-end; gap: 12px; background: var(--ol-surface);">
                     <button id="copyAIPromptModalBtn" class="ol-brand-bg ol-brand-text" style="border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
