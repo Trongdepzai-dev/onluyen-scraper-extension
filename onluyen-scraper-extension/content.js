@@ -3168,7 +3168,7 @@ if (window.hasRunScraper) {
         if (q.text) textAI += `${q.text}\n`;
         textAI += `\n`;
         
-        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
+        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages, type: 'fill-blank' };
       }
       
       // ===== 2. ĐÚNG/SAI =====
@@ -3225,7 +3225,7 @@ if (window.hasRunScraper) {
         if (endSep) textNormal += endSep + "\n";
         textAI += `\n`;
         
-        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
+        return { text: textNormal.trim(), textAI, id: cauId, images: questionImages, type: 'true-false' };
       }
       
       // ===== 3. TRẮC NGHIỆM =====
@@ -3278,14 +3278,14 @@ if (window.hasRunScraper) {
       if (endSep) textNormal += endSep + "\n";
       textAI += `\n`;
       
-      return { text: textNormal.trim(), textAI, id: cauId, images: questionImages };
+      return { text: textNormal.trim(), textAI, id: cauId, images: questionImages, type: 'multiple-choice' };
     }
 
     function formatSingleQuestionAI(q, displayNum) {
       const typeNames = {
         'multiple-choice': 'TRẮC NGHIỆM',
-        'true-false': 'ĐÚNG/SAI',
-        'fill-blank': 'ĐIỀN KHUYẾT',
+        'true-false': 'ĐÚNG SAI',
+        'fill-blank': 'TRẢ LỜI NGẮN',
         'unknown': 'CHƯA XÁC ĐỊNH'
       };
 
@@ -5132,8 +5132,8 @@ if (window.hasRunScraper) {
         const qId = isExam ? `q-exam-${qNum}` : `q-hw-${q.id}`;
         
         let typeBadge = '';
-        const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng/Sai', 'fill-blank': 'Điền khuyết' };
-        const displayType = typeNames[q.type] || (isExam ? q.type : 'Bài tập');
+        const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng sai', 'fill-blank': 'Trả lời ngắn' };
+        const displayType = typeNames[q.type] || (isExam ? q.type : 'Câu hỏi');
         typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 12px; border: 1px solid var(--ol-brand);">${displayType}</span>`;
 
         let rawText = q.text || '';
