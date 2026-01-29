@@ -5025,10 +5025,14 @@ if (window.hasRunScraper) {
       let inTable = false;
 
       const renderHTMLTable = (tableLines) => {
-        if (tableLines.length < 2) return tableLines.join('\n');
+        if (tableLines.length === 0) return '';
         
         // Find separator line |---| or |:---| etc
-        let sepIdx = tableLines.findIndex(l => l.trim().match(/^[|\s-:]+$/) && l.includes('-'));
+        let sepIdx = tableLines.findIndex(l => {
+          const trimmed = l.trim();
+          return trimmed.length > 2 && trimmed.match(/^[|\s-:]+$/) && trimmed.includes('-');
+        });
+        
         let headerRows = [];
         let bodyRows = [];
         
@@ -5036,6 +5040,7 @@ if (window.hasRunScraper) {
           headerRows = tableLines.slice(0, sepIdx);
           bodyRows = tableLines.slice(sepIdx + 1);
         } else {
+          // If no separator, check if the first row has at least 2 pipes, if so, treat all as body
           bodyRows = tableLines;
         }
 
@@ -5053,8 +5058,10 @@ if (window.hasRunScraper) {
           return `<tr>${cells.map(c => `<td style="border: 1px solid var(--ol-border); padding: 10px 14px;">${c}</td>`).join('')}</tr>`;
         }).join('');
 
-        return `<div class="ol-table-wrapper" style="overflow-x: auto; margin: 20px 0; border-radius: 14px; border: 1px solid var(--ol-border); box-shadow: 0 4px 12px var(--ol-shadow);">
-          <table style="width: 100%; border-collapse: collapse; font-size: 14px; background: var(--ol-bg); color: var(--ol-text);">
+        if (!htmlHeader && !htmlBody) return tableLines.join('\n');
+
+        return `<div class="ol-table-wrapper" style="overflow-x: auto; margin: 16px 0; border-radius: 12px; border: 1px solid var(--ol-border); box-shadow: 0 2px 8px var(--ol-shadow-sm);">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px; background: var(--ol-bg); color: var(--ol-text); min-width: 300px;">
             ${htmlHeader ? `<thead style="border-bottom: 2px solid var(--ol-border);">${htmlHeader}</thead>` : ''}
             <tbody>${htmlBody}</tbody>
           </table>
@@ -5063,7 +5070,11 @@ if (window.hasRunScraper) {
 
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const isTable = line.trim().includes('|');
+        const trimmed = line.trim();
+        const pipeCount = (trimmed.match(/\|/g) || []).length;
+        // A row is part of a table if it has at least 2 pipes, 
+        // or if it has 1 pipe and starts/ends with it.
+        const isTable = pipeCount >= 2 || (pipeCount === 1 && (trimmed.startsWith('|') || trimmed.endsWith('|')));
 
         if (isTable) {
           inTable = true;
@@ -5157,12 +5168,18 @@ if (window.hasRunScraper) {
 
         const renderFormattedContent = (text) => {
           if (!text) return '';
-          let escaped = escapeHTML(text);
+          let formatted = escapeHTML(text);
+          
+          // Apply basic markdown formatting (Bold, Italic)
+          formatted = formatted
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
           // Only apply parseMarkdownTable if it looks like a table
-          if (escaped.includes('|')) {
-            return parseMarkdownTable(escaped);
+          if (formatted.includes('|')) {
+            return parseMarkdownTable(formatted);
           }
-          return escaped;
+          return formatted;
         };
 
         return `
