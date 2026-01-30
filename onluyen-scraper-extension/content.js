@@ -4046,13 +4046,12 @@ if (window.hasRunScraper) {
           
           if (stopRequested) break;
 
-          // 🆕 FEATURE: Auto-stop if "Kết thúc" button is found
+          // 🆕 FEATURE: Confirmation Modal if "Kết thúc" button is found
           const scraperSettings = getScraperSettings();
           if (scraperSettings.autoStopAtEnd) {
-            const potentialFinishBtns = document.querySelectorAll('button.btn-gray, button.btn');
+            const potentialFinishBtns = document.querySelectorAll('button.btn, div.btn');
             let foundFinish = false;
             for (const btn of potentialFinishBtns) {
-              // Check visibility and text
               if (btn.offsetParent !== null && !btn.disabled) {
                 const txt = (btn.textContent || '').trim();
                 if (txt === 'Kết thúc') {
@@ -4062,10 +4061,22 @@ if (window.hasRunScraper) {
               }
             }
             if (foundFinish) {
-              updateStatus('Đã hoàn thành', 'Phát hiện nút Kết thúc', 'check');
-              showToast('Đã đến cuối bài (Nút Kết thúc)', 'success');
-              stopRequested = true;
-              break;
+              updateStatus('Đã xong?', 'Phát hiện nút Kết thúc', 'help');
+              const confirmed = await showConfirmModal(
+                'Hệ thống đã scrape xong toàn bộ các câu hỏi. Bạn có muốn kết thúc và xem dashboard kết quả không?',
+                'Xác nhận kết thúc'
+              );
+
+              if (confirmed) {
+                updateStatus('Đã hoàn thành', 'Xác nhận kết thúc', 'check');
+                showToast('Đang tổng hợp kết quả...', 'success');
+                stopRequested = true;
+                break;
+              } else {
+                showToast('Tiếp tục chờ tác vụ mới...', 'info');
+                // Đợi 5 giây trước khi check lại để tránh hiện modal liên tục
+                await smartSleep(5000);
+              }
             }
           }
           
