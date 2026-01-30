@@ -103,6 +103,20 @@ if (window.hasRunScraper) {
   (async function AutoScraperCombined() {
     'use strict';
 
+    // 🚀 AUTO-SKIP LOADING SCREEN (GLOBAL OBSERVER)
+    const loadingObserver = new MutationObserver(() => {
+      document
+        .querySelectorAll('.background.fadeIn.ng-star-inserted')
+        .forEach(el => {
+          // Chỉ xóa nếu thực sự là màn hình loading (có chứa text hoặc icon loading)
+          if (el.querySelector('.text-loading') || el.querySelector('img[src*="loading"]')) {
+            el.remove();
+          }
+        });
+    });
+    loadingObserver.observe(document.body, { childList: true, subtree: true });
+    // ------------------------------------------
+
     // ============================================================ 
     // 🎯 GLOBAL VARIABLES & CONFIGURATION
     // ============================================================ 
