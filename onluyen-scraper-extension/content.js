@@ -5134,7 +5134,13 @@ if (window.hasRunScraper) {
         let typeBadge = '';
         const typeNames = { 'multiple-choice': 'Trắc nghiệm', 'true-false': 'Đúng sai', 'fill-blank': 'Trả lời ngắn' };
         const displayType = typeNames[q.type] || (isExam ? q.type : 'Câu hỏi');
-        typeBadge = `<span class="ol-badge ol-brand-bg ol-brand-text" style="margin-left: 12px; border: 1px solid var(--ol-brand);">${displayType}</span>`;
+        
+        // Badge color based on type
+        let badgeColorClass = 'ol-brand-bg ol-brand-text';
+        if (q.type === 'true-false') badgeColorClass = 'ol-warning-bg ol-warning-text';
+        if (q.type === 'fill-blank') badgeColorClass = 'ol-success-bg ol-success-text';
+
+        typeBadge = `<span class="ol-badge ${badgeColorClass}" style="margin-left: 12px; border: 1px solid currentColor;">${displayType}</span>`;
 
         let rawText = q.text || '';
         let questionContent = '';
@@ -5142,7 +5148,6 @@ if (window.hasRunScraper) {
 
         if (!isExam) {
             // Clean ASCII artifacts but preserve table pipes
-            // Improved regex to handle various separators
             rawText = rawText.replace(/╔═+╗|║|╚═+╝|═+|─{4,}|-{4,}|───────────────────────────────/g, '').trim();
             
             // Try to extract choices if present in text
@@ -5182,6 +5187,85 @@ if (window.hasRunScraper) {
           return formatted;
         };
 
+        // RENDER OPTIONS based on Type
+        let optionsHTML = '';
+
+        // 1. EXAM MODE OPTIONS
+        if (isExam) {
+            if (q.type === 'multiple-choice') {
+                optionsHTML = `
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
+                    ${Object.entries(q.data.answers).map(([k, v]) => `
+                      <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                        <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow); flex-shrink: 0;">${escapeHTML(k)}</span>
+                        <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(v)}</span>
+                      </div>
+                    `).join('')}
+                  </div>`;
+            } else if (q.type === 'true-false') {
+                optionsHTML = `
+                  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                    ${q.data.items.map(item => `
+                      <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 16px; font-size: 14px; display: flex; gap: 16px; border-width: 1px; border-style: solid; align-items: flex-start;">
+                        <span style="font-weight: 800; color: var(--ol-warning); background: var(--ol-warning-bg); min-width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-top: 2px;">${escapeHTML(item.label)}</span>
+                        <span class="ol-text" style="font-weight: 500; line-height: 1.5;">${escapeHTML(item.statement)}</span>
+                      </div>
+                    `).join('')}
+                  </div>`;
+            } else if (q.type === 'fill-blank') {
+                 optionsHTML = `
+                    <div style="margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--ol-surface); border: 1px dashed var(--ol-border); color: var(--ol-text-sub); font-size: 13px; font-style: italic; text-align: center;">
+                        ${getIcon('pencil', 'scraper-icon-sm')} Câu hỏi tự luận / điền khuyết (Không có lựa chọn)
+                    </div>
+                 `;
+            }
+        } 
+        // 2. HOMEWORK MODE OPTIONS (Parsed)
+        else {
+            if (parsedChoices.length > 0) {
+                if (q.type === 'true-false') {
+                    // Vertical Layout for True/False
+                    optionsHTML = `
+                      <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                        ${parsedChoices.map(choice => `
+                          <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 16px; font-size: 14px; display: flex; gap: 16px; border-width: 1px; border-style: solid; align-items: flex-start;">
+                            <span style="font-weight: 800; color: var(--ol-warning); background: var(--ol-warning-bg); min-width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-top: 2px;">${escapeHTML(choice.key)}</span>
+                            <span class="ol-text" style="font-weight: 500; line-height: 1.5;">${renderFormattedContent(choice.text)}</span>
+                          </div>
+                        `).join('')}
+                      </div>`;
+                } else if (q.type === 'multiple-choice') {
+                    // Grid Layout for Multiple Choice
+                    optionsHTML = `
+                      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
+                        ${parsedChoices.map(choice => `
+                          <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
+                            <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow); flex-shrink: 0;">${escapeHTML(choice.key)}</span>
+                            <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(choice.text)}</span>
+                          </div>
+                        `).join('')}
+                      </div>`;
+                } else {
+                    // Fallback for unknown type but has choices
+                     optionsHTML = `
+                      <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 16px;">
+                        ${parsedChoices.map(choice => `
+                          <div class="ol-surface ol-border" style="padding: 10px 14px; border-radius: 12px; font-size: 14px; display: flex; gap: 10px; border-width: 1px; border-style: solid;">
+                            <span style="font-weight: 700;">${escapeHTML(choice.key)}.</span>
+                            <span>${renderFormattedContent(choice.text)}</span>
+                          </div>
+                        `).join('')}
+                      </div>`;
+                }
+            } else if (q.type === 'fill-blank') {
+                 optionsHTML = `
+                    <div style="margin-top: 16px; padding: 16px; border-radius: 16px; background: var(--ol-surface); border: 1px dashed var(--ol-border); color: var(--ol-text-sub); font-size: 13px; font-style: italic; text-align: center;">
+                        ${getIcon('pencil', 'scraper-icon-sm')} Câu hỏi tự luận / điền khuyết
+                    </div>
+                 `;
+            }
+        }
+
         return `
           <div class="ol-card q-card" id="${qId}" style="margin-bottom: 24px; scroll-margin-top: 100px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--ol-border);">
@@ -5209,38 +5293,7 @@ if (window.hasRunScraper) {
                 `<div style="opacity: 0.95;">${renderFormattedContent(q.content)}</div>` : 
                 renderFormattedContent(questionContent)}</div>
 
-            ${isExam && q.type === 'multiple-choice' ? `
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
-                ${Object.entries(q.data.answers).map(([k, v]) => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(k)}</span>
-                    <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(v)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-
-            ${!isExam && parsedChoices.length > 0 ? `
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 16px;">
-                ${parsedChoices.map(choice => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 12px 16px; border-radius: 18px; font-size: 14px; display: flex; gap: 12px; border-width: 1px; border-style: solid; cursor: default; align-items: center; transition: all 0.2s;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 2px 5px var(--ol-shadow);">${escapeHTML(choice.key)}</span>
-                    <span class="ol-text" style="font-weight: 500;">${renderFormattedContent(choice.text)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
-
-            ${isExam && q.type === 'true-false' ? `
-              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
-                ${q.data.items.map(item => `
-                  <div class="ol-surface ol-border ol-btn-hover" style="padding: 10px 14px; border-radius: 16px; font-size: 13.5px; display: flex; gap: 12px; border-width: 1px; border-style: solid; align-items: center;">
-                    <span style="font-weight: 800; color: var(--ol-brand); background: var(--ol-brand-bg); min-width: 26px; height: 26px; border-radius: 99px; display: flex; align-items: center; justify-content: center; font-size: 11px;">${escapeHTML(item.label)}</span>
-                    <span class="ol-text" style="font-weight: 500;">${escapeHTML(item.statement)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            ` : ''}
+            ${optionsHTML}
 
             ${q.images && q.images.length > 0 ? `
               <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--ol-border);">
