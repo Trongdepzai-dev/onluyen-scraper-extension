@@ -3155,10 +3155,31 @@ if (window.hasRunScraper) {
         
         questionImages = [...ctx.images, ...q.images];
         
+        // --- DE-DUPLICATION LOGIC ---
+        let finalContext = ctx.text;
+        let finalQuestion = q.text;
+
+        const cleanCtx = finalContext.trim();
+        const cleanQ = finalQuestion.trim();
+
+        if (cleanCtx === cleanQ) {
+            // If identical, keep only as context (or question)
+            finalQuestion = ''; 
+        } else if (cleanCtx.includes(cleanQ) && cleanQ.length > 10) {
+            // If Context includes Question, and Question is substantial -> Remove Question
+            finalQuestion = '';
+        } else if (cleanQ.includes(cleanCtx) && cleanCtx.length > 10) {
+            // If Question includes Context, and Context is substantial -> Remove Context
+            finalContext = '';
+        }
+        // -----------------------------
+
         let textNormal = createSeparator("start");
         if (textNormal) textNormal += "\n";
-        textNormal += formatBoxLine('', ctx.text);
-        textNormal += formatBoxLine('', q.text);
+        
+        if (finalContext) textNormal += formatBoxLine('', finalContext);
+        if (finalQuestion) textNormal += formatBoxLine('', finalQuestion);
+        
         if (questionImages.length > 0) {
           textNormal += `Ảnh: ${questionImages.length} hình\n`;
         }
@@ -3166,8 +3187,8 @@ if (window.hasRunScraper) {
         if (endSep) textNormal += endSep + "\n";
         
         let textAI = `\n━━━ ${cauText} ━━━\n`;
-        if (ctx.text) textAI += `${ctx.text}\n`;
-        if (q.text) textAI += `${q.text}\n`;
+        if (finalContext) textAI += `${finalContext}\n`;
+        if (finalQuestion) textAI += `${finalQuestion}\n`;
         textAI += `\n`;
         
         return { text: textNormal.trim(), textAI, id: cauId, images: questionImages, type: 'fill-blank' };
