@@ -103,8 +103,12 @@ if (window.hasRunScraper) {
   (async function AutoScraperCombined() {
     'use strict';
 
+    // 🎯 GLOBAL CONFIGURATION
+    let isSkipLoadingEnabled = true; // Default: ON
+
     // 🚀 AUTO-SKIP LOADING SCREEN (GLOBAL OBSERVER)
     const loadingObserver = new MutationObserver(() => {
+      if (!isSkipLoadingEnabled) return;
       document
         .querySelectorAll('.background.fadeIn.ng-star-inserted')
         .forEach(el => {
@@ -1639,7 +1643,7 @@ if (window.hasRunScraper) {
             </div>
             
             <!-- Compact Mode Grid -->
-            <div class="mode-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px; width: 100%;">
+            <div class="mode-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; width: 100%;">
               
               <!-- Homework Mode -->
               <div id="homeworkModeBtn" class="scraper-mode-card ol-surface ol-border ${isHomeworkUrl ? 'recommended' : ''}" style="
@@ -1694,6 +1698,24 @@ if (window.hasRunScraper) {
                     <span class="ol-text-sub" style="font-size: 12px; font-weight: 700;">Phím tắt</span>
                 </div>
               </div>
+            </div>
+
+            <!-- Settings Toggle -->
+            <div style="margin-bottom: 32px; display: flex; align-items: center; justify-content: center; gap: 12px;">
+              <label class="ol-surface ol-border ol-btn-hover" style="
+                display: flex; align-items: center; gap: 12px; padding: 10px 20px; 
+                border-radius: 99px; border-width: 1px; border-style: solid; 
+                cursor: pointer; user-select: none; transition: all 0.2s;
+              ">
+                <input type="checkbox" id="skipLoadingToggle" checked style="accent-color: var(--ol-brand); width: 18px; height: 18px; cursor: pointer;">
+                <span class="ol-text" style="font-size: 14px; font-weight: 700;">Tự động bỏ qua Loading</span>
+              </label>
+              <button id="skipLoadingInfoBtn" class="ol-surface ol-border ol-text-sub ol-btn-hover" style="
+                background: transparent; border-width: 1px; border-style: solid; cursor: pointer; padding: 10px;
+                display: flex; align-items: center; border-radius: 50%; transition: all 0.2s;
+              " title="Thông tin tính năng">
+                ${getIcon('info', 'scraper-icon-sm')}
+              </button>
             </div>
             
             <!-- Compact Footer Section -->
@@ -1813,6 +1835,20 @@ if (window.hasRunScraper) {
         document.getElementById('topCloseBtn').onclick = () => {
             // Trigger same logic as cancelModeBtn
             document.getElementById('cancelModeBtn').click();
+        };
+
+        // NEW: Skip Loading Toggle Logic
+        const skipLoadingToggle = document.getElementById('skipLoadingToggle');
+        if (skipLoadingToggle) {
+            skipLoadingToggle.checked = isSkipLoadingEnabled;
+            skipLoadingToggle.onchange = (e) => {
+                isSkipLoadingEnabled = e.target.checked;
+                showToast(isSkipLoadingEnabled ? 'Đã bật tự động bỏ qua loading' : 'Đã tắt tự động bỏ qua loading', 'info');
+            };
+        }
+
+        document.getElementById('skipLoadingInfoBtn').onclick = () => {
+            showToast('Tự động xóa màn hình chờ "Đang tải dữ liệu" để tăng tốc độ scrape.', 'info');
         };
 
         // Event handlers with cleanup
