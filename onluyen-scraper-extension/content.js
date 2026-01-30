@@ -6090,8 +6090,8 @@ if (window.hasRunScraper) {
       
       if (sidebarExists) {
           const useSidebar = await showConfirmModal(
-              'Hệ thống phát hiện danh sách câu hỏi bên sidebar. Bạn có muốn sử dụng chế độ "Sidebar Navigation (Beta)" để duyệt nhanh và chính xác hơn không?',
-              'Phát hiện Sidebar'
+              '🚀 HỆ THỐNG PHÁT HIỆN SIDEBAR! Bạn có muốn kích hoạt chế độ "Sidebar Turbo Mode" không?\n\n⚡ Tốc độ có thể NHANH GẤP 5 - 10 LẦN so với bình thường. Duyệt toàn bộ câu hỏi CỰC NHANH và SIÊU CHÍNH XÁC!',
+              'Kích Hoạt Siêu Tốc Độ ⚡'
           );
           
           if (useSidebar) {
