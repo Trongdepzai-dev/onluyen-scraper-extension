@@ -3997,8 +3997,8 @@ if (window.hasRunScraper) {
     // ============================================================ 
 
     async function runSidebarMode() {
-      showToast('Kích hoạt chế độ Sidebar (Beta)', 'success');
-      updateStatus('Sidebar Mode', 'Đang khởi tạo...', 'rocket');
+      showToast('Kích hoạt chế độ Sidebar (Turbo Mode 🚀)', 'success');
+      updateStatus('Turbo Mode', 'Đang khởi tạo...', 'rocket');
 
       // Re-query to be safe
       const sidebarItems = Array.from(document.querySelectorAll('.list-item .item[id^="question-sidebar-"]'));
@@ -4011,7 +4011,7 @@ if (window.hasRunScraper) {
       });
 
       const totalQ = sidebarItems.length;
-      updateStatus('Sidebar Mode', `Tìm thấy ${totalQ} câu hỏi`, 'fileText');
+      updateStatus('Turbo Mode', `Tìm thấy ${totalQ} câu hỏi`, 'zap');
 
       for (let i = 0; i < totalQ; i++) {
         if (stopRequested) break;
@@ -4024,40 +4024,36 @@ if (window.hasRunScraper) {
         const item = sidebarItems[i];
         const qNumText = item.textContent.trim();
         
-        // Scroll item into view
-        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Scroll item into view (only if needed to save rendering time)
+        // item.scrollIntoView({ behavior: 'instant', block: 'center' }); 
         
         // Visual feedback on sidebar item
         const originalBg = item.style.backgroundColor;
         item.style.backgroundColor = '#e0e7ff'; // Light indigo
         
-        updateStatus('Đang xử lý...', `Câu ${qNumText} / ${totalQ}`, 'rocket');
+        updateStatus('Đang xử lý...', `Câu ${qNumText} / ${totalQ}`, 'zap');
         
         // Click to navigate
         item.click();
         
         // Wait for content load
         // 1. Wait for loading spinner to clear
-        await waitForContentLoaded();
+        await waitForContentLoaded(2000); // Reduced max wait
         
         // 2. Extra check: Wait for question number in main view to match sidebar number
         // This prevents scraping the previous question before the new one renders
         let retries = 0;
-        while (retries < 20) {
+        while (retries < 100) { // More checks, faster interval
             const numDiv = document.querySelector('.num');
             if (numDiv) {
                 const currentIdMatch = (numDiv.textContent || '').match(/#(\d+)/);
                 const currentNumMatch = (numDiv.textContent || '').match(/Câu[:\s]*(\d+)/i);
                 
-                // Sidebar ID is often just 0, 1, 2... index, but text content is "1", "2"...
-                // We trust text content for alignment
                 const currentNum = currentNumMatch ? currentNumMatch[1] : (currentIdMatch ? currentIdMatch[1] : null);
                 
-                // Loose comparison because sometimes sidebar says "1" but main says "Câu 1"
-                // If we can't match, we rely on waitForContentLoaded
                 if (currentNum && currentNum === qNumText) break;
             }
-            await fastSleep(100);
+            await fastSleep(15); // Extreme speed polling
             retries++;
         }
 
@@ -4065,18 +4061,11 @@ if (window.hasRunScraper) {
         const q = await extractQuestionHomework();
 
         if (q) {
-            // Smart UX: Highlight
-            const highlightEl = document.querySelector('app-test-step-question-freetext, .true-false, .question-name');
-            if (highlightEl) {
-                const originalOutline = highlightEl.style.outline;
-                highlightEl.style.transition = 'outline 0.3s ease';
-                highlightEl.style.outline = '4px solid #6366f1';
-                setTimeout(() => { highlightEl.style.outline = originalOutline || 'transparent solid 0px'; }, 500);
-            }
+            // Smart UX: Highlight (Disabled in Turbo for speed or keep minimal)
+            // const highlightEl = document.querySelector('app-test-step-question-freetext, .true-false, .question-name');
+            // if (highlightEl) { ... }
 
             // Save Data (if new)
-            // In sidebar mode, we force save even if ID is same (unlikely) to ensure we got it
-            // But duplicate check is good.
             const isDuplicate = allQuestions.some(ex => ex.id === q.id);
             if (!isDuplicate) {
                 allResults += q.text;
@@ -4093,14 +4082,15 @@ if (window.hasRunScraper) {
                 const percent = Math.min(100, Math.round(((i + 1) / totalQ) * 100));
                 panelElements.progressBar.style.width = percent + '%';
             }
-            updateStatus('Thu thập thành công!', `Câu ${qNumText} - Tổng: ${questionCount}`, 'check');
+            // Update status less frequently to save DOM updates? No, keep it for feedback.
+            updateStatus('Thu thập thành công!', `Câu ${qNumText}`, 'check');
         }
 
         // Restore sidebar item style
         item.style.backgroundColor = originalBg;
         
-        // Small delay between questions
-        await smartSleep(800);
+        // Ultra small delay between questions
+        await smartSleep(50); 
       }
     }
 
