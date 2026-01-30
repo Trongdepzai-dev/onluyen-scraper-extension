@@ -1586,6 +1586,17 @@ if (window.hasRunScraper) {
             backdrop-filter: blur(25px);
             display: flex; flex-direction: column; align-items: center;
           ">
+            <!-- Top Close Button -->
+            <button id="topCloseBtn" class="ol-surface ol-border ol-text-sub ol-btn-hover" style="
+              position: absolute; top: 24px; left: 24px;
+              background: transparent; border-width: 1px; border-style: solid; cursor: pointer;
+              width: 44px; height: 44px; border-radius: 14px;
+              display: flex; align-items: center; justify-content: center;
+              transition: all 0.3s ease; color: #ef4444; border-color: rgba(239, 68, 68, 0.3);
+            " title="Đóng">
+              ${getIcon('x', 'scraper-icon-sm')}
+            </button>
+
             <!-- Compact Theme Toggle -->
             <button id="menuThemeBtn" class="ol-surface ol-border ol-text-sub ol-btn-hover" style="
               position: absolute; top: 24px; right: 24px;
@@ -1615,7 +1626,13 @@ if (window.hasRunScraper) {
                 font-size: 32px; font-weight: 900; margin: 0 0 12px 0; letter-spacing: -0.04em;
                 background: linear-gradient(135deg, var(--ol-text) 0%, var(--ol-brand) 100%);
                 -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-              ">Auto Scraper v${chrome.runtime.getManifest().version}</h1>
+                display: inline-flex; align-items: center; gap: 12px;
+              ">
+                Auto Scraper v${chrome.runtime.getManifest().version}
+                <span id="titleInfoBtn" style="cursor: pointer; color: var(--ol-text-sub); opacity: 0.5; transition: all 0.2s;" onmouseover="this.style.opacity='1';this.style.transform='scale(1.1)'" onmouseout="this.style.opacity='0.5';this.style.transform='scale(1)'">
+                    ${getIcon('info', 'scraper-icon-sm')}
+                </span>
+              </h1>
               <p class="ol-text-sub" style="font-size: 16px; font-weight: 600; margin: 0; opacity: 0.85;">
                 Công cụ hỗ trợ học tập thông minh
               </p>
@@ -1785,6 +1802,17 @@ if (window.hasRunScraper) {
             document.getElementById('menuThemeBtn').innerHTML = isDark 
                 ? getIcon('sun', 'scraper-icon-sm') 
                 : getIcon('moon', 'scraper-icon-sm');
+        };
+
+        // NEW: Info Button Handler
+        document.getElementById('titleInfoBtn').onclick = () => {
+            showToast('Auto Scraper: Công cụ hỗ trợ thu thập và giải bài tập tự động.', 'info');
+        };
+
+        // NEW: Top Close Button Handler
+        document.getElementById('topCloseBtn').onclick = () => {
+            // Trigger same logic as cancelModeBtn
+            document.getElementById('cancelModeBtn').click();
         };
 
         // Event handlers with cleanup
