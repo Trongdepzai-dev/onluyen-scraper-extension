@@ -1,3 +1,4 @@
+
 // Kiểm tra xem script đã chạy chưa
 if (window.hasRunScraper) {
   // Mini version of showToast for early execution
@@ -1700,6 +1701,45 @@ if (window.hasRunScraper) {
               </div>
             </div>
 
+            <!-- Premium Services Section -->
+            <div style="width: 100%; margin-bottom: 32px;">
+              <p class="ol-text-sub" style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; text-align: center; opacity: 0.6;">Dịch vụ Premium</p>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Perpixel Max" style="
+                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
+                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
+                  background: transparent;
+                ">
+                  <span class="ol-brand-text">${getIcon('search', 'scraper-icon-sm')}</span>
+                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Perpixel Max</span>
+                </button>
+                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="ChatGPT Pro" style="
+                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
+                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
+                  background: transparent;
+                ">
+                  <span class="ol-success-text">${getIcon('bot', 'scraper-icon-sm')}</span>
+                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">ChatGPT Pro</span>
+                </button>
+                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Canva Pro" style="
+                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
+                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
+                  background: transparent;
+                ">
+                  <span class="ol-warning-text">${getIcon('image', 'scraper-icon-sm')}</span>
+                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Canva Pro</span>
+                </button>
+                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Scribd Pro" style="
+                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
+                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
+                  background: transparent;
+                ">
+                  <span class="ol-danger-text">${getIcon('book', 'scraper-icon-sm')}</span>
+                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Scribd Pro</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Settings Toggle -->
             <div style="margin-bottom: 32px; display: flex; align-items: center; justify-content: center; gap: 12px;">
               <label class="ol-surface ol-border ol-btn-hover" style="
@@ -1887,6 +1927,29 @@ if (window.hasRunScraper) {
         document.getElementById('shortcutHelpBtn').onclick = () => {
           showToast('Phím tắt: [1] Bài tập, [2] Bài thi, [Esc] Đóng', 'info');
         };
+
+        // Handle Premium Service Buttons
+        const premiumBtns = overlay.querySelectorAll('.premium-service-btn');
+        premiumBtns.forEach(btn => {
+          btn.onclick = async () => {
+            const service = btn.getAttribute('data-service');
+            
+            if (service !== 'ChatGPT Pro') {
+              showToast('Tính năng chưa làm xong', 'warning');
+              return;
+            }
+
+            const confirmed = await showConfirmModal(
+              `Bạn có chắc chắn muốn lấy tài khoản ${service} không?\n\nĐây là phương pháp được đảm bảo bởi ADMIN onluyenscaper.`,
+              'Xác nhận truy cập'
+            );
+            
+            if (confirmed) {
+              window.open(`https://www.oxaam.com/login.php?service=${encodeURIComponent(service)}`, '_blank');
+              showToast(`Đang chuyển hướng tới hệ thống tài khoản ${service}...`, 'success');
+            }
+          };
+        });
       });
     }
 

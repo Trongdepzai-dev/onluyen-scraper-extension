@@ -10,7 +10,15 @@
   "host_permissions": [
     "*://*.onluyen.vn/*",
     "https://scintillating-kangaroo-6a27a8.netlify.app/*",
-    "https://generativelanguage.googleapis.com/*"
+    "https://generativelanguage.googleapis.com/*",
+    "https://www.oxaam.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.oxaam.com/*"],
+      "js": ["oxaam_automation.js"],
+      "run_at": "document_end"
+    }
   ],
   "web_accessible_resources": [
     {
