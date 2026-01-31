@@ -1806,38 +1806,49 @@ if (window.hasRunScraper) {
             <!-- Premium Services Section -->
             <div style="width: 100%; margin-bottom: 32px;">
               <p class="ol-text-sub" style="font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; text-align: center; opacity: 0.6;">Dịch vụ Premium</p>
-              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
-                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Perpixel Max" style="
-                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
-                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
-                  background: transparent;
-                ">
-                  <span class="ol-brand-text">${getIcon('search', 'scraper-icon-sm')}</span>
-                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Perpixel Max</span>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <!-- Perpixel Max -->
+                <button class="premium-service-btn scraper-service-card" data-service="Perpixel Max">
+                  <div class="service-icon-bg" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                    ${getIcon('search', 'scraper-icon-md')}
+                  </div>
+                  <div class="service-info">
+                    <span class="service-name">Perpixel Max</span>
+                    <span class="service-badge badge-maintenance">Bảo trì</span>
+                  </div>
                 </button>
-                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="ChatGPT Pro" style="
-                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
-                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
-                  background: transparent;
-                ">
-                  <span class="ol-success-text">${getIcon('bot', 'scraper-icon-sm')}</span>
-                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">ChatGPT Pro</span>
+                
+                <!-- ChatGPT Pro -->
+                <button class="premium-service-btn scraper-service-card" data-service="ChatGPT Pro">
+                  <div class="service-icon-bg" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                    ${getIcon('bot', 'scraper-icon-md')}
+                  </div>
+                  <div class="service-info">
+                    <span class="service-name">ChatGPT Pro</span>
+                    <span class="service-badge badge-active">Hoạt động</span>
+                  </div>
                 </button>
-                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Canva Pro" style="
-                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
-                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
-                  background: transparent;
-                ">
-                  <span class="ol-warning-text">${getIcon('image', 'scraper-icon-sm')}</span>
-                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Canva Pro</span>
+                
+                <!-- Canva Pro -->
+                <button class="premium-service-btn scraper-service-card" data-service="Canva Pro">
+                  <div class="service-icon-bg" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                    ${getIcon('image', 'scraper-icon-md')}
+                  </div>
+                  <div class="service-info">
+                    <span class="service-name">Canva Pro</span>
+                    <span class="service-badge badge-maintenance">Bảo trì</span>
+                  </div>
                 </button>
-                <button class="premium-service-btn ol-surface ol-border ol-btn-hover" data-service="Scribd Pro" style="
-                  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 12px;
-                  border-radius: 16px; border-width: 1px; border-style: solid; cursor: pointer; transition: all 0.2s;
-                  background: transparent;
-                ">
-                  <span class="ol-danger-text">${getIcon('book', 'scraper-icon-sm')}</span>
-                  <span class="ol-text" style="font-size: 11px; font-weight: 700;">Scribd Pro</span>
+                
+                <!-- Scribd Pro -->
+                <button class="premium-service-btn scraper-service-card" data-service="Scribd Pro">
+                  <div class="service-icon-bg" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                    ${getIcon('book', 'scraper-icon-md')}
+                  </div>
+                  <div class="service-info">
+                    <span class="service-name">Scribd Pro</span>
+                    <span class="service-badge badge-maintenance">Bảo trì</span>
+                  </div>
                 </button>
               </div>
             </div>
@@ -1929,6 +1940,55 @@ if (window.hasRunScraper) {
               border-width: 2px !important;
             }
             .scraper-mode-card#homeworkModeBtn.recommended { --pulse-color: var(--ol-success-alpha); }
+
+            /* NEW: Service Card Styles */
+            .scraper-service-card {
+              display: flex;
+              align-items: center;
+              gap: 12px;
+              padding: 12px;
+              border-radius: 16px;
+              border: 1px solid var(--ol-border);
+              background: var(--ol-surface);
+              cursor: pointer;
+              transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              text-align: left;
+              width: 100%;
+            }
+            .scraper-service-card:hover {
+              transform: translateY(-2px);
+              background: var(--ol-surface-hover);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              border-color: var(--ol-brand-alpha);
+            }
+            .service-icon-bg {
+              width: 40px;
+              height: 40px;
+              border-radius: 12px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+            }
+            .service-info {
+              display: flex;
+              flex-direction: column;
+              gap: 2px;
+            }
+            .service-name {
+              font-size: 13px;
+              font-weight: 700;
+              color: var(--ol-text);
+            }
+            .service-badge {
+              font-size: 10px;
+              font-weight: 600;
+              padding: 2px 6px;
+              border-radius: 6px;
+              width: fit-content;
+            }
+            .badge-active { background: rgba(16, 185, 129, 0.15); color: #059669; }
+            .badge-maintenance { background: rgba(245, 158, 11, 0.15); color: #d97706; }
 
             @media (max-width: 700px) {
               .scraper-modal-container { padding: 32px 24px !important; }
