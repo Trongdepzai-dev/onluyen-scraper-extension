@@ -119,7 +119,14 @@ if (window.hasRunScraper) {
           }
         });
     });
-    loadingObserver.observe(document.body, { childList: true, subtree: true });
+    
+    if (document.body) {
+        loadingObserver.observe(document.body, { childList: true, subtree: true });
+    } else {
+        window.addEventListener('DOMContentLoaded', () => {
+            loadingObserver.observe(document.body, { childList: true, subtree: true });
+        });
+    }
     // ------------------------------------------
 
     // ============================================================ 
@@ -518,11 +525,115 @@ if (window.hasRunScraper) {
     const styleEl = document.createElement('style');
     styleEl.textContent = THEME_STYLES;
     document.head.appendChild(styleEl);
+
+    // Hiển thị loading khởi tạo ngay lập tức (đã có đủ ICONS và Styles)
+    showInitialLoading();
+
     const getIcon = (name, className = '') => {
       const svg = ICONS[name] || '';
       if (!svg) return '';
       return svg.replace('<svg ', `<svg class="scraper-icon ${className}" `);
     };
+
+    // 🎯 INITIAL LOADING UI
+    function showInitialLoading() {
+      if (document.getElementById('scraper-initial-loader')) return;
+      
+      const loader = document.createElement('div');
+      loader.id = 'scraper-initial-loader';
+      // ... same styles ...
+      
+      const appendLoader = () => {
+          if (document.body) {
+              document.body.appendChild(loader);
+          } else {
+              setTimeout(appendLoader, 50);
+          }
+      };
+
+      Object.assign(loader.style, {
+        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+        background: '#0f172a', zIndex: '999999',
+        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", color: 'white',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+        overflow: 'hidden'
+      });
+      
+      loader.innerHTML = `
+        <style>
+          @keyframes loader-rocket-ultra {
+            0%, 100% { transform: translateY(0) rotate(-5deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(5deg) scale(1.05); }
+          }
+          @keyframes loader-trail {
+            0% { opacity: 0; transform: translateY(0) scale(0.5); }
+            50% { opacity: 0.5; transform: translateY(20px) scale(1.2); }
+            100% { opacity: 0; transform: translateY(40px) scale(0.8); }
+          }
+          @keyframes loader-pulse-glow {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.4); }
+          }
+          @keyframes loader-mesh-run {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(10%, 10%) rotate(5deg); }
+          }
+          @keyframes loader-progress-run {
+            0% { left: -100%; }
+            100% { left: 100%; }
+          }
+          .trail-particle {
+            position: absolute; width: 4px; height: 20px; background: linear-gradient(to bottom, #818cf8, transparent);
+            border-radius: 99px; animation: loader-trail 1s infinite; opacity: 0;
+          }
+        </style>
+        
+        <!-- Animated Mesh Background -->
+        <div style="position: absolute; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
+            <div style="position: absolute; top: -20%; left: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(79, 70, 229, 0.4) 0%, transparent 70%); animation: loader-mesh-run 15s infinite alternate ease-in-out;"></div>
+            <div style="position: absolute; bottom: -20%; right: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%); animation: loader-mesh-run 20s infinite alternate-reverse ease-in-out;"></div>
+        </div>
+
+        <div style="position: relative; margin-bottom: 60px; width: 160px; height: 160px;">
+            <!-- Glow Effect -->
+            <div style="position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; background: #4f46e5; border-radius: 50%; filter: blur(60px); animation: loader-pulse-glow 4s infinite ease-in-out;"></div>
+            
+            <!-- Rocket Container -->
+            <div style="position: relative; width: 100%; height: 100%; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 48px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); animation: loader-rocket-ultra 3s infinite ease-in-out; box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05);">
+                <div style="color: #818cf8; transform: scale(2.5); filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.6));">
+                    ${ICONS.rocket}
+                </div>
+                
+                <!-- Trail Particles -->
+                <div class="trail-particle" style="bottom: -10px; left: 30%; animation-delay: 0.1s;"></div>
+                <div class="trail-particle" style="bottom: -20px; left: 50%; animation-delay: 0.3s;"></div>
+                <div class="trail-particle" style="bottom: -15px; left: 70%; animation-delay: 0.5s;"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; z-index: 1;">
+            <h2 style="font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.04em; text-transform: uppercase; background: linear-gradient(135deg, #fff 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));">AUTO SCRAPER</h2>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px;">
+                <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; position: relative;">
+                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: #818cf8; border-radius: 99px; animation: loader-progress-run 1.5s infinite ease-in-out;"></div>
+                </div>
+                <p style="font-size: 16px; font-weight: 700; color: #94a3b8; margin: 0; letter-spacing: 0.02em;">Đang khởi tạo hệ thống...</p>
+            </div>
+        </div>
+      `;
+      appendLoader();
+    }
+
+    function hideInitialLoading() {
+      const loader = document.getElementById('scraper-initial-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        loader.style.filter = 'blur(20px)';
+        loader.style.transform = 'scale(1.1)';
+        setTimeout(() => loader.remove(), 600);
+      }
+    }
     
     let allResults = "";
     let allResultsAI = "";
@@ -2003,6 +2114,9 @@ if (window.hasRunScraper) {
         `;
 
         document.body.appendChild(overlay);
+
+        // Ẩn màn hình loading khởi tạo khi bảng chính đã hiện ra
+        hideInitialLoading();
 
         // Keyboard Shortcuts
         const handleKeyDown = (e) => {
