@@ -1,0 +1,43 @@
+name: Auto Release Notes (Conventional Commits)
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        run: |
+          PREV_TAG=$(git tag --sort=-creatordate | sed -n '2p')
+          CURR_TAG=$(git tag --sort=-creatordate | sed -n '1p')
+
+          echo "## 🚀 What's New" > CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+          echo "### ✨ Features" >> CHANGELOG.md
+          git log $PREV_TAG..$CURR_TAG --pretty=format:"- %s" | grep "^feat" || true >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+          echo "### 🎨 UI / UX" >> CHANGELOG.md
+          git log $PREV_TAG..$CURR_TAG --pretty=format:"- %s" | grep "feat(ui)" || true >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+          echo "### 🐛 Fixes" >> CHANGELOG.md
+          git log $PREV_TAG..$CURR_TAG --pretty=format:"- %s" | grep "^fix" || true >> CHANGELOG.md
+
+          echo "" >> CHANGELOG.md
+          echo "### ⚙️ Other Changes" >> CHANGELOG.md
+          git log $PREV_TAG..$CURR_TAG --pretty=format:"- %s" | grep -E "^(perf|refactor|chore)" || true >> CHANGELOG.md
+
+      - name: Publish release notes
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG.md
