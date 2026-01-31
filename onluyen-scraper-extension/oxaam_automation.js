@@ -153,63 +153,95 @@
                 const style = document.createElement('style');
                 style.id = 'oxaam-styles';
                 style.innerHTML = `
-                    @keyframes oxaam-entry {
-                        0% { opacity: 0; transform: translateX(-50%) scale(0.9) translateY(20px); filter: blur(10px); }
-                        100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0); filter: blur(0); }
+                    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;800&display=swap');
+                    
+                    @keyframes oxaam-ultra-enter {
+                        0% { opacity: 0; transform: translateX(-50%) scale(0.85) translateY(60px) rotateX(-15deg); filter: blur(20px); }
+                        100% { opacity: 1; transform: translateX(-50%) scale(1) translateY(0) rotateX(0); filter: blur(0); }
                     }
+                    @keyframes mesh-float {
+                        0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+                        100% { transform: translate(5%, 10%) rotate(10deg) scale(1.05); }
+                    }
+                    @keyframes oxaam-shine {
+                        0% { transform: translateX(-100%) rotate(45deg); }
+                        100% { transform: translateX(200%) rotate(45deg); }
+                    }
+                    
+                    .oxaam-glass {
+                        background: rgba(255, 255, 255, 0.85) !important;
+                        backdrop-filter: blur(24px) saturate(180%) !important;
+                        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+                    }
+                    
                     .oxaam-field {
-                        background: #f8fafc;
-                        padding: 14px;
-                        border-radius: 16px;
-                        margin-bottom: 12px;
+                        background: rgba(249, 250, 251, 0.6);
+                        padding: 18px 20px;
+                        border-radius: 24px;
+                        margin-bottom: 16px;
                         text-align: left;
-                        border: 1px solid #f1f5f9;
-                        transition: all 0.2s;
+                        border: 1.5px solid #f1f5f9;
+                        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
                         position: relative;
                         overflow: hidden;
                     }
                     .oxaam-field:hover {
-                        border-color: #e2e8f0;
-                        background: #f1f5f9;
+                        border-color: #6366f1;
+                        background: #ffffff;
+                        box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.15);
+                        transform: translateY(-2px);
                     }
+                    
                     .oxaam-copy-mini {
                         position: absolute;
-                        right: 8px;
+                        right: 12px;
                         top: 50%;
                         transform: translateY(-50%);
-                        padding: 6px 12px;
-                        background: white;
-                        border: 1px solid #e2e8f0;
-                        border-radius: 8px;
-                        font-size: 11px;
-                        font-weight: 700;
+                        width: 44px;
+                        height: 44px;
+                        background: #ffffff;
+                        border: 1.5px solid #f1f5f9;
+                        border-radius: 14px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
                         color: #6366f1;
                         cursor: pointer;
                         opacity: 0;
-                        transition: all 0.2s;
+                        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
                     }
                     .oxaam-field:hover .oxaam-copy-mini {
                         opacity: 1;
                     }
+                    .oxaam-copy-mini:hover {
+                        background: #6366f1;
+                        color: white;
+                        border-color: #6366f1;
+                        transform: translateY(-50%) scale(1.1);
+                    }
+                    
                     .oxaam-btn-primary {
-                        flex: 2; padding: 14px; background: #6366f1; color: white; border: none; 
-                        border-radius: 16px; cursor: pointer; font-weight: 700; font-size: 14px;
-                        transition: all 0.2s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+                        flex: 2; padding: 18px; 
+                        background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); 
+                        color: white; border: none; border-radius: 20px; cursor: pointer; 
+                        font-weight: 800; font-size: 15px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+                        box-shadow: 0 8px 24px -6px rgba(99, 102, 241, 0.5);
+                        position: relative; overflow: hidden;
+                        display: flex; align-items: center; justify-content: center; gap: 10px;
                     }
                     .oxaam-btn-primary:hover {
-                        background: #4f46e5;
-                        transform: translateY(-1px);
-                        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+                        transform: translateY(-3px);
+                        box-shadow: 0 12px 30px -8px rgba(99, 102, 241, 0.6);
                     }
+                    .oxaam-btn-primary:active { transform: translateY(-1px); }
+                    
                     .oxaam-btn-secondary {
-                        flex: 1; padding: 14px; background: #f1f5f9; color: #64748b; border: none; 
-                        border-radius: 16px; cursor: pointer; font-weight: 700; font-size: 14px;
+                        flex: 1; padding: 18px; background: #f3f4f6; color: #4b5563; border: none; 
+                        border-radius: 20px; cursor: pointer; font-weight: 700; font-size: 15px;
                         transition: all 0.2s;
                     }
-                    .oxaam-btn-secondary:hover {
-                        background: #e2e8f0;
-                        color: #475569;
-                    }
+                    .oxaam-btn-secondary:hover { background: #e5e7eb; color: #111827; }
                 `;
                 document.head.appendChild(style);
             }
@@ -218,58 +250,217 @@
             overlay.id = 'oxaam-scraper-overlay';
             Object.assign(overlay.style, {
                 position: 'fixed', top: '100px', left: '50%', transform: 'translateX(-50%)',
-                zIndex: '2147483647', background: 'white',
-                padding: '0', borderRadius: '28px', boxShadow: '0 30px 60px -12px rgba(0,0,0,0.3)',
-                border: '1px solid rgba(229, 231, 235, 0.5)',
-                fontFamily: "'Inter', sans-serif", width: '400px', 
+                zIndex: '2147483647',
+                padding: '0', borderRadius: '32px', boxShadow: '0 40px 100px -20px rgba(0,0,0,0.35)',
+                border: '1.5px solid rgba(255, 255, 255, 0.4)',
+                fontFamily: "'Inter', system-ui, -apple-system, sans-serif", width: '420px', 
                 textAlign: 'center', overflow: 'hidden',
-                animation: 'oxaam-entry 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                animation: 'oxaam-ultra-enter 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards'
             });
+            overlay.classList.add('oxaam-glass');
+
+            const meshBg = `
+                <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -1; pointer-events: none; opacity: 0.15;
+                    background: radial-gradient(circle at 30% 20%, #6366f1 0%, transparent 40%),
+                                radial-gradient(circle at 70% 60%, #10b981 0%, transparent 40%),
+                                radial-gradient(circle at 40% 90%, #f59e0b 0%, transparent 40%);
+                    animation: mesh-float 20s infinite alternate ease-in-out;">
+                </div>
+            `;
+
+            const iconCopy = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+            const iconCheck = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+            const iconShield = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
+            const iconLink = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
 
             const htmlContent = `
-                <div id="oxaam-drag-handle" style="background: #6366f1; padding: 20px; cursor: move; color: white; font-weight: 800; font-size: 16px; display: flex; align-items: center; justify-content: space-between;">
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span>Tài Khoản ${service || 'Premium'}</span>
+                ${meshBg}
+                <div id="oxaam-drag-handle" style="padding: 28px; cursor: move; color: #1e293b; display: flex; align-items: center; justify-content: space-between; border-bottom: 1.5px solid rgba(229, 231, 235, 0.4);">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="background: #6366f1; color: white; padding: 10px; border-radius: 16px; box-shadow: 0 8px 16px -4px rgba(99, 102, 241, 0.4);">
+                            ${iconShield}
+                        </div>
+                        <div style="text-align: left;">
+                            <span style="display: block; font-weight: 800; font-size: 19px; letter-spacing: -0.6px; color: #111827;">Tài Khoản ${service || 'Premium'}</span>
+                            <span style="font-size: 11px; font-weight: 700; color: #6366f1; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.8;">Hệ thống an toàn</span>
+                        </div>
                     </div>
-                    <div style="opacity: 0.5; font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;">ID: OX-$(Math.floor(Math.random()*999))</div>
                 </div>
-                <div style="padding: 28px;">
+                
+                <div style="padding: 32px;">
+                    <!-- Email Field -->
                     <div class="oxaam-field">
-                        <p style="margin: 0; font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Email đăng nhập</p>
-                        <p id="oxaam-email-text" style="margin: 6px 0 0 0; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #1e293b; word-break: break-all; font-weight: 700;">${email}</p>
-                        <button class="oxaam-copy-mini" onclick="navigator.clipboard.writeText('${email}'); this.innerText='OK!'; setTimeout(()=>this.innerText='Copy', 1000)">Copy</button>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; opacity: 0.6;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #111827;">Email đăng nhập</span>
+                        </div>
+                        <div style="padding-right: 50px;">
+                            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #111827; word-break: break-all; font-weight: 800; line-height: 1.3;">${email}</p>
+                        </div>
+                        <button class="oxaam-copy-mini" title="Copy Email" onclick="navigator.clipboard.writeText('${email}'); this.innerHTML='${iconCheck}'; this.style.background='#10b981'; this.style.color='white'; setTimeout(()=>{this.innerHTML='${iconCopy}'; this.style.background='#ffffff'; this.style.color='#6366f1'}, 1500)">
+                            ${iconCopy}
+                        </button>
                     </div>
                     
+                    <!-- Password Field -->
                     <div class="oxaam-field">
-                        <p style="margin: 0; font-size: 10px; color: #94a3b8; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Mật khẩu / OTP</p>
-                        <p id="oxaam-pass-text" style="margin: 6px 0 0 0; font-family: 'JetBrains Mono', monospace; font-size: 15px; color: #1e293b; word-break: break-all; font-weight: 700;">${password}</p>
-                        <button class="oxaam-copy-mini" onclick="navigator.clipboard.writeText('${password}'); this.innerText='OK!'; setTimeout(()=>this.innerText='Copy', 1000)">Copy</button>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px; opacity: 0.6;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111827" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #111827;">Mật khẩu / OTP</span>
+                        </div>
+                        <div style="padding-right: 50px;">
+                            <p style="margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 16px; color: #111827; word-break: break-all; font-weight: 800; line-height: 1.3;">${password}</p>
+                        </div>
+                        <button class="oxaam-copy-mini" title="Copy Mật khẩu" onclick="navigator.clipboard.writeText('${password}'); this.innerHTML='${iconCheck}'; this.style.background='#10b981'; this.style.color='white'; setTimeout(()=>{this.innerHTML='${iconCopy}'; this.style.background='#ffffff'; this.style.color='#6366f1'}, 1500)">
+                            ${iconCopy}
+                        </button>
                     </div>
 
+                    <!-- OTP Link Section -->
                     ${authLink ? `
-                    <div style="background: #fff1f2; padding: 16px; border-radius: 20px; margin-bottom: 24px; text-align: left; border: 1px solid #ffe4e6;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                            <p style="margin: 0; font-size: 10px; color: #e11d48; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;">Link Lấy Mã Xác Thực (OTP)</p>
+                    <div style="background: rgba(239, 68, 68, 0.05); padding: 22px; border-radius: 28px; margin-bottom: 32px; text-align: left; border: 1.5px solid rgba(239, 68, 68, 0.15); position: relative;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                            <div style="background: #ef4444; color: white; padding: 6px; border-radius: 10px;">
+                                ${iconLink}
+                            </div>
+                            <span style="font-size: 12px; color: #ef4444; font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em;">Lấy Mã Xác Thực (OTP)</span>
                         </div>
-                        <a href="${authLink}" target="_blank" style="display: block; font-size: 13px; color: #e11d48; font-weight: 700; text-decoration: none; word-break: break-all; line-height: 1.4; padding: 4px; border-radius: 8px; background: rgba(225, 29, 72, 0.05);">
+                        <a href="${authLink}" target="_blank" style="display: block; font-size: 14px; color: #ef4444; font-weight: 800; text-decoration: none; word-break: break-all; line-height: 1.5; padding: 14px; border-radius: 18px; background: white; border: 1.5px solid rgba(239, 68, 68, 0.1); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05); transition: all 0.2s;">
                             ${authLink}
                         </a>
                     </div>
                     ` : ''}
 
-                    <div style="display: flex; gap: 12px;">
-                        <button id="oxaam-copy-btn" class="oxaam-btn-primary">Copy Toàn Bộ</button>
+                    <!-- Buttons Section -->
+                    <div style="display: flex; gap: 14px;">
+                        <button id="oxaam-copy-btn" class="oxaam-btn-primary">
+                            ${iconCopy} Copy Toàn Bộ
+                        </button>
                         <button id="oxaam-close-btn" class="oxaam-btn-secondary">Đóng</button>
                     </div>
                     
-                    <div style="margin-top: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; opacity: 0.7;">
-                        <div style="width: 6px; height: 6px; background: #10b981; border-radius: 50%;"></div>
-                        <p style="margin: 0; font-size: 11px; color: #64748b; font-weight: 700;">Đảm bảo bởi <span style="color: #6366f1;">ADMIN onluyenscraper</span></p>
+                    <!-- Footer -->
+                    <div style="margin-top: 32px; display: flex; align-items: center; justify-content: center; gap: 10px; opacity: 0.8;">
+                        <div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; box-shadow: 0 0 12px #10b981;"></div>
+                        <p style="margin: 0; font-size: 12px; color: #4b5563; font-weight: 700;">Đảm bảo bởi <span style="color: #6366f1; font-weight: 800;">ADMIN onluyenscraper</span></p>
                     </div>
                 </div>
             `;
+
+            overlay.innerHTML = htmlContent;
+            document.body.appendChild(overlay);
+
+            document.getElementById('oxaam-copy-btn').onclick = function() {
+                var text = 'Email: ' + email + '\nPassword: ' + password + (authLink ? '\nLink xác thực: ' + authLink : '');
+                navigator.clipboard.writeText(text);
+                var btn = document.getElementById('oxaam-copy-btn');
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = iconCheck + ' Đã Copy Thành Công!';
+                btn.style.background = '#10b981';
+                btn.style.boxShadow = '0 8px 24px -6px rgba(16, 185, 129, 0.5)';
+                setTimeout(function() {
+                    btn.innerHTML = originalHTML;
+                    btn.style.background = 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)';
+                    btn.style.boxShadow = '0 8px 24px -6px rgba(99, 102, 241, 0.5)';
+                }, 2000);
+            };
+
+            document.getElementById('oxaam-close-btn').onclick = function() { 
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'translateX(-50%) scale(0.9) translateY(40px)';
+                overlay.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+                setTimeout(() => overlay.remove(), 400);
+            };
+
+            var dragHandle = document.getElementById('oxaam-drag-handle');
+            var isDragging = false;
+            var currentX;
+            var currentY;
+            var initialX;
+            var initialY;
+            var xOffset = 0;
+            var yOffset = 0;
+
+            dragHandle.onmousedown = function(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                if (e.target === dragHandle || dragHandle.contains(e.target)) {
+                    isDragging = true;
+                    overlay.style.transition = 'none';
+                }
+            };
+
+            document.onmousemove = function(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    overlay.style.transform = 'translate(calc(-50% + ' + currentX + 'px), ' + currentY + 'px)';
+                }
+            };
+
+            document.onmouseup = function() {
+                isDragging = false;
+            };
+        };
+
+            overlay.innerHTML = htmlContent;
+            document.body.appendChild(overlay);
+
+            document.getElementById('oxaam-copy-btn').onclick = function() {
+                var text = 'Email: ' + email + '\nPassword: ' + password + (authLink ? '\nLink xác thực: ' + authLink : '');
+                navigator.clipboard.writeText(text);
+                var btn = document.getElementById('oxaam-copy-btn');
+                btn.innerText = 'ĐÃ COPY THÀNH CÔNG!';
+                btn.style.background = '#10b981';
+                setTimeout(function() {
+                    btn.innerText = 'Copy Toàn Bộ';
+                    btn.style.background = 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)';
+                }, 2000);
+            };
+
+            document.getElementById('oxaam-close-btn').onclick = function() { 
+                overlay.style.opacity = '0';
+                overlay.style.transform = 'translateX(-50%) scale(0.9) translateY(40px)';
+                overlay.style.transition = 'all 0.4s cubic-bezier(0.2, 1, 0.2, 1)';
+                setTimeout(() => overlay.remove(), 400);
+            };
+
+            var dragHandle = document.getElementById('oxaam-drag-handle');
+            var isDragging = false;
+            var currentX;
+            var currentY;
+            var initialX;
+            var initialY;
+            var xOffset = 0;
+            var yOffset = 0;
+
+            dragHandle.onmousedown = function(e) {
+                initialX = e.clientX - xOffset;
+                initialY = e.clientY - yOffset;
+                if (e.target === dragHandle || dragHandle.contains(e.target)) {
+                    isDragging = true;
+                    overlay.style.transition = 'none';
+                }
+            };
+
+            document.onmousemove = function(e) {
+                if (isDragging) {
+                    e.preventDefault();
+                    currentX = e.clientX - initialX;
+                    currentY = e.clientY - initialY;
+                    xOffset = currentX;
+                    yOffset = currentY;
+                    overlay.style.transform = 'translate(calc(-50% + ' + currentX + 'px), ' + currentY + 'px)';
+                }
+            };
+
+            document.onmouseup = function() {
+                isDragging = false;
+            };
+        };
 
             overlay.innerHTML = htmlContent;
             document.body.appendChild(overlay);
