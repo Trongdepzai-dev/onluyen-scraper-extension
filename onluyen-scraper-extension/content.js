@@ -410,6 +410,108 @@ if (window.hasRunScraper) {
       .q-content-area .ol-table-wrapper {
         white-space: normal;
       }
+
+      /* AI Chat Enhancements */
+      .ai-think-block {
+        background: rgba(99, 102, 241, 0.05);
+        border: 1px solid rgba(99, 102, 241, 0.1);
+        border-radius: 12px;
+        margin: 12px 0;
+        overflow: hidden;
+      }
+      .ai-think-summary {
+        padding: 8px 12px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--ol-text-sub);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+        transition: background 0.2s;
+      }
+      .ai-think-summary:hover {
+        background: rgba(99, 102, 241, 0.05);
+      }
+      .ai-think-content {
+        padding: 12px;
+        border-top: 1px solid rgba(99, 102, 241, 0.1);
+        font-size: 13px;
+        color: var(--ol-text-sub);
+        background: rgba(99, 102, 241, 0.02);
+        line-height: 1.6;
+      }
+      
+      .code-block-wrapper {
+        border-radius: 12px;
+        border: 1px solid var(--ol-border);
+        overflow: hidden;
+        margin: 16px 0;
+        background: #1e293b;
+      }
+      .code-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .code-lang {
+        font-size: 11px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+      }
+      .code-copy-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 11px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all 0.2s;
+      }
+      .code-copy-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: #f1f5f9;
+      }
+      .chat-msg-content pre {
+        margin: 0 !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        padding: 16px !important;
+      }
+
+      .ai-tool-block {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: var(--ol-surface);
+        border: 1px solid var(--ol-border);
+        border-radius: 12px;
+        margin: 12px 0;
+        font-size: 13px;
+        color: var(--ol-text);
+        box-shadow: 0 2px 5px var(--ol-shadow);
+      }
+      .ai-tool-icon {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ol-brand-bg);
+        color: var(--ol-brand);
+        border-radius: 8px;
+      }
     `;
 
     // Inject Styles
@@ -3076,9 +3178,9 @@ if (window.hasRunScraper) {
       const isReady = (el) => {
         if (!el || el.disabled || el.classList.contains('disabled')) return false;
         
-        // KIỂM TRA BLACKLIST: Không bao giờ bấm nút "Nộp bài"
+        // KIỂM TRA BLACKLIST: Không bao giờ bấm nút "Nộp bài" hoặc "Kết thúc"
         const text = (el.textContent || '').trim().toLowerCase();
-        if (text.includes('nộp bài') || text.includes('nop bai')) {
+        if (text.includes('nộp bài') || text.includes('nop bai') || text === 'kết thúc') {
           return false;
         }
 
@@ -4313,12 +4415,14 @@ if (window.hasRunScraper) {
           // 🆕 FEATURE: Confirmation Modal if "Kết thúc" button is found
           const scraperSettings = getScraperSettings();
           if (scraperSettings.autoStopAtEnd) {
-            const potentialFinishBtns = document.querySelectorAll('button.btn, div.btn');
+            // Enhanced selector: include generic btn and specific classes from user feedback
+            const potentialFinishBtns = document.querySelectorAll('button.btn, div.btn, .btn-block.btn-gray.btn-primary');
             let foundFinish = false;
             for (const btn of potentialFinishBtns) {
-              if (btn.offsetParent !== null && !btn.disabled) {
+              if (btn.offsetParent !== null && !btn.disabled && !btn.classList.contains('disabled')) {
                 const txt = (btn.textContent || '').trim();
-                if (txt === 'Kết thúc') {
+                // Check exact match or if it contains the text (for cases with icons/extra whitespace)
+                if (txt === 'Kết thúc' || txt.includes('Kết thúc')) {
                   foundFinish = true;
                   break;
                 }
@@ -4626,15 +4730,38 @@ if (window.hasRunScraper) {
 
                         // Enhanced Markdown formatter
                         const formatMessage = (text) => {
+                            let safeText = text;
+
+                            // 0. Handle Thinking Blocks (<think>...</think>)
+                            safeText = safeText.replace(/<think>([\s\S]*?)<\/think>/gi, (match, content) => {
+                                return `<details class="ai-think-block" open>
+                                    <summary class="ai-think-summary">${getIcon('brain', 'scraper-icon-xs')} Thinking Process</summary>
+                                    <div class="ai-think-content">${marked.parse(content)}</div>
+                                </details>`;
+                            });
+
+                            // 0.1 Handle Tool Blocks ([[TOOL: name args]])
+                            safeText = safeText.replace(/\[\[TOOL:\s*(\w+)\s+(.*?)\]\]/g, (match, toolName, args) => {
+                                let icon = 'zap';
+                                if (toolName.toLowerCase().includes('search')) icon = 'search';
+                                if (toolName.toLowerCase().includes('calc')) icon = 'calculator';
+                                return `<div class="ai-tool-block">
+                                    <div class="ai-tool-icon">${getIcon(icon, 'scraper-icon-sm')}</div>
+                                    <div>
+                                        <div style="font-weight: 700; font-size: 11px; color: var(--ol-brand); text-transform: uppercase;">USED TOOL: ${toolName}</div>
+                                        <div style="font-family: monospace; opacity: 0.8;">${escapeHTML(args)}</div>
+                                    </div>
+                                </div>`;
+                            });
+
                             // 1. Protect LaTeX math
                             const mathBlocks = [];
-                            let safeText = text.replace(/(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\\)\$[\s\S]*?(?<!\\)\$)/g, (match) => {
+                            safeText = safeText.replace(/(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?<!\\)\$[\s\S]*?(?<!\\)\$)/g, (match) => {
                                 mathBlocks.push(match);
                                 return `__MATH_BLOCK_${mathBlocks.length - 1}__`;
                             });
 
-                            // 2. Custom Extensions
-                            // Smart Badge
+                            // 2. Custom Extensions (Smart Badge)
                             safeText = safeText.replace(/(?:📈|✅)?\s*ĐỘ TIN CẬY:\s*(\d+)%?\s*(?:🟢|🔵|🟡|🟠|🔴)?/gi, (match, score) => {
                                 const s = parseInt(score);
                                 let colorVar = '--ol-text-sub';
@@ -4657,6 +4784,25 @@ if (window.hasRunScraper) {
                                 safeText = safeText.replace(/\n/g, '<br>');
                             }
 
+                            // 3.1 Post-process Code Blocks for Copy Button
+                            safeText = safeText.replace(/<pre><code( class="language-([^"]+)")?>([\s\S]*?)<\/code><\/pre>/g, (match, classAttr, lang, codeContent) => {
+                                const language = lang || 'text';
+                                // Unescape HTML for the copy attribute
+                                const rawCode = codeContent.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"');
+                                const btnId = 'code-btn-' + Math.random().toString(36).substr(2, 9);
+                                
+                                // We add a global click handler later or inline onclick
+                                return `<div class="code-block-wrapper">
+                                    <div class="code-header">
+                                        <span class="code-lang">${language}</span>
+                                        <button class="code-copy-btn" onclick="navigator.clipboard.writeText(decodeURIComponent('${encodeURIComponent(rawCode)}')).then(() => { this.innerHTML = '${getIcon('check', 'scraper-icon-xs')} Copied!'; setTimeout(() => this.innerHTML = '${getIcon('copy', 'scraper-icon-xs')} Copy', 2000); })">
+                                            ${getIcon('copy', 'scraper-icon-xs')} Copy
+                                        </button>
+                                    </div>
+                                    <pre><code${classAttr || ''}>${codeContent}</code></pre>
+                                </div>`;
+                            });
+
                             // 4. Restore LaTeX
                             safeText = safeText.replace(/__MATH_BLOCK_(\d+)__/g, (match, index) => {
                                 return mathBlocks[parseInt(index)];
@@ -4667,11 +4813,13 @@ if (window.hasRunScraper) {
                             safeText = safeText.replace(/<h2>/g, '<h2 class="ol-text" style="font-size: 20px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px;">');
                             safeText = safeText.replace(/<h3>/g, '<h3 class="ol-text" style="font-size: 17px; font-weight: 600; margin: 16px 0 8px;">');
                             safeText = safeText.replace(/<hr>/g, '<hr class="ol-border" style="border: 0; border-top-width: 1px; border-top-style: solid; margin: 24px 0; opacity: 0.3;">');
-                            safeText = safeText.replace(/<table>/g, '<table class="ol-border" style="border-collapse: collapse; width: 100%; margin: 16px 0; border-width: 1px; border-style: solid; border-radius: 12px; overflow: hidden;">');
+                            safeText = safeText.replace(/<table>/g, '<div class="ol-table-wrapper"><table class="ol-border" style="border-collapse: collapse; width: 100%; margin: 0; border-width: 1px; border-style: solid; border-radius: 12px; overflow: hidden;">');
+                            safeText = safeText.replace(/<\/table>/g, '</table></div>');
                             safeText = safeText.replace(/<th>/g, '<th class="ol-bg ol-border" style="padding: 12px; text-align: left; border-bottom: 1px solid var(--ol-border); font-weight: 700;">');
                             safeText = safeText.replace(/<td>/g, '<td class="ol-border" style="padding: 8px 12px; border-width: 1px; border-style: solid;">');
-                            safeText = safeText.replace(/<pre>/g, '<pre class="ol-text ol-surface ol-border" style="padding: 16px; margin: 16px 0; overflow-x: auto; font-family: \'JetBrains Mono\', monospace; font-size: 13px; line-height: 1.5; border-radius: 12px; border-width: 1px; border-style: solid; box-shadow: 0 4px 12px var(--ol-shadow);">');
-                            safeText = safeText.replace(/<code>/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">');
+                            
+                            // <code> is handled by styles mostly, but let's ensure inline code is distinct from blocks
+                            safeText = safeText.replace(/<code(?! class)/g, '<code class="ol-brand-bg ol-brand-text" style="padding: 2px 6px; border-radius: 6px; font-family: monospace; font-size: 0.9em;">');
 
                             return safeText;
                         };
