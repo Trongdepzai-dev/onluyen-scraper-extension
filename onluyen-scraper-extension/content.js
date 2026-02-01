@@ -541,7 +541,6 @@ if (window.hasRunScraper) {
       
       const loader = document.createElement('div');
       loader.id = 'scraper-initial-loader';
-      // ... same styles ...
       
       const appendLoader = () => {
           if (document.body) {
@@ -560,65 +559,69 @@ if (window.hasRunScraper) {
         overflow: 'hidden'
       });
       
+      // Inline Rocket SVG to ensure it displays immediately
+      const rocketSvg = `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg>`;
+
       loader.innerHTML = `
         <style>
-          @keyframes loader-rocket-ultra {
+          @keyframes loader-spin-slow { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+          @keyframes loader-spin-fast { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+          @keyframes loader-rocket-float {
             0%, 100% { transform: translateY(0) rotate(-5deg) scale(1); }
-            50% { transform: translateY(-30px) rotate(5deg) scale(1.05); }
+            50% { transform: translateY(-15px) rotate(5deg) scale(1.1); }
           }
-          @keyframes loader-trail {
-            0% { opacity: 0; transform: translateY(0) scale(0.5); }
-            50% { opacity: 0.5; transform: translateY(20px) scale(1.2); }
-            100% { opacity: 0; transform: translateY(40px) scale(0.8); }
+          @keyframes loader-glow-pulse {
+            0%, 100% { opacity: 0.4; filter: blur(40px); transform: scale(1); }
+            50% { opacity: 0.8; filter: blur(60px); transform: scale(1.3); }
           }
-          @keyframes loader-pulse-glow {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.4); }
+          @keyframes loader-text-shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
           }
-          @keyframes loader-mesh-run {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(10%, 10%) rotate(5deg); }
+          .loader-mesh {
+            position: absolute; width: 100%; height: 100%; z-index: -1; opacity: 0.4;
           }
-          @keyframes loader-progress-run {
-            0% { left: -100%; }
-            100% { left: 100%; }
-          }
-          .trail-particle {
-            position: absolute; width: 4px; height: 20px; background: linear-gradient(to bottom, #818cf8, transparent);
-            border-radius: 99px; animation: loader-trail 1s infinite; opacity: 0;
+          .loader-ring {
+            position: absolute; border-radius: 50%; border: 2px solid transparent;
           }
         </style>
         
-        <!-- Animated Mesh Background -->
-        <div style="position: absolute; width: 100%; height: 100%; z-index: -1; pointer-events: none;">
-            <div style="position: absolute; top: -20%; left: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(79, 70, 229, 0.4) 0%, transparent 70%); animation: loader-mesh-run 15s infinite alternate ease-in-out;"></div>
-            <div style="position: absolute; bottom: -20%; right: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%); animation: loader-mesh-run 20s infinite alternate-reverse ease-in-out;"></div>
+        <!-- Premium Mesh Background -->
+        <div class="loader-mesh">
+            <div style="position: absolute; top: -10%; left: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(79, 70, 229, 0.4) 0%, transparent 70%); animation: loader-mesh-run 20s infinite alternate;"></div>
+            <div style="position: absolute; bottom: -10%; right: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%); animation: loader-mesh-run 25s infinite alternate-reverse;"></div>
         </div>
 
-        <div style="position: relative; margin-bottom: 60px; width: 160px; height: 160px;">
-            <!-- Glow Effect -->
-            <div style="position: absolute; top: 50%; left: 50%; width: 200px; height: 200px; background: #4f46e5; border-radius: 50%; filter: blur(60px); animation: loader-pulse-glow 4s infinite ease-in-out;"></div>
+        <div style="position: relative; width: 240px; height: 240px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px;">
+            <!-- Outer Glowing Background -->
+            <div style="position: absolute; width: 180px; height: 180px; background: #4f46e5; border-radius: 50%; animation: loader-glow-pulse 4s infinite ease-in-out;"></div>
             
-            <!-- Rocket Container -->
-            <div style="position: relative; width: 100%; height: 100%; background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.1); border-radius: 48px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); animation: loader-rocket-ultra 3s infinite ease-in-out; box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05);">
-                <div style="color: #818cf8; transform: scale(2.5); filter: drop-shadow(0 0 15px rgba(129, 140, 248, 0.6));">
-                    ${ICONS.rocket}
+            <!-- Rotating Rings -->
+            <div class="loader-ring" style="width: 220px; height: 220px; border-top-color: #6366f1; border-bottom-color: #6366f1; animation: loader-spin-slow 3s linear infinite; opacity: 0.5;"></div>
+            <div class="loader-ring" style="width: 190px; height: 180px; border-left-color: #10b981; border-right-color: #10b981; animation: loader-spin-fast 2s linear infinite; opacity: 0.8;"></div>
+            
+            <!-- Central Rocket Core -->
+            <div style="position: relative; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); animation: loader-rocket-float 3s infinite ease-in-out; box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);">
+                <div style="color: #818cf8; filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.8));">
+                    ${rocketSvg}
                 </div>
-                
-                <!-- Trail Particles -->
-                <div class="trail-particle" style="bottom: -10px; left: 30%; animation-delay: 0.1s;"></div>
-                <div class="trail-particle" style="bottom: -20px; left: 50%; animation-delay: 0.3s;"></div>
-                <div class="trail-particle" style="bottom: -15px; left: 70%; animation-delay: 0.5s;"></div>
             </div>
         </div>
 
-        <div style="text-align: center; z-index: 1;">
-            <h2 style="font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -0.04em; text-transform: uppercase; background: linear-gradient(135deg, #fff 0%, #818cf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));">AUTO SCRAPER</h2>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px;">
-                <div style="width: 40px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; overflow: hidden; position: relative;">
-                    <div style="position: absolute; top: 0; left: 0; height: 100%; width: 50%; background: #818cf8; border-radius: 99px; animation: loader-progress-run 1.5s infinite ease-in-out;"></div>
+        <div style="text-align: center; z-index: 10;">
+            <h2 style="font-size: 32px; font-weight: 900; margin: 0; letter-spacing: 0.1em; text-transform: uppercase; 
+                background: linear-gradient(90deg, #fff, #818cf8, #fff); background-size: 200% auto;
+                -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                animation: loader-text-shimmer 3s linear infinite;">
+                AUTO SCRAPER
+            </h2>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 16px; margin-top: 24px;">
+                <div style="width: 200px; height: 6px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="position: absolute; height: 100%; width: 40%; background: linear-gradient(90deg, transparent, #818cf8, transparent); border-radius: 99px; animation: loader-progress-run 1.5s infinite ease-in-out;"></div>
                 </div>
-                <p style="font-size: 16px; font-weight: 700; color: #94a3b8; margin: 0; letter-spacing: 0.02em;">Đang khởi tạo hệ thống...</p>
+                <p style="font-size: 14px; font-weight: 800; color: #94a3b8; margin: 0; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.8;">
+                    System Initializing...
+                </p>
             </div>
         </div>
       `;
