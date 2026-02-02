@@ -535,7 +535,7 @@ if (window.hasRunScraper) {
       return svg.replace('<svg ', `<svg class="scraper-icon ${className}" `);
     };
 
-    // 🎯 INITIAL LOADING UI (ULTRA V2)
+    // 🎯 INITIAL LOADING UI (LUMINOUS MODERN)
     function showInitialLoading() {
       if (document.getElementById('scraper-initial-loader')) return;
       
@@ -552,130 +552,160 @@ if (window.hasRunScraper) {
 
       Object.assign(loader.style, {
         position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
-        background: '#020617', zIndex: '2147483647', // Max z-index
+        background: '#0a0c14', zIndex: '2147483647',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-        fontFamily: "'Plus Jakarta Sans', 'Inter', sans-serif", color: 'white',
-        transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-        overflow: 'hidden',
-        perspective: '1000px'
+        fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: 'white',
+        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+        overflow: 'hidden'
       });
       
-      const rocketSvg = `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.5));"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg>`;
+      const rocketSvg = `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg>`;
 
       loader.innerHTML = `
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-          @keyframes ultra-spin-1 { 0% { transform: rotateX(70deg) rotateZ(0deg); } 100% { transform: rotateX(70deg) rotateZ(360deg); } }
-          @keyframes ultra-spin-2 { 0% { transform: rotateX(70deg) rotateZ(360deg); } 100% { transform: rotateX(70deg) rotateZ(0deg); } }
-          @keyframes ultra-spin-3 { 0% { transform: rotateY(70deg) rotateZ(0deg); } 100% { transform: rotateY(70deg) rotateZ(360deg); } }
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
           
-          @keyframes ultra-float {
-            0%, 100% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-15px) scale(1.05); }
-          }
-          
-          @keyframes ultra-pulse-glow {
-            0%, 100% { opacity: 0.3; transform: scale(1); filter: blur(60px); }
-            50% { opacity: 0.6; transform: scale(1.5); filter: blur(80px); }
+          .luminous-bg {
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0c14 100%);
+            z-index: -1;
           }
 
-          @keyframes ultra-text-shine {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 200% 50%; }
-          }
-          
-          @keyframes ultra-bar-progress {
-            0% { width: 0%; opacity: 1; }
-            50% { width: 70%; opacity: 1; }
-            100% { width: 100%; opacity: 0; }
+          .orb {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0.4;
+            animation: orb-float 20s ease-in-out infinite alternate;
           }
 
-          .ultra-ring {
-            position: absolute;
-            border-radius: 50%;
-            border: 1px solid transparent;
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.1), inset 0 0 20px rgba(99, 102, 241, 0.1);
+          @keyframes orb-float {
+            0% { transform: translate(-20%, -20%) scale(1); }
+            100% { transform: translate(20%, 20%) scale(1.2); }
           }
-          
-          .ultra-card {
+
+          .glass-card {
             background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(24px);
+            border-radius: 32px;
+            padding: 60px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: card-appear 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 1;
+          }
+
+          @keyframes card-appear {
+            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+          }
+
+          .rocket-container {
+            position: relative;
+            animation: rocket-pulse 3s ease-in-out infinite;
+          }
+
+          @keyframes rocket-pulse {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.05); filter: brightness(1.2); }
+          }
+
+          .rocket-glow {
+            position: absolute; inset: -20px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            z-index: -1;
+          }
+
+          .title-modern {
+            font-family: 'Inter', sans-serif;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+          }
+
+          .status-text {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #818cf8;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+
+          .loader-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 999px;
+            overflow: hidden;
+            position: relative;
+          }
+
+          .loader-progress {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #6366f1, #818cf8, transparent);
+            animation: progress-slide 1.5s infinite ease-in-out;
+          }
+
+          @keyframes progress-slide {
+            0% { left: -100%; }
+            100% { left: 100%; }
+          }
+
+          .version-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(99, 102, 241, 0.1);
+            color: #818cf8;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            margin-top: 8px;
           }
         </style>
         
-        <!-- Ambient Background Glows -->
-        <div style="position: absolute; width: 100%; height: 100%; overflow: hidden; z-index: -1;">
-            <div style="position: absolute; top: -20%; left: -20%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(99, 102, 241, 0.2) 0%, transparent 60%); animation: ultra-pulse-glow 8s infinite ease-in-out;"></div>
-            <div style="position: absolute; bottom: -20%; right: -20%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 60%); animation: ultra-pulse-glow 10s infinite ease-in-out reverse;"></div>
-        </div>
+        <div class="luminous-bg"></div>
+        <div class="orb" style="width: 400px; height: 400px; background: #4338ca; top: -10%; left: -10%;"></div>
+        <div class="orb" style="width: 300px; height: 300px; background: #6d28d9; bottom: -5%; right: -5%; animation-delay: -5s;"></div>
+        
+        <div class="glass-card">
+          <div class="rocket-container">
+            <div class="rocket-glow"></div>
+            ${rocketSvg}
+          </div>
+          
+          <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <h1 class="title-modern">ONLUYEN SCRAPER</h1>
+            <div class="version-badge">VERSION 4.0.0</div>
+          </div>
 
-        <!-- 3D Scene Container -->
-        <div style="position: relative; width: 300px; height: 300px; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; perspective: 1000px; margin-bottom: 30px;">
-            
-            <!-- 3D Orbital Rings -->
-            <div class="ultra-ring" style="width: 280px; height: 280px; border-top-color: rgba(99, 102, 241, 0.6); border-bottom-color: rgba(99, 102, 241, 0.2); animation: ultra-spin-1 8s linear infinite;"></div>
-            <div class="ultra-ring" style="width: 240px; height: 240px; border-top-color: rgba(168, 85, 247, 0.6); border-bottom-color: rgba(168, 85, 247, 0.2); animation: ultra-spin-2 6s linear infinite;"></div>
-            <div class="ultra-ring" style="width: 260px; height: 260px; border-left-color: rgba(6, 182, 212, 0.4); border-right-color: transparent; animation: ultra-spin-3 12s linear infinite;"></div>
-
-            <!-- Central Glass Card -->
-            <div class="ultra-card" style="
-                position: relative; 
-                width: 140px; height: 140px; 
-                border-radius: 40px; 
-                display: flex; align-items: center; justify-content: center;
-                animation: ultra-float 4s infinite ease-in-out;
-            ">
-                <!-- Inner Glow -->
-                <div style="position: absolute; inset: 0; border-radius: 40px; background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.1), transparent); pointer-events: none;"></div>
-                
-                <!-- Icon -->
-                <div style="color: #a5b4fc; transform: rotate(-5deg);">
-                    ${rocketSvg}
-                </div>
-            </div>
-        </div>
-
-        <!-- Typography & Status -->
-        <div style="text-align: center; z-index: 10; display: flex; flex-direction: column; align-items: center; gap: 16px;">
-            <div style="position: relative;">
-                <h2 style="
-                    font-size: 36px; font-weight: 800; margin: 0; letter-spacing: 0.05em;
-                    background: linear-gradient(90deg, #fff 0%, #a5b4fc 50%, #fff 100%); 
-                    background-size: 200% auto;
-                    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-                    animation: ultra-text-shine 4s linear infinite;
-                    filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
-                ">
-                    AUTO SCRAPER
-                </h2>
-                <div style="
-                    position: absolute; top: -10px; right: -30px; 
-                    background: linear-gradient(135deg, #6366f1, #a855f7);
-                    padding: 2px 8px; border-radius: 12px;
-                    font-size: 10px; font-weight: 800; letter-spacing: 0.1em;
-                    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-                ">AI</div>
-            </div>
-
-            <!-- Modern Progress Bar -->
-            <div style="width: 240px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; position: relative;">
-                <div style="
-                    position: absolute; top: 0; left: 0; height: 100%; width: 100%;
-                    background: linear-gradient(90deg, transparent, #6366f1, #a855f7, transparent);
-                    animation: ultra-bar-progress 2s ease-in-out infinite;
-                "></div>
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+            <div class="status-text">
+              <span style="width: 12px; height: 1px; background: currentColor; opacity: 0.5;"></span>
+              Initializing Engine
+              <span style="width: 12px; height: 1px; background: currentColor; opacity: 0.5;"></span>
             </div>
             
-            <p style="
-                font-size: 13px; font-weight: 600; color: #94a3b8; margin: 0; 
-                letter-spacing: 0.2em; text-transform: uppercase;
-                display: flex; align-items: center; gap: 8px;
-            ">
-                <span style="display: inline-block; width: 6px; height: 6px; background: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981;"></span>
-                System Initializing
-            </p>
+            <div class="loader-bar">
+              <div class="loader-progress"></div>
+            </div>
+          </div>
         </div>
       `;
       appendLoader();
@@ -685,9 +715,9 @@ if (window.hasRunScraper) {
       const loader = document.getElementById('scraper-initial-loader');
       if (loader) {
         loader.style.opacity = '0';
-        loader.style.filter = 'blur(20px)';
-        loader.style.transform = 'scale(1.1)';
-        setTimeout(() => loader.remove(), 600);
+        loader.style.filter = 'blur(40px)';
+        loader.style.transform = 'scale(1.05)';
+        setTimeout(() => loader.remove(), 800);
       }
     }
     
