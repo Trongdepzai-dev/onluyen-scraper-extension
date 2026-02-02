@@ -535,7 +535,7 @@ if (window.hasRunScraper) {
       return svg.replace('<svg ', `<svg class="scraper-icon ${className}" `);
     };
 
-    // 🎯 INITIAL LOADING UI (LUMINOUS MODERN)
+    // 🎯 INITIAL LOADING UI (LUMINOUS MODERN V4)
     function showInitialLoading() {
       if (document.getElementById('scraper-initial-loader')) return;
       
@@ -545,6 +545,7 @@ if (window.hasRunScraper) {
       const appendLoader = () => {
           if (document.body) {
               document.body.appendChild(loader);
+              initializeLoaderLogic();
           } else {
               setTimeout(appendLoader, 50);
           }
@@ -552,162 +553,615 @@ if (window.hasRunScraper) {
 
       Object.assign(loader.style, {
         position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
-        background: '#0a0c14', zIndex: '2147483647',
+        background: '#030014', zIndex: '2147483647',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: 'white',
         transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
-        overflow: 'hidden'
+        overflow: 'hidden', perspective: '1000px'
       });
       
-      const rocketSvg = `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.6));"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/><path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/></svg>`;
-
       loader.innerHTML = `
         <style>
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
           
-          .luminous-bg {
+          .mesh-bg {
             position: absolute; inset: 0;
-            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #0a0c14 100%);
-            z-index: -1;
+            background: 
+                radial-gradient(ellipse 80% 80% at 50% -20%, rgba(120, 119, 198, 0.3), transparent),
+                radial-gradient(ellipse 60% 60% at 100% 100%, rgba(79, 70, 229, 0.2), transparent),
+                radial-gradient(ellipse 40% 40% at 0% 100%, rgba(139, 92, 246, 0.15), transparent),
+                linear-gradient(180deg, #030014 0%, #0f0720 50%, #030014 100%);
+            z-index: -3;
+          }
+
+          .grid-bg {
+            position: absolute; inset: 0;
+            background-image: 
+                linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            mask-image: radial-gradient(ellipse 80% 50% at 50% 50%, black, transparent);
+            animation: grid-move 20s linear infinite;
+            z-index: -2;
+          }
+
+          @keyframes grid-move {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
           }
 
           .orb {
             position: absolute; border-radius: 50%;
-            filter: blur(80px); opacity: 0.4;
-            animation: orb-float 20s ease-in-out infinite alternate;
+            filter: blur(100px); opacity: 0.5;
+            will-change: transform;
           }
 
-          @keyframes orb-float {
-            0% { transform: translate(-20%, -20%) scale(1); }
-            100% { transform: translate(20%, 20%) scale(1.2); }
+          .orb-1 {
+            width: 600px; height: 600px;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            top: -20%; left: -15%;
+            animation: orb-dance-1 25s ease-in-out infinite;
+          }
+
+          .orb-2 {
+            width: 500px; height: 500px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            bottom: -15%; right: -10%;
+            animation: orb-dance-2 30s ease-in-out infinite;
+          }
+
+          .orb-3 {
+            width: 300px; height: 300px;
+            background: linear-gradient(135deg, #818cf8, #c084fc);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            animation: orb-dance-3 20s ease-in-out infinite;
+          }
+
+          @keyframes orb-dance-1 {
+            0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+            25% { transform: translate(10%, 10%) scale(1.1) rotate(90deg); }
+            50% { transform: translate(-5%, 15%) scale(0.9) rotate(180deg); }
+            75% { transform: translate(5%, -5%) scale(1.05) rotate(270deg); }
+          }
+
+          @keyframes orb-dance-2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-15%, -10%) scale(1.15); }
+            66% { transform: translate(10%, 5%) scale(0.85); }
+          }
+
+          @keyframes orb-dance-3 {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.5; }
+          }
+
+          .particles {
+            position: absolute; inset: 0;
+            z-index: -1; overflow: hidden;
+          }
+
+          .particle {
+            position: absolute; width: 4px; height: 4px;
+            background: rgba(139, 92, 246, 0.6);
+            border-radius: 50%;
+            animation: particle-float 15s linear infinite;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+          }
+
+          @keyframes particle-float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
           }
 
           .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 32px;
-            padding: 60px 80px;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 40px;
+            padding: 70px 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: card-appear 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            gap: 40px;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                0 50px 100px -20px rgba(0, 0, 0, 0.5),
+                0 30px 60px -30px rgba(79, 70, 229, 0.3);
+            animation: card-entrance 1.5s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            z-index: 1;
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
           }
 
-          @keyframes card-appear {
-            0% { opacity: 0; transform: translateY(40px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-          }
-
-          .rocket-container {
-            position: relative;
-            animation: rocket-pulse 3s ease-in-out infinite;
-          }
-
-          @keyframes rocket-pulse {
-            0%, 100% { transform: scale(1); filter: brightness(1); }
-            50% { transform: scale(1.05); filter: brightness(1.2); }
-          }
-
-          .rocket-glow {
-            position: absolute; inset: -20px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
-            border-radius: 50%;
+          .glass-card::before {
+            content: '';
+            position: absolute; inset: -2px;
+            border-radius: 42px;
+            background: linear-gradient(135deg, 
+                rgba(139, 92, 246, 0.4), 
+                rgba(99, 102, 241, 0.1), 
+                rgba(139, 92, 246, 0.4));
             z-index: -1;
+            animation: border-rotate 4s linear infinite;
+            background-size: 300% 300%;
+            opacity: 0.5;
           }
 
-          .title-modern {
-            font-family: 'Inter', sans-serif;
-            font-size: 42px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
+          @keyframes border-rotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
           }
 
-          .status-text {
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 600;
-            color: #818cf8;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+          @keyframes card-entrance {
+            0% { 
+                opacity: 0; 
+                transform: translateY(60px) rotateX(10deg) scale(0.9); 
+                filter: blur(10px);
+            }
+            100% { 
+                opacity: 1; 
+                transform: translateY(0) rotateX(0deg) scale(1); 
+                filter: blur(0);
+            }
           }
 
-          .loader-bar {
-            width: 200px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 999px;
-            overflow: hidden;
+          .logo-container {
             position: relative;
+            width: 120px; height: 120px;
+            display: flex; align-items: center; justify-content: center;
           }
 
-          .loader-progress {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, #6366f1, #818cf8, transparent);
-            animation: progress-slide 1.5s infinite ease-in-out;
+          .logo-ring {
+            position: absolute; inset: 0;
+            border-radius: 50%; border: 2px solid transparent;
+            border-top-color: rgba(139, 92, 246, 0.8);
+            border-right-color: rgba(99, 102, 241, 0.4);
+            animation: ring-spin 2s linear infinite;
           }
 
-          @keyframes progress-slide {
-            0% { left: -100%; }
-            100% { left: 100%; }
+          .logo-ring:nth-child(2) {
+            inset: 8px;
+            animation-duration: 3s; animation-direction: reverse;
+            border-top-color: rgba(99, 102, 241, 0.6);
+            border-right-color: rgba(139, 92, 246, 0.3);
+          }
+
+          .logo-ring:nth-child(3) {
+            inset: 16px; animation-duration: 4s;
+            border-top-color: rgba(167, 139, 250, 0.5);
+            border-right-color: rgba(99, 102, 241, 0.2);
+          }
+
+          @keyframes ring-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          .logo-core {
+            width: 70px; height: 70px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.3));
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            animation: core-pulse 3s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(139, 92, 246, 0.2);
+          }
+
+          @keyframes core-pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 0 30px rgba(99, 102, 241, 0.3), inset 0 0 20px rgba(139, 92, 246, 0.2);
+            }
+            50% { 
+                transform: scale(1.05); 
+                box-shadow: 0 0 50px rgba(99, 102, 241, 0.5), inset 0 0 30px rgba(139, 92, 246, 0.4);
+            }
+          }
+
+          .rocket-icon {
+            color: white;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.8));
+            animation: rocket-float 4s ease-in-out infinite;
+          }
+
+          @keyframes rocket-float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+          }
+
+          .title-section {
+            text-align: center; display: flex; flex-direction: column; align-items: center; gap: 16px;
+          }
+
+          .title-main {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px; font-weight: 700; letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 30%, #a5b4fc 60%, #818cf8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            text-shadow: 0 0 80px rgba(139, 92, 246, 0.5);
+            animation: title-shimmer 3s ease-in-out infinite; background-size: 200% 200%;
+          }
+
+          @keyframes title-shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+          }
+
+          .title-sub {
+            font-size: 14px; font-weight: 500; color: rgba(167, 139, 250, 0.8);
+            letter-spacing: 0.3em; text-transform: uppercase;
           }
 
           .version-badge {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            font-weight: 700;
-            background: rgba(99, 102, 241, 0.1);
-            color: #818cf8;
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            margin-top: 8px;
+            display: inline-flex; align-items: center; gap: 8px;
+            font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.1));
+            color: #a5b4fc; padding: 8px 16px; border-radius: 100px;
+            border: 1px solid rgba(139, 92, 246, 0.2); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+          }
+
+          .version-dot {
+            width: 6px; height: 6px; background: #22c55e; border-radius: 50%;
+            animation: dot-pulse 2s ease-in-out infinite; box-shadow: 0 0 10px #22c55e;
+          }
+
+          @keyframes dot-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+          }
+
+          .loading-section {
+            display: flex; flex-direction: column; align-items: center; gap: 24px; width: 100%;
+          }
+
+          .progress-container {
+            width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 12px;
+          }
+
+          .progress-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; color: rgba(167, 139, 250, 0.7); font-weight: 500;
+          }
+
+          .progress-percent {
+            font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: #a5b4fc;
+          }
+
+          .progress-bar {
+            width: 100%; height: 6px; background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px; overflow: hidden; position: relative;
+          }
+
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7, #8b5cf6, #6366f1);
+            background-size: 200% 100%; border-radius: 100px; width: 0%;
+            animation: progress-shimmer 2s linear infinite;
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            transition: width 0.4s ease;
+          }
+
+          @keyframes progress-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+          }
+
+          .progress-glow {
+            position: absolute; top: 0; left: 0; height: 100%; width: 30%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: glow-slide 2s ease-in-out infinite;
+          }
+
+          @keyframes glow-slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+          }
+
+          .status-steps {
+            display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px;
+          }
+
+          .status-step {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.02); border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            opacity: 0; transform: translateX(-20px);
+            animation: step-appear 0.5s ease-out forwards;
+          }
+
+          @keyframes step-appear {
+            to { opacity: 1; transform: translateX(0); }
+          }
+
+          .step-icon {
+            width: 32px; height: 32px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.1));
+            color: #a5b4fc;
+          }
+
+          .step-icon.completed {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.1));
+            color: #22c55e;
+          }
+
+          .step-icon.loading {
+            animation: icon-spin 1s linear infinite;
+          }
+
+          @keyframes icon-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+
+          .step-content { flex: 1; }
+          .step-title { font-size: 13px; font-weight: 600; color: rgba(255, 255, 255, 0.9); }
+          .step-desc { font-size: 11px; color: rgba(167, 139, 250, 0.6); margin-top: 2px; }
+          .step-status {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 600;
+            padding: 4px 8px; border-radius: 6px; background: rgba(99, 102, 241, 0.1); color: #818cf8;
+          }
+
+          .step-status.done { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+
+          .loader-footer {
+            display: flex; align-items: center; gap: 24px; margin-top: 8px;
+          }
+
+          .footer-link {
+            font-size: 12px; color: rgba(167, 139, 250, 0.5); text-decoration: none;
+            transition: color 0.3s ease; display: flex; align-items: center; gap: 6px;
+          }
+
+          .footer-link:hover { color: #a5b4fc; }
+
+          .corner-decoration {
+            position: absolute; width: 100px; height: 100px; pointer-events: none;
+          }
+
+          .corner-decoration.top-left {
+            top: 20px; left: 20px; border-top: 2px solid rgba(139, 92, 246, 0.2);
+            border-left: 2px solid rgba(139, 92, 246, 0.2); border-top-left-radius: 20px;
+          }
+
+          .corner-decoration.bottom-right {
+            bottom: 20px; right: 20px; border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+            border-right: 2px solid rgba(139, 92, 246, 0.2); border-bottom-right-radius: 20px;
           }
         </style>
         
-        <div class="luminous-bg"></div>
-        <div class="orb" style="width: 400px; height: 400px; background: #4338ca; top: -10%; left: -10%;"></div>
-        <div class="orb" style="width: 300px; height: 300px; background: #6d28d9; bottom: -5%; right: -5%; animation-delay: -5s;"></div>
+        <div class="mesh-bg"></div>
+        <div class="grid-bg"></div>
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="particles" id="particles"></div>
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration bottom-right"></div>
         
-        <div class="glass-card">
-          <div class="rocket-container">
-            <div class="rocket-glow"></div>
-            ${rocketSvg}
-          </div>
-          
-          <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <h1 class="title-modern">ONLUYEN SCRAPER</h1>
-            <div class="version-badge">VERSION 4.0.0</div>
-          </div>
-
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-            <div class="status-text">
-              <span style="width: 12px; height: 1px; background: currentColor; opacity: 0.5;"></span>
-              Initializing Engine
-              <span style="width: 12px; height: 1px; background: currentColor; opacity: 0.5;"></span>
+        <div class="glass-card" id="glass-card">
+            <div class="logo-container">
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-ring"></div>
+                <div class="logo-core">
+                    <svg class="rocket-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
+                        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
+                        <path d="M9 12H4s.55-3.03 2-4c1.62-1.1 4-1 4-1"/>
+                        <path d="M12 15v5s3.03-.55 4-2c1.1-1.62 1-4 1-4"/>
+                    </svg>
+                </div>
             </div>
             
-            <div class="loader-bar">
-              <div class="loader-progress"></div>
+            <div class="title-section">
+                <h1 class="title-main">ONLUYEN SCRAPER</h1>
+                <p class="title-sub">Data Extraction Engine</p>
+                <div class="version-badge">
+                    <span class="version-dot"></span>
+                    <span>v4.0.0</span>
+                </div>
             </div>
-          </div>
+
+            <div class="loading-section">
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span>Initializing...</span>
+                        <span class="progress-percent" id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                        <div class="progress-glow"></div>
+                    </div>
+                </div>
+
+                <div class="status-steps">
+                    <div class="status-step" id="step-1" style="animation-delay: 0.5s">
+                        <div class="step-icon loading">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Loading Core Modules</div>
+                            <div class="step-desc">Initializing essential components</div>
+                        </div>
+                        <span class="step-status">Running</span>
+                    </div>
+                    
+                    <div class="status-step" id="step-2" style="animation-delay: 1.5s">
+                        <div class="step-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m15 9-6 6"/>
+                                <path d="m9 9 6 6"/>
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Connecting to Server</div>
+                            <div class="step-desc">Establishing secure connection</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    
+                    <div class="status-step" id="step-3" style="animation-delay: 2.5s">
+                        <div class="step-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Authenticating</div>
+                            <div class="step-desc">Verifying credentials</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                    
+                    <div class="status-step" id="step-4" style="animation-delay: 3.5s">
+                        <div class="step-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-title">Ready to Launch</div>
+                            <div class="step-desc">All systems operational</div>
+                        </div>
+                        <span class="step-status">Pending</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="loader-footer">
+                <a href="#" class="footer-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                    </svg>
+                    GitHub
+                </a>
+                <a href="#" class="footer-link">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    Support
+                </a>
+            </div>
         </div>
       `;
+
+      function initializeLoaderLogic() {
+          // Generate Particles
+          const particlesContainer = document.getElementById('particles');
+          if (particlesContainer) {
+              for (let i = 0; i < 30; i++) {
+                  const particle = document.createElement('div');
+                  particle.className = 'particle';
+                  particle.style.left = `${Math.random() * 100}%`;
+                  particle.style.animationDuration = `${15 + Math.random() * 20}s`;
+                  particle.style.animationDelay = `${Math.random() * 15}s`;
+                  particle.style.width = `${2 + Math.random() * 4}px`;
+                  particle.style.height = particle.style.width;
+                  particlesContainer.appendChild(particle);
+              }
+          }
+
+          // Animate Progress
+          const progressPercent = document.getElementById('progress-percent');
+          const progressFill = document.getElementById('progress-fill');
+          let progress = 0;
+          const steps = [
+              { at: 25, element: 'step-1', complete: true },
+              { at: 50, element: 'step-2', complete: true },
+              { at: 75, element: 'step-3', complete: true },
+              { at: 100, element: 'step-4', complete: true }
+          ];
+
+          const interval = setInterval(() => {
+              if (progress < 100) {
+                  progress++;
+                  if (progressPercent) progressPercent.textContent = `${progress}%`;
+                  if (progressFill) progressFill.style.width = `${progress}%`;
+                  
+                  // Check steps
+                  steps.forEach(step => {
+                      if (progress >= step.at && !step.triggered) {
+                          step.triggered = true;
+                          const el = document.getElementById(step.element);
+                          if (el) {
+                              const icon = el.querySelector('.step-icon');
+                              const status = el.querySelector('.step-status');
+                              
+                              if (icon) {
+                                  icon.classList.remove('loading');
+                                  icon.classList.add('completed');
+                                  icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
+                              }
+                              if (status) {
+                                  status.textContent = 'Done';
+                                  status.classList.add('done');
+                              }
+                              
+                              // Start next step loading
+                              const nextStepId = `step-${parseInt(step.element.split('-')[1]) + 1}`;
+                              const nextStep = document.getElementById(nextStepId);
+                              if (nextStep) {
+                                  const nextIcon = nextStep.querySelector('.step-icon');
+                                  const nextStatus = nextStep.querySelector('.step-status');
+                                  if (nextIcon) nextIcon.classList.add('loading');
+                                  if (nextStatus) nextStatus.textContent = 'Running';
+                              }
+                          }
+                      }
+                  });
+              } else {
+                  clearInterval(interval);
+              }
+          }, 40);
+
+          // Card 3D Effect
+          const card = document.getElementById('glass-card');
+          if (card) {
+              const handleMouseMove = (e) => {
+                  const rect = card.getBoundingClientRect();
+                  const x = e.clientX - rect.left - rect.width / 2;
+                  const y = e.clientY - rect.top - rect.height / 2;
+                  
+                  const rotateX = (y / rect.height) * -5;
+                  const rotateY = (x / rect.width) * 5;
+                  
+                  card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+              };
+
+              const handleMouseLeave = () => {
+                  card.style.transform = 'rotateX(0) rotateY(0)';
+              };
+
+              document.addEventListener('mousemove', handleMouseMove);
+              document.addEventListener('mouseleave', handleMouseLeave);
+              
+              // Cleanup listeners when loader is removed
+              const observer = new MutationObserver((mutations) => {
+                  mutations.forEach((mutation) => {
+                      mutation.removedNodes.forEach((node) => {
+                          if (node.id === 'scraper-initial-loader') {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseleave', handleMouseLeave);
+                              observer.disconnect();
+                          }
+                      });
+                  });
+              });
+              observer.observe(document.body, { childList: true });
+          }
+      }
+
       appendLoader();
     }
 
