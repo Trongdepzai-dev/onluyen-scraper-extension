@@ -981,20 +981,20 @@ if (window.hasRunScraper) {
                 </div>
 
                 <div class="status-steps">
-                    <div class="status-step" id="step-1" style="animation-delay: 0.5s">
+                    <div class="status-step" id="step-1" style="animation-delay: 0.2s">
                         <div class="step-icon loading">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
                             </svg>
                         </div>
                         <div class="step-content">
-                            <div class="step-title">Loading Core Modules</div>
-                            <div class="step-desc">Initializing essential components</div>
+                            <div class="step-title">Khởi tạo Hệ thống</div>
+                            <div class="step-desc">Thiết lập các thành phần cốt lõi</div>
                         </div>
-                        <span class="step-status">Running</span>
+                        <span class="step-status">Đang chạy</span>
                     </div>
                     
-                    <div class="status-step" id="step-2" style="animation-delay: 1.5s">
+                    <div class="status-step" id="step-2" style="animation-delay: 0.4s">
                         <div class="step-icon">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10"/>
@@ -1003,13 +1003,13 @@ if (window.hasRunScraper) {
                             </svg>
                         </div>
                         <div class="step-content">
-                            <div class="step-title">Connecting to Server</div>
-                            <div class="step-desc">Establishing secure connection</div>
+                            <div class="step-title">Kết nối Máy chủ</div>
+                            <div class="step-desc">Đang kiểm tra cập nhật & cấu hình</div>
                         </div>
-                        <span class="step-status">Pending</span>
+                        <span class="step-status">Đang chờ</span>
                     </div>
                     
-                    <div class="status-step" id="step-3" style="animation-delay: 2.5s">
+                    <div class="status-step" id="step-3" style="animation-delay: 0.6s">
                         <div class="step-icon">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
@@ -1017,23 +1017,23 @@ if (window.hasRunScraper) {
                             </svg>
                         </div>
                         <div class="step-content">
-                            <div class="step-title">Authenticating</div>
-                            <div class="step-desc">Verifying credentials</div>
+                            <div class="step-title">Xác thực AI</div>
+                            <div class="step-desc">Kiểm tra Gemini API Key</div>
                         </div>
-                        <span class="step-status">Pending</span>
+                        <span class="step-status">Đang chờ</span>
                     </div>
                     
-                    <div class="status-step" id="step-4" style="animation-delay: 3.5s">
+                    <div class="status-step" id="step-4" style="animation-delay: 0.8s">
                         <div class="step-icon">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="20 6 9 17 4 12"/>
                             </svg>
                         </div>
                         <div class="step-content">
-                            <div class="step-title">Ready to Launch</div>
-                            <div class="step-desc">All systems operational</div>
+                            <div class="step-title">Sẵn sàng</div>
+                            <div class="step-desc">Hệ thống đã sẵn sàng hoạt động</div>
                         </div>
-                        <span class="step-status">Pending</span>
+                        <span class="step-status">Đang chờ</span>
                     </div>
                 </div>
             </div>
@@ -1075,7 +1075,7 @@ if (window.hasRunScraper) {
           // Animate Progress
           const progressPercent = document.getElementById('progress-percent');
           const progressFill = document.getElementById('progress-fill');
-          let progress = 0;
+          window.scraperProgress = 0;
           const steps = [
               { at: 25, element: 'step-1', complete: true },
               { at: 50, element: 'step-2', complete: true },
@@ -1083,15 +1083,21 @@ if (window.hasRunScraper) {
               { at: 100, element: 'step-4', complete: true }
           ];
 
+          if (progressFill) progressFill.style.transition = 'width 0.3s ease-out';
+
           const interval = setInterval(() => {
-              if (progress < 100) {
-                  progress++;
-                  if (progressPercent) progressPercent.textContent = `${progress}%`;
-                  if (progressFill) progressFill.style.width = `${progress}%`;
+              if (window.scraperProgress < 100) {
+                  // Tăng tốc độ ngẫu nhiên để trông thật hơn
+                  const increment = Math.random() * 2 + 0.5;
+                  window.scraperProgress = Math.min(100, window.scraperProgress + increment);
+                  
+                  const displayProgress = Math.floor(window.scraperProgress);
+                  if (progressPercent) progressPercent.textContent = `${displayProgress}%`;
+                  if (progressFill) progressFill.style.width = `${window.scraperProgress}%`;
                   
                   // Check steps
                   steps.forEach(step => {
-                      if (progress >= step.at && !step.triggered) {
+                      if (displayProgress >= step.at && !step.triggered) {
                           step.triggered = true;
                           const el = document.getElementById(step.element);
                           if (el) {
@@ -1104,7 +1110,7 @@ if (window.hasRunScraper) {
                                   icon.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>`;
                               }
                               if (status) {
-                                  status.textContent = 'Done';
+                                  status.textContent = 'Xong';
                                   status.classList.add('done');
                               }
                               
@@ -1115,7 +1121,7 @@ if (window.hasRunScraper) {
                                   const nextIcon = nextStep.querySelector('.step-icon');
                                   const nextStatus = nextStep.querySelector('.step-status');
                                   if (nextIcon) nextIcon.classList.add('loading');
-                                  if (nextStatus) nextStatus.textContent = 'Running';
+                                  if (nextStatus) nextStatus.textContent = 'Đang chạy';
                               }
                           }
                       }
@@ -1123,7 +1129,7 @@ if (window.hasRunScraper) {
               } else {
                   clearInterval(interval);
               }
-          }, 40);
+          }, 50);
 
           // Card 3D Effect
           const card = document.getElementById('glass-card');
@@ -1165,9 +1171,17 @@ if (window.hasRunScraper) {
       appendLoader();
     }
 
-    function hideInitialLoading() {
+    async function hideInitialLoading() {
       const loader = document.getElementById('scraper-initial-loader');
       if (loader) {
+        // Đợi cho đến khi progress đạt 100%
+        while (window.scraperProgress < 100) {
+          await new Promise(r => setTimeout(r, 100));
+        }
+        
+        // Thêm một chút delay để người dùng thấy trạng thái hoàn thành
+        await new Promise(r => setTimeout(r, 400));
+
         loader.style.opacity = '0';
         loader.style.filter = 'blur(40px)';
         loader.style.transform = 'scale(1.05)';
